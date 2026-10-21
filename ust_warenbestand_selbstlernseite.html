@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umsatzsteuer &amp; Warenbestand</title>
+<meta name="description" content="Selbstlernseite: Umsatzsteuer buchen und Warenbestandsveränderungen – Schuhhandel Meier GmbH">
+<style>
+:root{
+  --paper:#f2ead8; --paper-2:#fbf7ec; --paper-3:#efe5cf;
+  --ink:#2a2620; --muted:#6b6254; --line:#d6c8aa; --line-2:#c2b28f;
+  --head:#1e3a5f; --head-2:#2b4f7c; --head-ink:#f6f1e4;
+  --bestand:#3b7a37; --aufwand:#7b3e88; --erloes:#256f9e; --ust:#a8452e; --neutral:#4d4a44;
+  --ok:#2e7a38; --ok-bg:#e3efd9; --bad:#ae2f28; --bad-bg:#f6e0dc; --part:#9a6a12; --part-bg:#f5ead0;
+  --merke:#e7eed2; --merke-line:#9fb46a; --bsp:#e1eaf3; --bsp-line:#8fb0d1;
+  --focus:#d08a1a;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#1a1916; --paper-2:#24221e; --paper-3:#2c2924;
+    --ink:#ece5d5; --muted:#a79e8c; --line:#3c382f; --line-2:#565044;
+    --head:#1c3556; --head-2:#28496f; --head-ink:#f1ecdf;
+    --bestand:#86c57e; --aufwand:#cc9fd8; --erloes:#7cb9e2; --ust:#e8907a; --neutral:#c9c2b3;
+    --ok:#8fd08f; --ok-bg:#1f3322; --bad:#f08c82; --bad-bg:#3a2220; --part:#e6b85c; --part-bg:#372d18;
+    --merke:#262d1c; --merke-line:#6f8445; --bsp:#1c2632; --bsp-line:#44678c; --focus:#f0b048;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#1a1916; --paper-2:#24221e; --paper-3:#2c2924;
+  --ink:#ece5d5; --muted:#a79e8c; --line:#3c382f; --line-2:#565044;
+  --head:#1c3556; --head-2:#28496f; --head-ink:#f1ecdf;
+  --bestand:#86c57e; --aufwand:#cc9fd8; --erloes:#7cb9e2; --ust:#e8907a; --neutral:#c9c2b3;
+  --ok:#8fd08f; --ok-bg:#1f3322; --bad:#f08c82; --bad-bg:#3a2220; --part:#e6b85c; --part-bg:#372d18;
+  --merke:#262d1c; --merke-line:#6f8445; --bsp:#1c2632; --bsp-line:#44678c; --focus:#f0b048;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);-webkit-text-size-adjust:100%}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+h1,h2,h3,h4{font-family:var(--serif);line-height:1.2;text-wrap:balance;margin:0}
+h2{font-size:1.65rem;margin-block:28px 10px}
+h3{font-size:1.25rem;margin-block:26px 8px;color:var(--head-2)}
+:root[data-theme="dark"] h3{color:var(--erloes)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h3{color:var(--erloes)}}
+p{margin:0 0 12px;max-width:68ch}
+ul{margin:0 0 12px;padding-left:1.2em;max-width:68ch}
+li{margin-bottom:4px}
+.num,.tk,td.n{font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Header */
+.masthead{background:var(--head);color:var(--head-ink);padding-block:26px 22px;border-bottom:4px solid var(--line-2)}
+.masthead .eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.masthead h1{font-size:clamp(1.7rem,4.5vw,2.5rem);margin-top:6px}
+.masthead p{margin:8px 0 0;opacity:.88;max-width:60ch}
+
+/* Nav */
+.navbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper-3);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-block:8px 0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);border-bottom:none;background:transparent;padding:8px 14px 9px;border-radius:8px 8px 0 0;cursor:pointer;color:var(--muted);font-weight:600;font-size:.92rem;display:flex;gap:8px;align-items:center}
+.tab[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--line-2)}
+.tab .badge{font-size:.74rem;font-weight:600;background:var(--paper-2);border:1px solid var(--line);border-radius:99px;padding:0 7px;font-variant-numeric:tabular-nums}
+.tab .badge.full{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.progress{display:flex;align-items:center;gap:12px;padding-block:7px;font-size:.85rem;color:var(--muted)}
+.bar{flex:1;height:8px;background:var(--paper-2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--head-2);transition:width .4s}
+.progress b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+main{padding-block:8px 60px}
+.panel[hidden]{display:none!important}
+
+/* Boxes */
+.merke,.bsp,.situation{border-radius:6px;padding:14px 16px;margin-block:14px;max-width:100%}
+.merke{background:var(--merke);border-left:5px solid var(--merke-line)}
+.merke::before{content:"Merke";display:block;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bestand);margin-bottom:4px}
+.bsp{background:var(--bsp);border-left:5px solid var(--bsp-line)}
+.bsp .lbl{font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--erloes);margin-bottom:4px;display:block}
+.merke p:last-child,.bsp p:last-child,.merke ul:last-child{margin-bottom:0}
+.situation{background:var(--paper-2);border:1px solid var(--line)}
+.dialog{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+.dialog dt{font-weight:700;white-space:nowrap}
+.dialog dd{margin:0;font-style:italic;max-width:64ch}
+.formula{font-family:var(--serif);font-size:1.12rem;background:var(--paper-2);border:1px dashed var(--line-2);border-radius:6px;padding:10px 14px;margin-block:10px;display:inline-block;max-width:100%}
+.formula b{font-weight:700}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-block:14px}
+.card{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.card h4{font-size:1.05rem;margin-bottom:6px}
+.acc-b{color:var(--bestand);font-weight:600}.acc-a{color:var(--aufwand);font-weight:600}.acc-e{color:var(--erloes);font-weight:600}.acc-u{color:var(--ust);font-weight:600}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;margin-block:12px}
+table{border-collapse:collapse;width:100%;min-width:520px;background:var(--paper-2)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--paper-3);font-size:.85rem;letter-spacing:.02em}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.sum td{font-weight:700;border-top:2px solid var(--ink)}
+
+/* T-Konten */
+.tks{display:flex;flex-wrap:wrap;gap:18px 26px;margin-block:14px}
+.tk{flex:1 1 230px;max-width:340px;font-size:.9rem}
+.tk-h{display:grid;grid-template-columns:auto 1fr auto;border-bottom:2px solid var(--ink);padding-bottom:2px;font-weight:700}
+.tk-h .t{text-align:center;font-family:var(--serif);font-size:1rem}
+.tk-b{display:grid;grid-template-columns:1fr 1fr}
+.tk-b>div{padding:3px 6px 4px;min-height:1.6em}
+.tk-b>div+div{border-left:2px solid var(--ink)}
+.tk-r{display:flex;justify-content:space-between;gap:6px;padding:1px 0}
+.tk-r span:first-child{color:var(--muted)}
+.tk-r.hi{background:color-mix(in srgb,var(--part) 18%,transparent);border-radius:3px;padding-inline:3px;margin-inline:-3px}
+.tk-r.hi span:first-child{color:var(--ink);font-weight:600}
+.tk-s{display:grid;grid-template-columns:1fr 1fr}
+.tk-s>div{border-top:1px solid var(--ink);border-bottom:3px double var(--ink);text-align:right;padding:1px 6px;font-weight:700}
+.tk-s>div+div{border-left:2px solid var(--ink)}
+.tk.c-b .t{color:var(--bestand)}.tk.c-a .t{color:var(--aufwand)}.tk.c-e .t{color:var(--erloes)}.tk.c-u .t{color:var(--ust)}
+.tk.schema .tk-r{justify-content:center;text-align:center;padding:6px 2px;border-radius:4px;margin:3px 0}
+.tk.schema .tk-r span{color:var(--ink)!important}
+.sch-b{background:color-mix(in srgb,var(--bestand) 16%,transparent)}
+.sch-a{background:color-mix(in srgb,var(--aufwand) 16%,transparent)}
+.sch-x{background:color-mix(in srgb,var(--part) 22%,transparent)}
+
+/* Widgets */
+.widget{background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:16px;margin-block:18px;box-shadow:0 1px 0 var(--line)}
+.widget>.wt{font-family:var(--serif);font-size:1.15rem;font-weight:700;margin-bottom:4px}
+.widget>.ws{color:var(--muted);font-size:.9rem;margin-bottom:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:3px;font-size:.85rem;color:var(--muted)}
+.field input,.field select{min-width:0;width:130px}
+input[type=text],select{background:var(--paper);border:1px solid var(--line-2);border-radius:6px;padding:7px 9px;font-variant-numeric:tabular-nums}
+input[type=text]{text-align:right}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+.seg button{border:none;background:var(--paper);padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--head);color:var(--head-ink)}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat3>div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.stat3 small{display:block;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.stat3 b{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.split{display:flex;height:26px;border-radius:5px;overflow:hidden;margin-top:10px;border:1px solid var(--line)}
+.split div{display:flex;align-items:center;justify-content:center;font-size:.76rem;color:#fff;white-space:nowrap;overflow:hidden;transition:flex-basis .3s}
+.split .sn{background:var(--head-2)}.split .su{background:#a8452e}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-2);background:var(--paper);border-radius:99px;padding:5px 12px;cursor:pointer;font-size:.85rem}
+.chip:hover{border-color:var(--head-2)}
+.result{border-radius:8px;padding:10px 14px;margin-block:10px;font-weight:600}
+.result.zl{background:var(--bad-bg);color:var(--bad)}
+.result.vu{background:var(--ok-bg);color:var(--ok)}
+.result.neu{background:var(--paper-3)}
+.bs{font-family:var(--mono);font-size:.86rem;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:6px 0;overflow-x:auto;white-space:pre-wrap}
+.calc{width:100%;max-width:560px;min-width:0;border:none;background:none}
+.calc td{border:none;padding:3px 6px}
+.calc tr.eq td{border-top:1.5px solid var(--ink);font-weight:700}
+.calc tr.res td{border-bottom:3px double var(--ink)}
+.err{color:var(--bad);font-weight:600}
+
+/* Tasks */
+.tasks-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-block:30px 6px;border-bottom:2px solid var(--head);padding-bottom:4px}
+.tasks-h h3{margin:0;color:var(--ink)}
+.tasks-h span{color:var(--muted);font-size:.9rem}
+.task{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-block:12px}
+.task.s-ok{border-color:var(--ok)}.task.s-bad{border-color:var(--bad)}.task.s-part{border-color:var(--part)}
+.th{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;font-size:.82rem;color:var(--muted);font-weight:600}
+.th .no{color:var(--head-2);letter-spacing:.04em}
+:root[data-theme="dark"] .th .no{color:var(--erloes)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .th .no{color:var(--erloes)}}
+.q{margin-bottom:10px}
+.q p{margin-bottom:6px}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);cursor:pointer}
+.opt input{margin-top:4px;accent-color:var(--head-2)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.numrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.numrow input{width:160px}
+input.right,select.right{border-color:var(--ok);background:var(--ok-bg)}
+input.wrong,select.wrong{border-color:var(--bad);background:var(--bad-bg)}
+input.part,select.part{border-color:var(--part);background:var(--part-bg)}
+.bk{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start}
+.bk .side h5{margin:0 0 6px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bk .an{align-self:center;font-family:var(--serif);font-style:italic;font-size:1.1rem;color:var(--muted);padding-top:18px}
+.bk .row{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:6px;margin-bottom:6px}
+.bk .row select{width:100%;min-width:0}
+.bk .row input{width:100%}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--head);background:var(--head);color:var(--head-ink);border-radius:6px;padding:8px 16px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--head-2)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn:disabled{opacity:.5;cursor:default}
+.confirm{margin-top:12px;border:2px solid var(--part);background:var(--part-bg);border-radius:6px;padding:10px 12px}
+.confirm p{margin:0;font-weight:600}
+.fb{margin-top:12px;border-radius:6px;padding:10px 12px;font-size:.95rem}
+.fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}.fb.part{background:var(--part-bg)}
+.fb .v{font-weight:700;display:block;margin-bottom:3px}
+.fb.ok .v{color:var(--ok)}.fb.bad .v{color:var(--bad)}.fb.part .v{color:var(--part)}
+.fb p{margin:4px 0 0}
+.sol{display:inline-grid;grid-template-columns:auto auto;gap:0 16px;font-variant-numeric:tabular-nums;margin-top:6px;font-size:.92rem}
+.sol .an2{grid-column:1/-1;font-style:italic;color:var(--muted)}
+.sol .r{text-align:right}
+details.tip{margin-top:8px;font-size:.9rem}
+details.tip summary{cursor:pointer;color:var(--muted)}
+
+/* Start */
+.goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-block:16px}
+.goal{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left}
+.goal:hover{border-color:var(--head-2)}
+.goal b{display:block;font-family:var(--serif);font-size:1.05rem;margin-bottom:3px}
+.goal span{color:var(--muted);font-size:.88rem}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.88rem;margin-block:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* Ergebnis */
+.score{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:18px}
+.note{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:var(--head);color:var(--head-ink);font-family:var(--serif);font-size:2.6rem;font-weight:700}
+.score .big{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.foot{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--line);padding-top:10px}
+
+@media (max-width:640px){
+  .bk{grid-template-columns:1fr}
+  .bk .an{padding-top:0;text-align:center}
+  .stat3{grid-template-columns:1fr}
+  .dialog{grid-template-columns:1fr}
+  .dialog dt{margin-top:6px}
+  .score{grid-template-columns:1fr;justify-items:start}
+  .field input,.field select{width:118px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Selbstlernseite · Lernfeld 11 · Schuhhandel Meier GmbH</div>
+    <h1>Umsatzsteuer &amp; Warenbestand</h1>
+    <p>Vorsteuer und Umsatzsteuer buchen, die Zahllast ermitteln und Warenbestandsveränderungen richtig erfassen – mit Rechnern, T-Konten und sofortiger Rückmeldung.</p>
+  </div>
+</header>
+
+<nav class="navbar" aria-label="Kapitel">
+  <div class="wrap">
+    <div class="tabs" role="tablist" id="tabs">
+      <button class="tab" role="tab" data-tab="start" aria-selected="true">Start</button>
+      <button class="tab" role="tab" data-tab="ust">1 · Umsatzsteuer <span class="badge" data-badge="ust"></span></button>
+      <button class="tab" role="tab" data-tab="buchen">2 · USt buchen <span class="badge" data-badge="buchen"></span></button>
+      <button class="tab" role="tab" data-tab="waren">3 · Warenbestand <span class="badge" data-badge="waren"></span></button>
+      <button class="tab" role="tab" data-tab="komplex">4 · Komplexaufgabe <span class="badge" data-badge="komplex"></span></button>
+      <button class="tab" role="tab" data-tab="ergebnis">Ergebnis</button>
+    </div>
+    <div class="progress"><span>Fortschritt</span><div class="bar"><i id="barFill"></i></div><b id="barTxt">0 / 0 P</b></div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= START ================= -->
+<section class="panel" id="p-start">
+  <h2>Handlungssituation</h2>
+  <div class="situation">
+    <p>Lena Hofmann ist Auszubildende im 2. Lehrjahr bei der <b>Schuhhandel Meier GmbH</b>. Heute ist der 10. Juni. Sie hilft Frau Aksoy in der Buchhaltung.</p>
+    <dl class="dialog">
+      <dt>Frau Aksoy:</dt><dd>„Lena, heute muss die Umsatzsteuer-Voranmeldung für Mai ans Finanzamt. Und die Inventur der Damenabteilung ist auch ausgewertet.“</dd>
+      <dt>Lena:</dt><dd>„Die Umsatzsteuer zahlen doch die Kunden. Warum überweisen dann wir etwas ans Finanzamt?“</dd>
+      <dt>Frau Aksoy:</dt><dd>„Die Kunden tragen sie, wir ziehen sie nur ein. Abführen müssen wir sie selbst – abzüglich der Vorsteuer, die wir unseren Lieferanten bezahlt haben.“</dd>
+      <dt>Lena:</dt><dd>„Und bei der Inventur? Wir haben weniger Sneaker im Lager als am Jahresanfang.“</dd>
+      <dt>Frau Aksoy:</dt><dd>„Dann haben wir mehr verkauft als eingekauft. Diese Bestandsminderung müssen wir buchen. Sonst stellen wir den Erlösen nicht den richtigen Wareneinsatz gegenüber, und unser Rohgewinn ist falsch.“</dd>
+    </dl>
+  </div>
+
+  <h3>Das lernst du auf dieser Seite</h3>
+  <div class="goals">
+    <button class="goal" data-go="ust"><b>1 · Umsatzsteuer</b><span>Netto, Brutto, Steuersätze und das Prinzip der Mehrwertsteuer</span></button>
+    <button class="goal" data-go="buchen"><b>2 · USt buchen</b><span>Vorsteuer, Umsatzsteuer, Zahllast und Vorsteuerüberhang</span></button>
+    <button class="goal" data-go="waren"><b>3 · Warenbestand</b><span>Bestandsmehrung, Bestandsminderung, Wareneinsatz, Rohgewinn</span></button>
+    <button class="goal" data-go="komplex"><b>4 · Komplexaufgabe</b><span>Alles zusammen: ein Geschäftsgang von der Buchung bis zum Abschluss</span></button>
+  </div>
+
+  <h3>So arbeitest du</h3>
+  <ul>
+    <li>Lies in jedem Kapitel zuerst die Erklärung und probiere die <b>Rechner</b> aus.</li>
+    <li>Bearbeite dann die Aufgaben. Nach <b>Prüfen</b> fragt die Seite noch einmal nach. Erst mit <b>Ja, prüfen</b> bekommst du die Rückmeldung, danach ist die Aufgabe gesperrt. Mit <b>Abbrechen</b> kannst du weiter ändern.</li>
+    <li>Beträge kannst du so eingeben: <span class="num">1140</span>, <span class="num">1.140</span> oder <span class="num">1.140,00</span>.</li>
+    <li>Folgefehler werden berücksichtigt: Rechnest du mit deinem eigenen falschen Zwischenergebnis richtig weiter, bekommst du die Punkte.</li>
+  </ul>
+  <p>Die Kontenfarben sind auf der ganzen Seite gleich:</p>
+  <div class="legend">
+    <span><i style="background:var(--bestand)"></i>Bestandskonto Warenbestände</span>
+    <span><i style="background:var(--aufwand)"></i>Aufwandskonto</span>
+    <span><i style="background:var(--erloes)"></i>Ertragskonto</span>
+    <span><i style="background:var(--ust)"></i>Steuerkonten</span>
+  </div>
+</section>
+
+<!-- ================= 1 UMSATZSTEUER ================= -->
+<section class="panel" id="p-ust" hidden>
+  <h2>1 · Die Umsatzsteuer</h2>
+  <p>Fast jeder Umsatz eines Unternehmens ist umsatzsteuerpflichtig. Wenn die Schuhhandel Meier GmbH ein Paar Schuhe verkauft, schlägt sie auf den Nettopreis die Umsatzsteuer auf. Der Kunde zahlt den Bruttopreis.</p>
+  <div class="grid2">
+    <div class="card"><h4>Regelsteuersatz 19 %</h4><p>Gilt für die meisten Waren, z. B. Schuhe, Taschen, Pflegemittel, Elektronik.</p></div>
+    <div class="card"><h4>Ermäßigter Steuersatz 7 %</h4><p>Gilt z. B. für Lebensmittel, Bücher, Zeitungen und Blumen.</p></div>
+  </div>
+  <div class="formula">Umsatzsteuer = Nettopreis × 19 %<br>Bruttopreis = Nettopreis × 1,19<br>Nettopreis = Bruttopreis ÷ 1,19<br>Steuer im Bruttopreis = Bruttopreis × 19 ⁄ 119</div>
+
+  <div class="widget" id="w-rechner">
+    <div class="wt">USt-Rechner</div>
+    <div class="ws">Gib einen Betrag ein und wähle, ob er netto oder brutto ist.</div>
+    <div class="controls">
+      <label class="field">Betrag in €<input type="text" id="r-betrag" inputmode="decimal" value="119,00"></label>
+      <div class="field">Betrag ist<div class="seg" id="r-mode"><button aria-pressed="false" data-v="netto">netto</button><button aria-pressed="true" data-v="brutto">brutto</button></div></div>
+      <div class="field">Steuersatz<div class="seg" id="r-satz"><button aria-pressed="true" data-v="19">19 %</button><button aria-pressed="false" data-v="7">7 %</button></div></div>
+    </div>
+    <div class="stat3">
+      <div><small>Netto</small><b id="r-n">–</b></div>
+      <div><small>Umsatzsteuer</small><b id="r-u">–</b></div>
+      <div><small>Brutto</small><b id="r-b">–</b></div>
+    </div>
+    <div class="split"><div class="sn" id="r-sn">Netto</div><div class="su" id="r-su">USt</div></div>
+  </div>
+
+  <h3>Das Prinzip der Mehrwertsteuer</h3>
+  <p>Ein Paar Sneaker durchläuft mehrere Unternehmen, bis es bei der Kundin ankommt. Jedes Unternehmen stellt Umsatzsteuer in Rechnung. Die Umsatzsteuer, die es selbst an seinen Lieferanten gezahlt hat, darf es als <b>Vorsteuer</b> abziehen. Ans Finanzamt überweist es nur die Differenz, die <b>Zahllast</b>.</p>
+  <p>Damit wird auf jeder Stufe nur der Wert besteuert, der dort neu hinzukommt, also der <b>Mehrwert</b>. Die ganze Steuerlast trägt am Ende die Endverbraucherin.</p>
+
+  <div class="widget">
+    <div class="wt">Wertschöpfungskette eines Sneakers</div>
+    <div class="ws">Ändere die Netto-Verkaufspreise der Stufen und beobachte die Zahllasten.</div>
+    <div class="controls">
+      <label class="field">Gerberei → Schuhfabrik<input type="text" id="k1" inputmode="decimal" value="12,00"></label>
+      <label class="field">Schuhfabrik → Meier GmbH<input type="text" id="k2" inputmode="decimal" value="40,00"></label>
+      <label class="field">Meier GmbH → Kundin<input type="text" id="k3" inputmode="decimal" value="70,00"></label>
+    </div>
+    <div class="tbl-wrap"><table id="kette"></table></div>
+    <p id="kette-txt" style="margin-top:8px"></p>
+  </div>
+
+  <div class="merke">
+    <ul>
+      <li>Die Umsatzsteuer ist für das Unternehmen ein <b>durchlaufender Posten</b>. Sie wird beim Kunden eingezogen und ans Finanzamt weitergegeben. Deshalb ist sie <b>erfolgsneutral</b> und berührt den Gewinn nicht.</li>
+      <li>Wirtschaftlich trägt die Steuer der <b>Endverbraucher</b>. Er kann keine Vorsteuer abziehen.</li>
+      <li>Zahllast = Umsatzsteuer − Vorsteuer</li>
+    </ul>
+  </div>
+
+  <div class="tasks-h"><h3>Aufgaben zu Kapitel 1</h3><span data-secpts="ust"></span></div>
+  <div data-task="t1"></div><div data-task="t2"></div><div data-task="t3"></div>
+  <div data-task="t4"></div><div data-task="t5"></div><div data-task="t6"></div>
+</section>
+
+<!-- ================= 2 USt BUCHEN ================= -->
+<section class="panel" id="p-buchen" hidden>
+  <h2>2 · Umsatzsteuer buchen</h2>
+  <p>In der Buchführung werden gezahlte und erhaltene Umsatzsteuer auf zwei getrennten Konten erfasst.</p>
+  <div class="grid2">
+    <div class="card"><h4 class="acc-u">Vorsteuer (VSt)</h4><p>Die USt, die wir beim <b>Einkauf</b> an Lieferanten zahlen. Wir holen sie uns vom Finanzamt zurück. Deshalb ist sie eine <b>Forderung</b> und das Konto ein <b>Aktivkonto</b>. Zugänge stehen im <b>Soll</b>.</p></div>
+    <div class="card"><h4 class="acc-u">Umsatzsteuer (USt)</h4><p>Die USt, die wir beim <b>Verkauf</b> von Kunden erhalten. Wir schulden sie dem Finanzamt. Deshalb ist sie eine <b>Verbindlichkeit</b> und das Konto ein <b>Passivkonto</b>. Zugänge stehen im <b>Haben</b>.</p></div>
+  </div>
+
+  <div class="bsp"><span class="lbl">Beispiel</span>
+    <div class="tbl-wrap"><table>
+      <tr><th>Nr.</th><th>Geschäftsfall</th><th>Konten</th><th class="n">Soll</th><th class="n">Haben</th></tr>
+      <tr><td>1</td><td>Einkauf von Damenstiefeln auf Ziel, netto 2.000,00 € + 19 % USt</td><td><span class="acc-a">Aufwendungen für Waren</span><br><span class="acc-u">Vorsteuer</span><br>&nbsp;&nbsp;an Verbindlichkeiten aLL</td><td class="n">2.000,00<br>380,00<br>&nbsp;</td><td class="n">&nbsp;<br>&nbsp;<br>2.380,00</td></tr>
+      <tr><td>2</td><td>Barverkauf von Stiefeln, netto 1.500,00 € + 19 % USt</td><td>Kasse<br>&nbsp;&nbsp;an <span class="acc-e">Umsatzerlöse für Waren</span><br>&nbsp;&nbsp;an <span class="acc-u">Umsatzsteuer</span></td><td class="n">1.785,00<br>&nbsp;<br>&nbsp;</td><td class="n">&nbsp;<br>1.500,00<br>285,00</td></tr>
+    </table></div>
+    <p>Aufwendungen und Erlöse werden immer <b>netto</b> gebucht. Die Steuer steht auf ihrem eigenen Konto.</p>
+  </div>
+
+  <h3>Die Zahllast ermitteln und überweisen</h3>
+  <p>Am Monatsende stellt das Unternehmen Umsatzsteuer und Vorsteuer gegenüber. Es meldet das Ergebnis in der <b>Umsatzsteuer-Voranmeldung</b> bis zum <b>10. des Folgemonats</b> elektronisch über ELSTER an das Finanzamt.</p>
+  <ol>
+    <li><b>Umbuchen:</b> Das kleinere Steuerkonto wird über das größere abgeschlossen. Im Normalfall ist die Umsatzsteuer größer: <b>Umsatzsteuer an Vorsteuer</b>.</li>
+    <li><b>Überweisen:</b> Der Saldo auf dem USt-Konto ist die Zahllast: <b>Umsatzsteuer an Bank</b>.</li>
+  </ol>
+  <p>Ist die Vorsteuer größer als die Umsatzsteuer (z. B. nach großen Einkäufen vor dem Weihnachtsgeschäft), entsteht ein <b>Vorsteuerüberhang</b>. Das Finanzamt erstattet ihn. Dann wird gebucht: <b>Umsatzsteuer an Vorsteuer</b> (in Höhe der USt) und bei Erstattung <b>Bank an Vorsteuer</b>.</p>
+
+  <div class="widget" id="w-zl">
+    <div class="wt">Zahllast-Rechner</div>
+    <div class="ws">Trage die Monatssummen der beiden Steuerkonten ein.</div>
+    <div class="controls">
+      <label class="field">Summe Umsatzsteuer<input type="text" id="z-ust" inputmode="decimal" value="4.085,00"></label>
+      <label class="field">Summe Vorsteuer<input type="text" id="z-vst" inputmode="decimal" value="2.470,00"></label>
+      <div class="presets"><button class="chip" data-z="4085,2470">Zahllast</button><button class="chip" data-z="2900,3200">Vorsteuerüberhang</button></div>
+    </div>
+    <div id="z-out"></div>
+  </div>
+
+  <h3>Umsatzsteuer beim Jahresabschluss</h3>
+  <p>Die Zahllast für Dezember wird erst im Januar überwiesen. Am 31.12. ist sie also noch eine Schuld. Ein Vorsteuerüberhang ist noch nicht erstattet und damit eine Forderung.</p>
+  <div class="grid2">
+    <div class="card"><h4>Zahllast am 31.12.</h4><p><b>Umsatzsteuer an SBK</b><br>Passivseite: sonstige Verbindlichkeiten</p></div>
+    <div class="card"><h4>Vorsteuerüberhang am 31.12.</h4><p><b>SBK an Vorsteuer</b><br>Aktivseite: sonstige Forderungen</p></div>
+  </div>
+  <div class="merke"><ul>
+    <li>Einkauf: Vorsteuer im Soll. Verkauf: Umsatzsteuer im Haben.</li>
+    <li>Zahlungen an Lieferanten oder von Kunden enthalten schon die Steuer. Beim Ausgleich einer Rechnung wird <b>keine</b> Steuer gebucht.</li>
+    <li>Das kleinere Steuerkonto wird über das größere abgeschlossen.</li>
+  </ul></div>
+
+  <div class="tasks-h"><h3>Aufgaben zu Kapitel 2</h3><span data-secpts="buchen"></span></div>
+  <p>Bilde die Buchungssätze für die Schuhhandel Meier GmbH im Mai. Nicht benötigte Zeilen lässt du leer.</p>
+  <div data-task="b1"></div><div data-task="b2"></div><div data-task="b3"></div><div data-task="b4"></div>
+  <div data-task="b5"></div><div data-task="b6"></div><div data-task="b7"></div>
+  <div data-task="b8"></div><div data-task="b9"></div>
+</section>
+
+<!-- ================= 3 WARENBESTAND ================= -->
+<section class="panel" id="p-waren" hidden>
+  <h2>3 · Warenbestandsveränderungen</h2>
+  <p>Bisher sind wir davon ausgegangen, dass alle eingekauften Waren in derselben Periode auch verkauft werden. Das ist in der Praxis fast nie so. Deshalb gibt es ein weiteres Warenkonto, das Konto <span class="acc-b">Warenbestände</span>.</p>
+  <div class="merke"><p>Das Konto <b>Warenbestände</b> erfasst den <b>Anfangsbestand</b> und den <b>Schlussbestand</b> an Waren. Es ist ein reines <b>Bestandskonto (Aktivkonto)</b>. Als Schlussbestand gilt immer der <b>Inventurbestand</b>, bewertet zu Einstandspreisen (netto).</p></div>
+
+  <h3>Soll-Bestand, Ist-Bestand, Inventurdifferenz</h3>
+  <p>Die Warenwirtschaft errechnet einen <b>Soll-Bestand</b>. Die Inventur ermittelt den tatsächlichen <b>Ist-Bestand</b>. Weichen beide voneinander ab, spricht man von einer <b>Inventurdifferenz</b>. In die Buchführung wird immer der Ist-Bestand übernommen.</p>
+  <div class="grid2">
+    <div class="card"><h4>Mögliche Gründe</h4><ul><li>Fehler bei der Inventur (falsch gezählt oder bewertet)</li><li>Fehler bei der Erfassung oder Buchung von Wareneingängen und -verkäufen</li><li>Ladendiebstahl</li><li>Verderb, Bruch oder Aussonderung beschädigter Ware</li></ul></div>
+    <div class="card"><h4>Inventurdifferenz in Prozent</h4><div class="formula" style="font-size:1rem">(Soll − Ist) ÷ Soll × 100</div><p>Beispiel: Soll 50.000 €, Ist 49.000 € → 1.000 ÷ 50.000 × 100 = 2 %</p></div>
+  </div>
+
+  <h3>Drei Fälle</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Situation</th><th>Schlussbestand</th><th>Buchung</th><th>Wareneinsatz</th></tr>
+    <tr><td>Einkauf = Verkauf (Menge)</td><td>SB = AB</td><td>keine</td><td>= Wareneinkäufe</td></tr>
+    <tr><td><b>Mehr verkauft</b> als eingekauft, Ware kam aus dem Lager</td><td>SB &lt; AB: <b>Bestandsminderung</b></td><td><span class="acc-a">Aufwendungen für Waren</span> an <span class="acc-b">Warenbestände</span></td><td>= Einkäufe <b>+</b> Minderung</td></tr>
+    <tr><td><b>Weniger verkauft</b> als eingekauft, Ware ging ins Lager</td><td>SB &gt; AB: <b>Bestandsmehrung</b></td><td><span class="acc-b">Warenbestände</span> an <span class="acc-a">Aufwendungen für Waren</span></td><td>= Einkäufe <b>−</b> Mehrung</td></tr>
+  </table></div>
+  <div class="formula"><b>Wareneinsatz</b> = Wareneinkäufe + Bestandsminderung − Bestandsmehrung<br><b>Rohgewinn</b> = Umsatzerlöse für Waren − Wareneinsatz</div>
+  <p>Der <b>Wareneinsatz</b> ist der Wert der verkauften Ware zu Einstandspreisen. Nur er darf den Umsatzerlösen gegenübergestellt werden. Sonst wird der Rohgewinn bei einer Bestandsminderung zu hoch und bei einer Mehrung zu niedrig ausgewiesen.</p>
+
+  <div class="grid2">
+    <div>
+      <p><b>Bestandsminderung:</b> Der Schlussbestand nimmt ab.</p>
+      <div class="tks" id="schema-min"></div>
+    </div>
+    <div>
+      <p><b>Bestandsmehrung:</b> Der Schlussbestand nimmt zu.</p>
+      <div class="tks" id="schema-mehr"></div>
+    </div>
+  </div>
+
+  <div class="widget" id="w-sim">
+    <div class="wt">Warenbestand-Simulator</div>
+    <div class="ws">Sneaker „City Walk“ · Einstandspreis und Verkaufspreis je Paar netto. Die Konten werden sofort neu gebucht und abgeschlossen.</div>
+    <div class="controls">
+      <label class="field">Anfangsbestand (Paar)<input type="text" id="s-ab" inputmode="numeric" value="50"></label>
+      <label class="field">Einkauf (Paar)<input type="text" id="s-ek" inputmode="numeric" value="80"></label>
+      <label class="field">Verkauf (Paar)<input type="text" id="s-vk" inputmode="numeric" value="90"></label>
+      <label class="field">Einstandspreis €<input type="text" id="s-ep" inputmode="decimal" value="40,00"></label>
+      <label class="field">Verkaufspreis €<input type="text" id="s-vp" inputmode="decimal" value="70,00"></label>
+    </div>
+    <div class="presets" style="margin-bottom:10px">
+      <button class="chip" data-s="50,60,60">Keine Veränderung</button>
+      <button class="chip" data-s="50,80,90">Bestandsminderung</button>
+      <button class="chip" data-s="40,90,80">Bestandsmehrung</button>
+    </div>
+    <div id="s-out"></div>
+  </div>
+
+  <div class="merke"><ul>
+    <li>Die Umsatzsteuer spielt bei der Bestandsveränderung <b>keine Rolle</b>. Warenbestände werden netto zu Einstandspreisen bewertet. Die Vorsteuer wurde schon beim Einkauf gebucht.</li>
+    <li>Das Konto Warenbestände wird über das SBK abgeschlossen: <b>SBK an Warenbestände</b>.</li>
+    <li>Die Bestandsveränderung wird auf dem Konto <b>Aufwendungen für Waren</b> gegengebucht. Dessen Saldo ist der Wareneinsatz und geht in die GuV.</li>
+  </ul></div>
+
+  <div class="tasks-h"><h3>Aufgaben zu Kapitel 3</h3><span data-secpts="waren"></span></div>
+  <div data-task="w1"></div><div data-task="w2"></div><div data-task="w3"></div><div data-task="w4"></div>
+  <div data-task="w5"></div><div data-task="w6"></div><div data-task="w7"></div><div data-task="w8"></div>
+  <div data-task="w9"></div><div data-task="w10"></div>
+</section>
+
+<!-- ================= 4 KOMPLEX ================= -->
+<section class="panel" id="p-komplex" hidden>
+  <h2>4 · Komplexaufgabe: Filiale Damenschuhe</h2>
+  <div class="bsp"><span class="lbl">Ausgangsdaten</span>
+    <p>Buchungsauszug der Schuhhandel Meier GmbH, Abteilung Damenschuhe.</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>I. Anfangsbestand</th><th class="n">€</th></tr>
+      <tr><td>Anfangsbestand an Waren (Warenbestände)</td><td class="n">24.000,00</td></tr>
+      <tr><th>II. Geschäftsfälle</th><th class="n"></th></tr>
+      <tr><td>1. Einkauf von Pumps auf Ziel, netto + 19 % USt</td><td class="n">18.000,00</td></tr>
+      <tr><td>2. Verkauf von Schuhen auf Ziel an einen Tanzverein, netto + 19 % USt</td><td class="n">26.000,00</td></tr>
+      <tr><td>3. Barverkäufe laut Kassenbericht, <b>brutto</b></td><td class="n">3.570,00</td></tr>
+      <tr><th>III. Abschlussangabe</th><th class="n"></th></tr>
+      <tr><td>Warenschlussbestand laut Inventur</td><td class="n">20.500,00</td></tr>
+    </table></div>
+  </div>
+  <div class="tasks-h"><h3>Aufgaben</h3><span data-secpts="komplex"></span></div>
+  <div data-task="k1"></div><div data-task="k2"></div><div data-task="k3"></div><div data-task="k4"></div>
+  <div data-task="k5"></div><div data-task="k6"></div><div data-task="k7"></div><div data-task="k8"></div>
+  <div class="widget">
+    <div class="wt">Musterlösung als T-Konten</div>
+    <div class="ws" id="k-sol-note">Wird freigeschaltet, sobald du alle Aufgaben dieses Kapitels geprüft hast.</div>
+    <button class="btn" id="k-sol-btn" disabled>T-Konten anzeigen</button>
+    <div id="k-sol" hidden></div>
+  </div>
+</section>
+
+<!-- ================= ERGEBNIS ================= -->
+<section class="panel" id="p-ergebnis" hidden>
+  <h2>Dein Ergebnis</h2>
+  <div class="score">
+    <div class="note" id="e-note">–</div>
+    <div>
+      <div class="big" id="e-pts">0 von 0 Punkten</div>
+      <div id="e-pct" style="color:var(--muted)"></div>
+      <p id="e-msg" style="margin:8px 0 0"></p>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table id="e-tbl"></table></div>
+  <p style="font-size:.88rem;color:var(--muted)">Notenschlüssel der IHK: ab 92 % = 1 · ab 81 % = 2 · ab 67 % = 3 · ab 50 % = 4 · ab 30 % = 5 · unter 30 % = 6</p>
+  <div id="e-open"></div>
+  <div class="actions"><button class="btn ghost" id="resetBtn">Alle Antworten zurücksetzen</button><span id="resetHint" style="font-size:.88rem;color:var(--muted)"></span></div>
+</section>
+
+<div class="foot">Selbstlernseite Lernfeld 11 · Schuhhandel Meier GmbH (Modellunternehmen) · Steuersätze: 19 % / 7 %</div>
+</main>
+
+<script>
+(function(){
+"use strict";
+/* ---------- Helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function parseDE(s){
+  if(s==null) return NaN;
+  s=String(s).trim().replace(/[\s€%]/g,'');
+  if(!s) return NaN;
+  if(s.includes(',')) s=s.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,'');
+  if(!/^-?\d*\.?\d+$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+const fmt=n=>isFinite(n)?n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}):'–';
+const eur=n=>fmt(n)+' €';
+const r2=n=>Math.round(n*100)/100;
+const eq=(a,b,tol=0.005)=>isFinite(a)&&isFinite(b)&&Math.abs(a-b)<=tol;
+
+const ACC={
+  AWW:'Aufwendungen für Waren', UEW:'Umsatzerlöse für Waren', WB:'Warenbestände',
+  VST:'Vorsteuer', UST:'Umsatzsteuer', FO:'Forderungen aLL', VE:'Verbindlichkeiten aLL',
+  KA:'Kasse', BK:'Bank', SBK:'Schlussbilanzkonto (SBK)', GUV:'GuV-Konto', EK:'Eigenkapital'
+};
+const ACC_ORDER=['AWW','UEW','WB','VST','UST','FO','VE','KA','BK','EK','SBK','GUV'];
+
+/* ---------- T-Konto ---------- */
+function tk(title,cls,soll,haben,opt={}){
+  const row=r=>`<div class="tk-r${r[2]?' hi':''}"><span>${r[0]}</span><span>${r[1]==null?'':fmt(r[1])}</span></div>`;
+  const n=Math.max(soll.length,haben.length);
+  const pad=a=>a.concat(Array(n-a.length).fill(null));
+  const col=a=>pad(a).map(r=>r?row(r):'<div class="tk-r"><span>&nbsp;</span></div>').join('');
+  const sum=a=>a.reduce((s,r)=>s+(r[1]||0),0);
+  const showSum=!opt.noSum&&(soll.length>1||haben.length>1);
+  return `<div class="tk c-${cls}"><div class="tk-h"><span>S</span><span class="t">${title}</span><span>H</span></div>
+  <div class="tk-b"><div>${col(soll)}</div><div>${col(haben)}</div></div>
+  ${showSum?`<div class="tk-s"><div>${fmt(sum(soll))}</div><div>${fmt(sum(haben))}</div></div>`:''}</div>`;
+}
+function tkSchema(title,cls,soll,haben){
+  const c=a=>a.map(x=>`<div class="tk-r ${x[1]}"><span>${x[0]}</span></div>`).join('');
+  return `<div class="tk schema c-${cls}"><div class="tk-h"><span>S</span><span class="t">${title}</span><span>H</span></div><div class="tk-b"><div>${c(soll)}</div><div>${c(haben)}</div></div></div>`;
+}
+$('#schema-min').innerHTML=
+  tkSchema('Warenbestände','b',[['Anfangsbestand','sch-b']],[['Schlussbestand','sch-b'],['Bestandsminderung','sch-x']])+
+  tkSchema('Aufwendungen für Waren','a',[['Wareneinkäufe','sch-a'],['Bestandsminderung','sch-x']],[['Wareneinsatz → GuV','sch-a']]);
+$('#schema-mehr').innerHTML=
+  tkSchema('Warenbestände','b',[['Anfangsbestand','sch-b'],['Bestandsmehrung','sch-x']],[['Schlussbestand','sch-b']])+
+  tkSchema('Aufwendungen für Waren','a',[['Wareneinkäufe','sch-a']],[['Wareneinsatz → GuV','sch-a'],['Bestandsmehrung','sch-x']]);
+
+/* ---------- Tabs ---------- */
+const TABS=['start','ust','buchen','waren','komplex','ergebnis'];
+function show(t){
+  if(!TABS.includes(t)) t='start';
+  $$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
+  TABS.forEach(x=>$('#p-'+x).hidden=x!==t);
+  if(t==='ergebnis') renderResult();
+  try{history.replaceState(null,'','#'+t);}catch(e){}
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);window.scrollTo({top:$('.masthead').offsetHeight,behavior:'smooth'});}));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.go);window.scrollTo({top:$('.masthead').offsetHeight});}));
+
+/* ---------- Widget: USt-Rechner ---------- */
+function seg(id,cb){const el=$(id);el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('button',el).forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));cb();});}
+const segVal=id=>$(id+' [aria-pressed="true"]').dataset.v;
+function rechner(){
+  const v=parseDE($('#r-betrag').value), s=+segVal('#r-satz')/100, m=segVal('#r-mode');
+  let n,u,b;
+  if(!isFinite(v)){n=u=b=NaN;}
+  else if(m==='netto'){n=v;u=r2(v*s);b=r2(n+u);}
+  else {b=v;n=r2(v/(1+s));u=r2(b-n);}
+  $('#r-n').textContent=eur(n);$('#r-u').textContent=eur(u);$('#r-b').textContent=eur(b);
+  const pn=isFinite(n)&&b>0?n/b*100:100/(1+s);
+  $('#r-sn').style.flexBasis=pn+'%';$('#r-su').style.flexBasis=(100-pn)+'%';
+  $('#r-su').textContent=(s*100)+' %';
+}
+$('#r-betrag').addEventListener('input',rechner);seg('#r-mode',rechner);seg('#r-satz',rechner);rechner();
+
+/* ---------- Widget: Kette ---------- */
+function kette(){
+  const p=[parseDE($('#k1').value),parseDE($('#k2').value),parseDE($('#k3').value)];
+  const names=['Gerberei','Schuhfabrik','Schuhhandel Meier GmbH'];
+  if(p.some(x=>!isFinite(x)||x<0)){$('#kette').innerHTML='<tr><td class="err">Bitte gültige Beträge eingeben.</td></tr>';$('#kette-txt').textContent='';return;}
+  let h='<tr><th>Stufe</th><th class="n">Netto-VK</th><th class="n">USt auf VK</th><th class="n">− Vorsteuer</th><th class="n">= Zahllast</th><th class="n">Mehrwert</th></tr>';
+  let sum=0,prev=0;
+  p.forEach((x,i)=>{const u=r2(x*.19),v=r2(prev*.19),z=r2(u-v);sum+=z;
+    h+=`<tr><td>${names[i]}</td><td class="n">${fmt(x)}</td><td class="n">${fmt(u)}</td><td class="n">${fmt(v)}</td><td class="n"><b>${fmt(z)}</b></td><td class="n">${fmt(x-prev)}</td></tr>`;prev=x;});
+  h+=`<tr class="sum"><td>Summe an das Finanzamt</td><td></td><td></td><td></td><td class="n">${fmt(sum)}</td><td class="n">${fmt(p[2])}</td></tr>`;
+  $('#kette').innerHTML=h;
+  $('#kette-txt').innerHTML=`Die Kundin zahlt <b>${eur(r2(p[2]*1.19))}</b>. Darin stecken <b>${eur(r2(p[2]*.19))}</b> Umsatzsteuer. Das ist genau die Summe aller Zahllasten. Sie trägt die Steuer allein, die Unternehmen reichen sie nur weiter.`;
+}
+['#k1','#k2','#k3'].forEach(i=>$(i).addEventListener('input',kette));kette();
+
+/* ---------- Widget: Zahllast ---------- */
+function zl(){
+  const u=parseDE($('#z-ust').value), v=parseDE($('#z-vst').value), o=$('#z-out');
+  if(!isFinite(u)||!isFinite(v)||u<0||v<0){o.innerHTML='<p class="err">Bitte zwei gültige Beträge eingeben.</p>';return;}
+  const d=r2(u-v);
+  if(d>0){
+    o.innerHTML=`<div class="result zl">Zahllast: ${eur(d)} – an das Finanzamt überweisen</div>
+    <div class="tks">${tk('Vorsteuer','u',[['Summe',v]],[['USt',v,1]])}${tk('Umsatzsteuer','u',[['VSt',v,1],['Bank',d,1]],[['Summe',u]])}</div>
+    <div class="bs">1) Umsatzsteuer   ${fmt(v).padStart(10)}   an Vorsteuer   ${fmt(v).padStart(10)}\n2) Umsatzsteuer   ${fmt(d).padStart(10)}   an Bank        ${fmt(d).padStart(10)}</div>`;
+  }else if(d<0){
+    o.innerHTML=`<div class="result vu">Vorsteuerüberhang: ${eur(-d)} – das Finanzamt erstattet</div>
+    <div class="tks">${tk('Vorsteuer','u',[['Summe',v]],[['USt',u,1],['Bank',-d,1]])}${tk('Umsatzsteuer','u',[['VSt',u,1]],[['Summe',u]])}</div>
+    <div class="bs">1) Umsatzsteuer   ${fmt(u).padStart(10)}   an Vorsteuer   ${fmt(u).padStart(10)}\n2) Bank           ${fmt(-d).padStart(10)}   an Vorsteuer   ${fmt(-d).padStart(10)}</div>`;
+  }else o.innerHTML='<div class="result neu">Umsatzsteuer und Vorsteuer sind gleich hoch. Es gibt keine Zahllast.</div>';
+}
+['#z-ust','#z-vst'].forEach(i=>$(i).addEventListener('input',zl));
+$$('[data-z]').forEach(b=>b.addEventListener('click',()=>{const[a,c]=b.dataset.z.split(',');$('#z-ust').value=fmt(+a);$('#z-vst').value=fmt(+c);zl();}));zl();
+
+/* ---------- Widget: Simulator ---------- */
+function sim(){
+  const ab=parseDE($('#s-ab').value),ek=parseDE($('#s-ek').value),vk=parseDE($('#s-vk').value),ep=parseDE($('#s-ep').value),vp=parseDE($('#s-vp').value),o=$('#s-out');
+  if([ab,ek,vk,ep,vp].some(x=>!isFinite(x)||x<0)){o.innerHTML='<p class="err">Bitte nur positive Zahlen eingeben.</p>';return;}
+  const sb=ab+ek-vk;
+  if(sb<0){o.innerHTML=`<p class="err">Es können nicht mehr Paar verkauft werden, als vorhanden sind (höchstens ${ab+ek}).</p>`;return;}
+  const AB=r2(ab*ep),EK=r2(ek*ep),SB=r2(sb*ep),UE=r2(vk*vp),d=r2(SB-AB),WE=r2(EK-d),RG=r2(UE-WE);
+  let wbS=[['AB',AB]],wbH=[['SBK',SB]],awS=[['Kasse',EK]],awH=[['GuV',WE]],art,bs,formel;
+  if(d<0){wbH.push(['AWW',-d,1]);awS.push(['Waren',-d,1]);art=`Bestandsminderung um ${ab-sb} Paar = <b>${eur(-d)}</b>`;
+    bs=`Aufwendungen für Waren  ${fmt(-d).padStart(10)}   an Warenbestände  ${fmt(-d).padStart(10)}`;formel=['+ Bestandsminderung',-d];}
+  else if(d>0){wbS.push(['AWW',d,1]);awH.push(['Waren',d,1]);art=`Bestandsmehrung um ${sb-ab} Paar = <b>${eur(d)}</b>`;
+    bs=`Warenbestände  ${fmt(d).padStart(10)}   an Aufwendungen für Waren  ${fmt(d).padStart(10)}`;formel=['− Bestandsmehrung',d];}
+  else {art='Keine Bestandsveränderung';bs='Keine Buchung erforderlich.';formel=null;}
+  const guvS=[['AWW',WE]],guvH=[['UEW',UE]];
+  if(RG>=0) guvS.push(['EK (Rohgewinn)',RG,1]); else guvH.push(['EK (Rohverlust)',-RG,1]);
+  o.innerHTML=`<div class="result neu">Schlussbestand lt. Inventur: ${sb} Paar = ${eur(SB)} · ${art}</div>
+  <div class="bs">${bs}</div>
+  <div class="tks">${tk('Warenbestände','b',wbS,wbH)}${tk('Aufwendungen für Waren','a',awS,awH)}${tk('Umsatzerlöse für Waren','e',[['GuV',UE]],[['Kasse',UE]],{noSum:1})}${tk('GuV','n',guvS,guvH)}</div>
+  <div class="tbl-wrap"><table class="calc">
+   <tr><td>Wareneinkäufe</td><td>${ek} Paar × ${fmt(ep)} €</td><td class="n">${fmt(EK)} €</td></tr>
+   ${formel?`<tr><td>${formel[0]}</td><td>${Math.abs(sb-ab)} Paar × ${fmt(ep)} €</td><td class="n">${fmt(formel[1])} €</td></tr>`:''}
+   <tr class="eq"><td>= Wareneinsatz</td><td>${vk} Paar × ${fmt(ep)} €</td><td class="n">${fmt(WE)} €</td></tr>
+   <tr><td>Umsatzerlöse für Waren</td><td>${vk} Paar × ${fmt(vp)} €</td><td class="n">${fmt(UE)} €</td></tr>
+   <tr><td>− Wareneinsatz</td><td></td><td class="n">${fmt(WE)} €</td></tr>
+   <tr class="eq res"><td>= ${RG>=0?'Rohgewinn':'Rohverlust'}</td><td></td><td class="n">${fmt(Math.abs(RG))} €</td></tr>
+  </table></div>`;
+}
+['#s-ab','#s-ek','#s-vk','#s-ep','#s-vp'].forEach(i=>$(i).addEventListener('input',sim));
+$$('[data-s]').forEach(b=>b.addEventListener('click',()=>{const[a,e,v]=b.dataset.s.split(',');$('#s-ab').value=a;$('#s-ek').value=e;$('#s-vk').value=v;sim();}));sim();
+
+/* ---------- Tasks ---------- */
+const ANS={}; // student answers after check
+const RES={}; // {got,max}
+const num=id=>ANS[id]&&isFinite(ANS[id].v)?ANS[id].v:null;
+const bk=id=>ANS[id]&&ANS[id].soll?ANS[id]:null;
+const amt=(id,side,a)=>{const r=bk(id);if(!r)return null;const e=r[side].find(x=>x.a===a);return e&&isFinite(e.v)?e.v:null;};
+
+const T={
+/* Kapitel 1 */
+t1:{sec:'ust',no:'1.1',pts:1,type:'num',unit:'€',q:'Die Schuhhandel Meier GmbH verkauft Wanderschuhe für netto 2.400,00 €. Wie hoch ist die Umsatzsteuer (19 %)?',a:456,
+  ex:'2.400,00 € × 19 % = 456,00 €.'},
+t2:{sec:'ust',no:'1.2',pts:1,type:'num',unit:'€',q:'Eine Lieferantenrechnung lautet über 1.785,00 € brutto (19 % USt). Wie hoch ist der Nettobetrag?',a:1500,
+  ex:'Netto = Brutto ÷ 1,19 = 1.785,00 ÷ 1,19 = 1.500,00 €. Ein häufiger Fehler ist 1.785 × 0,81. Das ergibt nicht den Nettobetrag, weil die 19 % auf den Nettopreis gerechnet werden, nicht auf den Bruttopreis.',
+  tip:'Der Bruttobetrag entspricht 119 %.'},
+t3:{sec:'ust',no:'1.3',pts:1,type:'num',unit:'€',q:'Im Kassenbereich verkauft Meier ein Buch über Schuhpflege für 10,70 € brutto (ermäßigter Satz 7 %). Wie viel Umsatzsteuer ist enthalten?',a:0.70,
+  ex:'Netto = 10,70 ÷ 1,07 = 10,00 €. USt = 10,70 − 10,00 = 0,70 €. Bücher unterliegen dem ermäßigten Steuersatz.'},
+t4:{sec:'ust',no:'1.4',pts:1,type:'mc',q:'Welche Aussage über die Vorsteuer ist richtig?',
+  o:['Sie ist eine Verbindlichkeit gegenüber dem Finanzamt.','Sie ist eine Forderung gegenüber dem Finanzamt und wird auf einem Aktivkonto gebucht.','Sie ist ein Aufwand und mindert den Gewinn.','Sie entsteht beim Verkauf von Waren an Kunden.'],a:1,
+  ex:'Die Vorsteuer zahlen wir beim Einkauf an den Lieferanten. Das Finanzamt erstattet sie bzw. verrechnet sie mit der Umsatzsteuer. Deshalb ist sie eine Forderung (Aktivkonto). Erfolgswirksam ist sie nicht.'},
+t5:{sec:'ust',no:'1.5',pts:1,type:'mc',q:'Wer trägt die Umsatzsteuer wirtschaftlich?',
+  o:['Der Hersteller','Der Einzelhändler','Der Endverbraucher','Alle Stufen zu gleichen Teilen'],a:2,
+  ex:'Unternehmen ziehen die Vorsteuer ab. Für sie ist die Steuer ein durchlaufender Posten. Nur der Endverbraucher kann nichts abziehen und trägt die ganze Steuer.'},
+t6:{sec:'ust',no:'1.6',pts:1,type:'num',unit:'€',q:'Meier kauft ein Paar Sneaker für netto 40,00 € ein und verkauft es für netto 70,00 €. Wie hoch ist die Zahllast für dieses Paar?',a:5.70,
+  ex:'USt 70,00 × 19 % = 13,30 € − VSt 40,00 × 19 % = 7,60 € = 5,70 €. Das sind 19 % des Mehrwerts von 30,00 €.'},
+
+/* Kapitel 2 */
+b1:{sec:'buchen',no:'2.1',pts:2,type:'bk',rows:2,q:'Zieleinkauf von Damenschuhen, netto 6.000,00 € + 19 % USt.',
+  soll:[['AWW',6000],['VST',1140]],haben:[['VE',7140]],
+  ex:'Der Warenwert geht netto auf Aufwendungen für Waren. Die Steuer ist Vorsteuer (Forderung, Soll). Die Schuld beim Lieferanten entsteht brutto.'},
+b2:{sec:'buchen',no:'2.2',pts:2,type:'bk',rows:2,q:'Barverkauf von Schuhen laut Kassenbericht, <b>brutto</b> 2.380,00 €.',
+  soll:[['KA',2380]],haben:[['UEW',2000],['UST',380]],
+  ex:'Zuerst herausrechnen: 2.380 ÷ 1,19 = 2.000 € netto, USt 380 €. Die Kasse nimmt brutto ein. Erlös netto, USt im Haben (Verbindlichkeit).'},
+b3:{sec:'buchen',no:'2.3',pts:2,type:'bk',rows:2,q:'Zielverkauf von Laufschuhen an einen Sportverein, netto 4.500,00 € + 19 % USt.',
+  soll:[['FO',5355]],haben:[['UEW',4500],['UST',855]],
+  ex:'Forderung brutto 5.355 €, Erlös netto 4.500 €, Umsatzsteuer 855 €.'},
+b4:{sec:'buchen',no:'2.4',pts:2,type:'bk',rows:2,q:'Wir überweisen die Rechnung aus Aufgabe 2.1 per Bank.',
+  soll:[['VE',7140]],haben:[['BK',7140]],
+  ex:'Beim Bezahlen wird <b>keine</b> Steuer gebucht. Die Vorsteuer wurde schon beim Einkauf erfasst. Die Verbindlichkeit wird in voller Höhe (brutto) ausgeglichen.'},
+b5:{sec:'buchen',no:'2.5',pts:1,type:'num',unit:'€',q:'Ende Mai stehen auf den Konten: Vorsteuer 2.470,00 €, Umsatzsteuer 4.085,00 €. Berechne die Zahllast.',a:1615,
+  ex:'Zahllast = USt − VSt = 4.085,00 − 2.470,00 = 1.615,00 €.'},
+b6:{sec:'buchen',no:'2.6',pts:2,type:'bk',rows:1,q:'Buche die Verrechnung der Vorsteuer mit der Umsatzsteuer zum 31. Mai (Werte aus 2.5).',
+  soll:[['UST',2470]],haben:[['VST',2470]],
+  ex:'Das kleinere Konto (Vorsteuer) wird über das größere abgeschlossen: Umsatzsteuer an Vorsteuer 2.470 €.'},
+b7:{sec:'buchen',no:'2.7',pts:2,type:'bk',rows:1,q:'Am 10. Juni überweisen wir die Zahllast für Mai.',
+  soll:[['UST',1615,()=>num('b5')]],haben:[['BK',1615,()=>num('b5')]],
+  ex:'Die Zahllast ist eine Schuld beim Finanzamt. Sie wird im Soll des USt-Kontos ausgebucht: Umsatzsteuer an Bank 1.615 €.'},
+b8:{sec:'buchen',no:'2.8',pts:1,type:'mc',q:'Im Dezember (Einkauf für das Wintergeschäft) betragen die Vorsteuer 3.200,00 € und die Umsatzsteuer 2.900,00 €. Was gilt am 31.12.?',
+  o:['Es entsteht eine Zahllast von 300 €, gebucht: Umsatzsteuer an SBK.','Es entsteht ein Vorsteuerüberhang von 300 €. Er wird als Forderung aktiviert: SBK an Vorsteuer.','Die 300 € werden als Aufwand in der GuV gebucht.','Die Differenz verfällt, weil das Jahr endet.'],a:1,
+  ex:'Die Vorsteuer ist größer. Nach der Verrechnung (Umsatzsteuer an Vorsteuer 2.900 €) bleiben 300 € Forderung ans Finanzamt. Sie stehen in der Schlussbilanz auf der Aktivseite: SBK an Vorsteuer.'},
+b9:{sec:'buchen',no:'2.9',pts:1,type:'mc',q:'Wo erscheint eine Zahllast, die am 31.12. noch nicht überwiesen ist?',
+  o:['Aktivseite der Bilanz, sonstige Forderungen','Passivseite der Bilanz, sonstige Verbindlichkeiten','Soll-Seite der GuV','Sie erscheint nirgends.'],a:1,
+  ex:'Die Zahllast ist eine Schuld beim Finanzamt: Umsatzsteuer an SBK. In der Bilanz steht sie unter den sonstigen Verbindlichkeiten.'},
+
+/* Kapitel 3 */
+w1:{sec:'waren',no:'3.1',pts:1,type:'mc',q:'Das Konto Warenbestände ist …',
+  o:['ein Aufwandskonto','ein Ertragskonto','ein Bestandskonto (Aktivkonto)','ein Passivkonto'],a:2,
+  ex:'Warenbestände erfasst Anfangs- und Schlussbestand. Es ist ein reines Bestandskonto auf der Aktivseite und wird über das SBK abgeschlossen.'},
+w2:{sec:'waren',no:'3.2',pts:1,type:'num',unit:'%',tol:0.01,q:'Laut Warenwirtschaft beträgt der Bestand an Damenschuhen 62.400,00 €. Die Inventur ergibt 60.528,00 €. Berechne die Inventurdifferenz in Prozent (bezogen auf den Soll-Bestand).',a:3,
+  ex:'Differenz 62.400 − 60.528 = 1.872 €. 1.872 ÷ 62.400 × 100 = 3,00 %.'},
+w3:{sec:'waren',no:'3.3',pts:1,type:'mc',q:'Anfangsbestand an Waren 45.000,00 €, Schlussbestand lt. Inventur 38.000,00 €. Welche Situation liegt vor?',
+  o:['Bestandsmehrung um 7.000 € – es wurde weniger verkauft als eingekauft.','Bestandsminderung um 7.000 € – es wurde mehr verkauft als eingekauft.','Keine Bestandsveränderung','Eine Inventurdifferenz von 7.000 €'],a:1,
+  ex:'Der Schlussbestand ist kleiner als der Anfangsbestand. Es wurde also Ware aus dem Lager verkauft. Das ist eine Bestandsminderung. Eine Inventurdifferenz betrifft dagegen Soll- und Ist-Bestand.'},
+w4:{sec:'waren',no:'3.4',pts:2,type:'bk',rows:1,q:'Buche die Bestandsveränderung aus Aufgabe 3.3.',
+  soll:[['AWW',7000]],haben:[['WB',7000]],
+  ex:'Minderung: Die verkaufte Lagerware erhöht den Wareneinsatz. Aufwendungen für Waren an Warenbestände 7.000 €.'},
+w5:{sec:'waren',no:'3.5',pts:1,type:'num',unit:'€',q:'Die Wareneinkäufe (netto) im Jahr betrugen 186.000,00 €. Berechne mit der Bestandsminderung aus 3.3 den Wareneinsatz.',a:193000,
+  ex:'Wareneinsatz = Einkäufe + Minderung = 186.000 + 7.000 = 193.000 €.'},
+w6:{sec:'waren',no:'3.6',pts:1,type:'num',unit:'€',q:'Die Umsatzerlöse für Waren betragen 289.500,00 €. Wie hoch ist der Rohgewinn?',a:96500,ff:()=>{const v=num('w5');return v==null?null:289500-v;},
+  ex:'Rohgewinn = Umsatzerlöse − Wareneinsatz = 289.500 − 193.000 = 96.500 €.'},
+w7:{sec:'waren',no:'3.7',pts:2,type:'bk',rows:1,q:'Im Folgejahr: Anfangsbestand 38.000,00 €, Schlussbestand lt. Inventur 41.200,00 €. Buche die Bestandsveränderung.',
+  soll:[['WB',3200]],haben:[['AWW',3200]],
+  ex:'SB > AB: Bestandsmehrung um 3.200 €. Eingekaufte Ware liegt noch im Lager und ist nicht Wareneinsatz. Warenbestände an Aufwendungen für Waren.'},
+w8:{sec:'waren',no:'3.8',pts:1,type:'mc',q:'Der Ist-Bestand laut Inventur ist <b>höher</b> als der Soll-Bestand der Buchführung. Welche Ursache ist möglich?',
+  o:['Ladendiebstahl','Eine Warenlieferung wurde nicht erfasst.','Beschädigte Ware wurde entsorgt.','Ein Wareneingang wurde doppelt gebucht.'],a:1,
+  ex:'Ist die Ware da, aber nicht gebucht, liegt mehr im Lager als die Buchführung weiß. Diebstahl, Aussonderung und doppelt gebuchte Eingänge führen dagegen zu einem Ist-Bestand unter dem Soll-Bestand.'},
+w9:{sec:'waren',no:'3.9',pts:1,type:'mc',q:'Warum wird bei der Bestandsveränderung keine Umsatzsteuer oder Vorsteuer gebucht?',
+  o:['Weil Bestandsveränderungen steuerfrei sind.','Weil Warenbestände netto zu Einstandspreisen bewertet werden und die Vorsteuer schon beim Einkauf gebucht wurde.','Weil die Steuer erst am Jahresende berechnet wird.','Weil nur Ertragskonten steuerpflichtig sind.'],a:1,
+  ex:'Die Bestandsveränderung ist eine interne Umbuchung zwischen zwei Warenkonten, kein Umsatz. Die Steuer fällt nur bei Einkauf und Verkauf an.'},
+w10:{sec:'waren',no:'3.10',pts:1,type:'num',unit:'€',q:'Der Wareneinsatz beträgt 150.000,00 €, die Bestandsmehrung 6.000,00 €. Wie hoch waren die Wareneinkäufe?',a:156000,
+  ex:'Wareneinsatz = Einkäufe − Mehrung → Einkäufe = 150.000 + 6.000 = 156.000 €.',tip:'Stelle die Formel für den Wareneinsatz um.'},
+
+/* Kapitel 4 */
+k1:{sec:'komplex',no:'4.1',pts:2,type:'bk',rows:2,q:'Buche Geschäftsfall 1.',soll:[['AWW',18000],['VST',3420]],haben:[['VE',21420]],
+  ex:'18.000 × 19 % = 3.420 € Vorsteuer; Verbindlichkeit brutto 21.420 €.'},
+k2:{sec:'komplex',no:'4.2',pts:2,type:'bk',rows:2,q:'Buche Geschäftsfall 2.',soll:[['FO',30940]],haben:[['UEW',26000],['UST',4940]],
+  ex:'26.000 × 19 % = 4.940 € USt; Forderung brutto 30.940 €.'},
+k3:{sec:'komplex',no:'4.3',pts:2,type:'bk',rows:2,q:'Buche Geschäftsfall 3.',soll:[['KA',3570]],haben:[['UEW',3000],['UST',570]],
+  ex:'3.570 ÷ 1,19 = 3.000 € netto; USt 570 €.'},
+k4:{sec:'komplex',no:'4.4',pts:1,type:'num',unit:'€',q:'Ermittle die Zahllast.',a:2090,
+  ff:()=>{const a=amt('k2','haben','UST'),b=amt('k3','haben','UST'),c=amt('k1','soll','VST');return a==null||b==null||c==null?null:r2(a+b-c);},
+  ex:'USt 4.940 + 570 = 5.510 € − VSt 3.420 € = 2.090 €.'},
+k5:{sec:'komplex',no:'4.5',pts:2,type:'bk',rows:1,q:'Buche die Bestandsveränderung.',soll:[['AWW',3500]],haben:[['WB',3500]],
+  ex:'AB 24.000 € > SB 20.500 €: Bestandsminderung 3.500 €. Aufwendungen für Waren an Warenbestände.'},
+k6:{sec:'komplex',no:'4.6',pts:1,type:'num',unit:'€',q:'Berechne den Wareneinsatz.',a:21500,
+  ff:()=>{const r=bk('k5');if(!r)return null;const x=r.soll.find(e=>e.a==='AWW'),y=r.haben.find(e=>e.a==='WB');if(x&&y&&isFinite(x.v))return 18000+x.v;const m=r.soll.find(e=>e.a==='WB'),n=r.haben.find(e=>e.a==='AWW');if(m&&n&&isFinite(m.v))return 18000-m.v;return null;},
+  ex:'Einkäufe 18.000 + Minderung 3.500 = 21.500 €.'},
+k7:{sec:'komplex',no:'4.7',pts:1,type:'num',unit:'€',q:'Berechne den Rohgewinn.',a:7500,ff:()=>{const v=num('k6');return v==null?null:29000-v;},
+  ex:'Umsatzerlöse 26.000 + 3.000 = 29.000 € − Wareneinsatz 21.500 € = 7.500 €.'},
+k8:{sec:'komplex',no:'4.8',pts:2,type:'bk',rows:1,q:'Buche den Abschluss des Kontos Warenbestände.',soll:[['SBK',20500]],haben:[['WB',20500]],
+  ex:'Der Schlussbestand lt. Inventur geht auf das Schlussbilanzkonto: SBK an Warenbestände 20.500 €.'}
+};
+const SECS={ust:'1 · Umsatzsteuer',buchen:'2 · USt buchen',waren:'3 · Warenbestand',komplex:'4 · Komplexaufgabe'};
+
+function accOptions(){return '<option value="">– Konto –</option>'+ACC_ORDER.map(k=>`<option value="${k}">${ACC[k]}</option>`).join('');}
+function renderTask(el){
+  const id=el.dataset.task,t=T[id];
+  let body='';
+  if(t.type==='mc') body=`<div class="opts" role="radiogroup">${t.o.map((o,i)=>`<label class="opt"><input type="radio" name="${id}" id="${id}-o${i}" value="${i}"><span>${o}</span></label>`).join('')}</div>`;
+  else if(t.type==='num') body=`<div class="numrow"><input type="text" id="${id}-in" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span>${t.unit}</span></div>`;
+  else {
+    const rows=side=>Array.from({length:t.rows},(_,i)=>`<div class="row"><select id="${id}-${side}${i}a" aria-label="${side} Konto ${i+1}">${accOptions()}</select><input type="text" id="${id}-${side}${i}v" inputmode="decimal" autocomplete="off" placeholder="Betrag" aria-label="${side} Betrag ${i+1}"></div>`).join('');
+    body=`<div class="bk"><div class="side"><h5>Soll</h5>${rows('s')}</div><div class="an">an</div><div class="side"><h5>Haben</h5>${rows('h')}</div></div>`;
+  }
+  el.className='task';
+  el.innerHTML=`<div class="th"><span class="no">Aufgabe ${t.no}</span><span>${t.pts} ${t.pts===1?'Punkt':'Punkte'}</span></div>
+  <div class="q">${t.q}</div>${body}
+  ${t.tip?`<details class="tip"><summary>Tipp anzeigen</summary>${t.tip}</details>`:''}
+  <div class="actions"><button class="btn" data-check="${id}">Prüfen</button></div><div class="confirm" hidden><p>Antwort wirklich prüfen lassen? Danach kannst du bei dieser Aufgabe nichts mehr ändern.</p><div class="actions" style="margin-top:8px"><button class="btn" data-confirm="${id}">Ja, prüfen</button><button class="btn ghost" data-cancel="${id}">Abbrechen, weiter bearbeiten</button></div></div><div class="fb" hidden></div>`;
+}
+function solHTML(t){
+  const line=(e,pre)=>`<span>${pre}${ACC[e[0]]}</span><span class="r">${fmt(e[1])} €</span>`;
+  return `<div class="sol">${t.soll.map(e=>line(e,'')).join('')}${t.haben.map(e=>line(e,'an ')).join('')}</div>`;
+}
+function check(id){
+  const t=T[id],el=$(`[data-task="${id}"]`),fb=$('.fb',el);
+  let got=0,verdict,msg='',ffUsed=false;
+  if(t.type==='mc'){
+    const sel=$(`input[name="${id}"]:checked`,el);
+    if(!sel){flash(fb,'Bitte wähle eine Antwort aus.');return;}
+    const v=+sel.value;ANS[id]={v};
+    $$('.opt',el).forEach((o,i)=>{if(i===t.a)o.classList.add('right');else if(i===v)o.classList.add('wrong');});
+    got=v===t.a?t.pts:0;
+  }else if(t.type==='num'){
+    const inp=$(`#${id}-in`),v=parseDE(inp.value);
+    if(!isFinite(v)){flash(fb,'Bitte gib eine Zahl ein, z. B. 1.140,00.');return;}
+    ANS[id]={v};const tol=t.tol||0.005;
+    if(eq(v,t.a,tol)) got=t.pts;
+    else if(t.ff){const f=t.ff();if(f!=null&&!eq(f,t.a,tol)&&eq(v,f,tol)){got=t.pts;ffUsed=true;}}
+    inp.classList.add(got?'right':'wrong');
+  }else{
+    const read=side=>Array.from({length:t.rows},(_,i)=>({a:$(`#${id}-${side}${i}a`).value,raw:$(`#${id}-${side}${i}v`).value,i}));
+    const S=read('s'),H=read('h');
+    if(![...S,...H].some(e=>e.a||e.raw.trim())){flash(fb,'Bitte trage mindestens ein Konto ein.');return;}
+    S.forEach(e=>e.v=parseDE(e.raw));H.forEach(e=>e.v=parseDE(e.raw));
+    ANS[id]={soll:S.filter(e=>e.a),haben:H.filter(e=>e.a)};
+    let score=0;const n=t.soll.length+t.haben.length;
+    const grade=(exp,stu,side)=>{
+      const used=new Set();
+      exp.forEach(x=>{
+        const s=stu.find(e=>e.a===x[0]&&!used.has(e.i));
+        if(!s) return; used.add(s.i);
+        const sa=$(`#${id}-${side}${s.i}a`),sv=$(`#${id}-${side}${s.i}v`);
+        let ok=eq(s.v,x[1]);
+        if(!ok&&x[2]){const f=x[2]();if(f!=null&&!eq(f,x[1])&&eq(s.v,f)){ok=true;ffUsed=true;}}
+        sa.classList.add('right');sv.classList.add(ok?'right':'wrong');
+        score+=ok?1:0.5;
+      });
+      stu.forEach(e=>{if(!used.has(e.i)&&(e.a||e.raw.trim())){$(`#${id}-${side}${e.i}a`).classList.add('wrong');$(`#${id}-${side}${e.i}v`).classList.add('wrong');if(e.a)score-=0.5;}});
+    };
+    grade(t.soll,S,'s');grade(t.haben,H,'h');
+    got=Math.max(0,Math.round(score/n*t.pts*2)/2);
+  }
+  RES[id]={got,max:t.pts};
+  verdict=got===t.pts?'ok':got>0?'part':'bad';
+  el.classList.add('s-'+verdict);
+  const head={ok:ffUsed?'Richtig – Folgefehler berücksichtigt.':'Richtig!',part:`Teilweise richtig (${fmt1(got)} von ${t.pts} P).`,bad:'Leider falsch.'}[verdict];
+  if(verdict!=='ok'||ffUsed){
+    msg=`<p>${t.ex}</p>`;
+    if(t.type==='bk') msg=`<p><b>Richtiger Buchungssatz:</b></p>${solHTML(t)}`+msg;
+    if(t.type==='num') msg=`<p><b>Lösung:</b> ${t.unit==='%'?fmt(t.a)+' %':eur(t.a)}</p>`+msg;
+    if(ffUsed) msg=`<p>Du hast mit deinem Zwischenergebnis richtig weitergerechnet.</p>`+msg;
+  }
+  fb.className='fb '+verdict;fb.hidden=false;fb.innerHTML=`<span class="v">${head}</span>${msg}`;
+  $$('input,select',el).forEach(x=>x.disabled=true);
+  const btn=$('[data-check]',el);btn.disabled=true;btn.textContent='Geprüft';
+  update();
+}
+const fmt1=n=>String(n).replace('.',',');
+function flash(fb,txt){fb.className='fb part';fb.hidden=false;fb.innerHTML=`<span class="v">${txt}</span>`;}
+
+/* Sicherheitsabfrage vor dem Prüfen */
+function hasInput(id){const t=T[id],el=$(`[data-task="${id}"]`);
+  if(t.type==='mc') return $(`input[name="${id}"]:checked`,el)?'':'Bitte wähle eine Antwort aus.';
+  if(t.type==='num') return isFinite(parseDE($(`#${id}-in`).value))?'':'Bitte gib eine Zahl ein, z. B. 1.140,00.';
+  return $$('select',el).some(x=>x.value)?'':'Bitte trage mindestens ein Konto ein.';}
+function ask(id){const el=$(`[data-task="${id}"]`),fb=$('.fb',el),msg=hasInput(id);
+  if(msg){flash(fb,msg);return;}
+  fb.hidden=true;$('[data-check]',el).hidden=true;const c=$('.confirm',el);c.hidden=false;$('[data-confirm]',c).focus();}
+function cancelAsk(id){const el=$(`[data-task="${id}"]`);$('.confirm',el).hidden=true;const b=$('[data-check]',el);b.hidden=false;b.focus();}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-check]');if(b&&!b.disabled){ask(b.dataset.check);return;}
+  const y=e.target.closest('[data-confirm]');if(y){const id=y.dataset.confirm;$('.confirm',$(`[data-task="${id}"]`)).hidden=true;$('[data-check]',$(`[data-task="${id}"]`)).hidden=false;check(id);return;}
+  const n=e.target.closest('[data-cancel]');if(n)cancelAsk(n.dataset.cancel);});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.task input[type=text]')){e.preventDefault();const b=$('[data-check]',e.target.closest('.task'));if(b&&!b.disabled&&!b.hidden)ask(b.dataset.check);}});
+
+/* ---------- Progress ---------- */
+const secMax=s=>Object.values(T).filter(t=>t.sec===s).reduce((a,t)=>a+t.pts,0);
+const secGot=s=>Object.keys(T).filter(k=>T[k].sec===s&&RES[k]).reduce((a,k)=>a+RES[k].got,0);
+const secDone=s=>Object.keys(T).filter(k=>T[k].sec===s).every(k=>RES[k]);
+const TOTAL=Object.values(T).reduce((a,t)=>a+t.pts,0);
+function update(){
+  const got=Object.values(RES).reduce((a,r)=>a+r.got,0), done=Object.values(RES).reduce((a,r)=>a+r.max,0);
+  $('#barFill').style.width=(done/TOTAL*100)+'%';
+  $('#barTxt').textContent=`${fmt1(got)} / ${fmt1(done)} P · ${Object.keys(RES).length}/${Object.keys(T).length} Aufgaben`;
+  Object.keys(SECS).forEach(s=>{
+    const b=$(`[data-badge="${s}"]`),n=Object.keys(T).filter(k=>T[k].sec===s).length,d=Object.keys(T).filter(k=>T[k].sec===s&&RES[k]).length;
+    b.textContent=`${d}/${n}`;b.classList.toggle('full',d===n);
+    const sp=$(`[data-secpts="${s}"]`);if(sp)sp.textContent=`${fmt1(secGot(s))} von ${secMax(s)} Punkten`;
+  });
+  const kd=secDone('komplex');$('#k-sol-btn').disabled=!kd;
+  $('#k-sol-note').textContent=kd?'Vergleiche deine Buchungen mit den abgeschlossenen Konten.':'Wird freigeschaltet, sobald du alle Aufgaben dieses Kapitels geprüft hast.';
+}
+function grade(p){return p>=92?1:p>=81?2:p>=67?3:p>=50?4:p>=30?5:6;}
+const GTXT={1:'sehr gut',2:'gut',3:'befriedigend',4:'ausreichend',5:'mangelhaft',6:'ungenügend'};
+function renderResult(){
+  const got=Object.values(RES).reduce((a,r)=>a+r.got,0),cnt=Object.keys(RES).length,all=Object.keys(T).length;
+  const p=got/TOTAL*100,g=grade(p);
+  $('#e-note').textContent=cnt?g:'–';
+  $('#e-pts').textContent=`${fmt1(got)} von ${TOTAL} Punkten`;
+  $('#e-pct').textContent=cnt?`${p.toLocaleString('de-DE',{maximumFractionDigits:1})} % · Note ${g} (${GTXT[g]})`:'Noch keine Aufgabe geprüft.';
+  $('#e-msg').textContent=!cnt?'Starte mit Kapitel 1.':cnt<all?`Du hast ${cnt} von ${all} Aufgaben bearbeitet. Die Note bezieht sich auf alle ${TOTAL} Punkte.`:
+    g<=2?'Stark! Du beherrschst Umsatzsteuer und Warenbestandsveränderungen sicher.':g<=4?'Solide Basis. Schau dir die Erklärungen zu deinen Fehlern noch einmal an.':'Arbeite die Kapitel noch einmal durch und nutze die Rechner zum Üben.';
+  let h='<tr><th>Kapitel</th><th class="n">Aufgaben</th><th class="n">Punkte</th><th class="n">Anteil</th></tr>';
+  Object.keys(SECS).forEach(s=>{const ks=Object.keys(T).filter(k=>T[k].sec===s),d=ks.filter(k=>RES[k]).length,m=secMax(s),gg=secGot(s);
+    h+=`<tr><td>${SECS[s]}</td><td class="n">${d}/${ks.length}</td><td class="n">${fmt1(gg)} / ${m}</td><td class="n">${Math.round(gg/m*100)} %</td></tr>`;});
+  h+=`<tr class="sum"><td>Gesamt</td><td class="n">${cnt}/${all}</td><td class="n">${fmt1(got)} / ${TOTAL}</td><td class="n">${Math.round(p)} %</td></tr>`;
+  $('#e-tbl').innerHTML=h;
+  const wrong=Object.keys(RES).filter(k=>RES[k].got<RES[k].max);
+  $('#e-open').innerHTML=wrong.length?`<h3>Noch einmal ansehen</h3><p>${wrong.map(k=>`<button class="chip" data-jump="${k}">Aufgabe ${T[k].no}</button>`).join(' ')}</p>`:'';
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const id=b.dataset.jump;show(T[id].sec);setTimeout(()=>$(`[data-task="${id}"]`).scrollIntoView({behavior:'smooth',block:'center'}),30);});
+
+/* ---------- Komplex solution ---------- */
+$('#k-sol-btn').addEventListener('click',()=>{
+  const d=$('#k-sol');d.hidden=!d.hidden;$('#k-sol-btn').textContent=d.hidden?'T-Konten anzeigen':'T-Konten ausblenden';
+  if(!d.innerHTML) d.innerHTML=`<div class="tks">
+  ${tk('Warenbestände','b',[['AB',24000]],[['AWW',3500,1],['SBK',20500]])}
+  ${tk('Aufwendungen für Waren','a',[['VE',18000],['WB',3500,1]],[['GuV',21500]])}
+  ${tk('Umsatzerlöse für Waren','e',[['GuV',29000]],[['FO',26000],['KA',3000]])}
+  ${tk('Vorsteuer','u',[['VE',3420]],[['USt',3420]])}
+  ${tk('Umsatzsteuer','u',[['VSt',3420],['Zahllast',2090,1]],[['FO',4940],['KA',570]])}
+  ${tk('GuV','n',[['AWW',21500],['EK (Rohgewinn)',7500,1]],[['UEW',29000]])}
+  </div><p>Die Zahllast von 2.090 € wird bis zum 10. des Folgemonats überwiesen (Umsatzsteuer an Bank). Am Jahresende würde sie passiviert (Umsatzsteuer an SBK).</p>`;
+});
+
+/* ---------- Reset ---------- */
+let armed=false;
+$('#resetBtn').addEventListener('click',()=>{
+  if(!armed){armed=true;$('#resetBtn').textContent='Wirklich alles löschen?';$('#resetHint').textContent='Zum Bestätigen noch einmal tippen.';setTimeout(()=>{armed=false;$('#resetBtn').textContent='Alle Antworten zurücksetzen';$('#resetHint').textContent='';},4000);return;}
+  armed=false;Object.keys(RES).forEach(k=>delete RES[k]);Object.keys(ANS).forEach(k=>delete ANS[k]);
+  $$('[data-task]').forEach(renderTask);$('#k-sol').innerHTML='';$('#k-sol').hidden=true;$('#k-sol-btn').textContent='T-Konten anzeigen';
+  $('#resetBtn').textContent='Alle Antworten zurücksetzen';$('#resetHint').textContent='Alle Antworten wurden gelöscht.';update();renderResult();
+});
+
+/* ---------- Init ---------- */
+$$('[data-task]').forEach(renderTask);update();
+show((location.hash||'').slice(1)||'start');
+})();
+</script>
+
+</body>
+</html>
