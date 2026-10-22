@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BAB im Handel</title>
+<style>
+:root{
+  --paper:#f2ead8; --paper-2:#fbf7ec; --paper-3:#efe5cf;
+  --ink:#2a2620; --muted:#6b6254; --line:#d6c8aa; --line-2:#c2b28f;
+  --head:#1e3a5f; --head-2:#2b4f7c; --head-ink:#f6f1e4;
+  --bestand:#3b7a37; --aufwand:#7b3e88; --erloes:#256f9e; --ust:#a8452e; --neutral:#4d4a44;
+  --ok:#2e7a38; --ok-bg:#e3efd9; --bad:#ae2f28; --bad-bg:#f6e0dc; --part:#9a6a12; --part-bg:#f5ead0;
+  --merke:#e7eed2; --merke-line:#9fb46a; --bsp:#e1eaf3; --bsp-line:#8fb0d1;
+  --focus:#d08a1a;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#1a1916; --paper-2:#24221e; --paper-3:#2c2924;
+    --ink:#ece5d5; --muted:#a79e8c; --line:#3c382f; --line-2:#565044;
+    --head:#1c3556; --head-2:#28496f; --head-ink:#f1ecdf;
+    --bestand:#86c57e; --aufwand:#cc9fd8; --erloes:#7cb9e2; --ust:#e8907a; --neutral:#c9c2b3;
+    --ok:#8fd08f; --ok-bg:#1f3322; --bad:#f08c82; --bad-bg:#3a2220; --part:#e6b85c; --part-bg:#372d18;
+    --merke:#262d1c; --merke-line:#6f8445; --bsp:#1c2632; --bsp-line:#44678c; --focus:#f0b048;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#1a1916; --paper-2:#24221e; --paper-3:#2c2924;
+  --ink:#ece5d5; --muted:#a79e8c; --line:#3c382f; --line-2:#565044;
+  --head:#1c3556; --head-2:#28496f; --head-ink:#f1ecdf;
+  --bestand:#86c57e; --aufwand:#cc9fd8; --erloes:#7cb9e2; --ust:#e8907a; --neutral:#c9c2b3;
+  --ok:#8fd08f; --ok-bg:#1f3322; --bad:#f08c82; --bad-bg:#3a2220; --part:#e6b85c; --part-bg:#372d18;
+  --merke:#262d1c; --merke-line:#6f8445; --bsp:#1c2632; --bsp-line:#44678c; --focus:#f0b048;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);-webkit-text-size-adjust:100%}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+h1,h2,h3,h4{font-family:var(--serif);line-height:1.2;text-wrap:balance;margin:0}
+h2{font-size:1.65rem;margin-block:28px 10px}
+h3{font-size:1.25rem;margin-block:26px 8px;color:var(--head-2)}
+:root[data-theme="dark"] h3{color:var(--erloes)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h3{color:var(--erloes)}}
+p{margin:0 0 12px;max-width:68ch}
+ul{margin:0 0 12px;padding-left:1.2em;max-width:68ch}
+li{margin-bottom:4px}
+.num,.tk,td.n{font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Header */
+.masthead{background:var(--head);color:var(--head-ink);padding-block:26px 22px;border-bottom:4px solid var(--line-2)}
+.masthead .eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.masthead h1{font-size:clamp(1.7rem,4.5vw,2.5rem);margin-top:6px}
+.masthead p{margin:8px 0 0;opacity:.88;max-width:60ch}
+
+/* Nav */
+.navbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper-3);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-block:8px 0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);border-bottom:none;background:transparent;padding:8px 14px 9px;border-radius:8px 8px 0 0;cursor:pointer;color:var(--muted);font-weight:600;font-size:.92rem;display:flex;gap:8px;align-items:center}
+.tab[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--line-2)}
+.tab .badge{font-size:.74rem;font-weight:600;background:var(--paper-2);border:1px solid var(--line);border-radius:99px;padding:0 7px;font-variant-numeric:tabular-nums}
+.tab .badge.full{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.progress{display:flex;align-items:center;gap:12px;padding-block:7px;font-size:.85rem;color:var(--muted)}
+.bar{flex:1;height:8px;background:var(--paper-2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--head-2);transition:width .4s}
+.progress b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+main{padding-block:8px 60px}
+.panel[hidden]{display:none!important}
+
+/* Boxes */
+.merke,.bsp,.situation{border-radius:6px;padding:14px 16px;margin-block:14px;max-width:100%}
+.merke{background:var(--merke);border-left:5px solid var(--merke-line)}
+.merke::before{content:"Merke";display:block;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bestand);margin-bottom:4px}
+.bsp{background:var(--bsp);border-left:5px solid var(--bsp-line)}
+.bsp .lbl{font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--erloes);margin-bottom:4px;display:block}
+.merke p:last-child,.bsp p:last-child,.merke ul:last-child{margin-bottom:0}
+.situation{background:var(--paper-2);border:1px solid var(--line)}
+.dialog{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+.dialog dt{font-weight:700;white-space:nowrap}
+.dialog dd{margin:0;font-style:italic;max-width:64ch}
+.formula{font-family:var(--serif);font-size:1.12rem;background:var(--paper-2);border:1px dashed var(--line-2);border-radius:6px;padding:10px 14px;margin-block:10px;display:inline-block;max-width:100%}
+.formula b{font-weight:700}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-block:14px}
+.card{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.card h4{font-size:1.05rem;margin-bottom:6px}
+.acc-b{color:var(--bestand);font-weight:600}.acc-a{color:var(--aufwand);font-weight:600}.acc-e{color:var(--erloes);font-weight:600}.acc-u{color:var(--ust);font-weight:600}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;margin-block:12px}
+table{border-collapse:collapse;width:100%;min-width:520px;background:var(--paper-2)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--paper-3);font-size:.85rem;letter-spacing:.02em}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.sum td{font-weight:700;border-top:2px solid var(--ink)}
+
+/* T-Konten */
+.tks{display:flex;flex-wrap:wrap;gap:18px 26px;margin-block:14px}
+.tk{flex:1 1 230px;max-width:340px;font-size:.9rem}
+.tk-h{display:grid;grid-template-columns:auto 1fr auto;border-bottom:2px solid var(--ink);padding-bottom:2px;font-weight:700}
+.tk-h .t{text-align:center;font-family:var(--serif);font-size:1rem}
+.tk-b{display:grid;grid-template-columns:1fr 1fr}
+.tk-b>div{padding:3px 6px 4px;min-height:1.6em}
+.tk-b>div+div{border-left:2px solid var(--ink)}
+.tk-r{display:flex;justify-content:space-between;gap:6px;padding:1px 0}
+.tk-r span:first-child{color:var(--muted)}
+.tk-r.hi{background:color-mix(in srgb,var(--part) 18%,transparent);border-radius:3px;padding-inline:3px;margin-inline:-3px}
+.tk-r.hi span:first-child{color:var(--ink);font-weight:600}
+.tk-s{display:grid;grid-template-columns:1fr 1fr}
+.tk-s>div{border-top:1px solid var(--ink);border-bottom:3px double var(--ink);text-align:right;padding:1px 6px;font-weight:700}
+.tk-s>div+div{border-left:2px solid var(--ink)}
+.tk.c-b .t{color:var(--bestand)}.tk.c-a .t{color:var(--aufwand)}.tk.c-e .t{color:var(--erloes)}.tk.c-u .t{color:var(--ust)}
+.tk.schema .tk-r{justify-content:center;text-align:center;padding:6px 2px;border-radius:4px;margin:3px 0}
+.tk.schema .tk-r span{color:var(--ink)!important}
+.sch-b{background:color-mix(in srgb,var(--bestand) 16%,transparent)}
+.sch-a{background:color-mix(in srgb,var(--aufwand) 16%,transparent)}
+.sch-x{background:color-mix(in srgb,var(--part) 22%,transparent)}
+
+/* Widgets */
+.widget{background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:16px;margin-block:18px;box-shadow:0 1px 0 var(--line)}
+.widget>.wt{font-family:var(--serif);font-size:1.15rem;font-weight:700;margin-bottom:4px}
+.widget>.ws{color:var(--muted);font-size:.9rem;margin-bottom:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:3px;font-size:.85rem;color:var(--muted)}
+.field input,.field select{min-width:0;width:130px}
+input[type=text],select{background:var(--paper);border:1px solid var(--line-2);border-radius:6px;padding:7px 9px;font-variant-numeric:tabular-nums}
+input[type=text]{text-align:right}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+.seg button{border:none;background:var(--paper);padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--head);color:var(--head-ink)}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat3>div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.stat3 small{display:block;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.stat3 b{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.split{display:flex;height:26px;border-radius:5px;overflow:hidden;margin-top:10px;border:1px solid var(--line)}
+.split div{display:flex;align-items:center;justify-content:center;font-size:.76rem;color:#fff;white-space:nowrap;overflow:hidden;transition:flex-basis .3s}
+.split .sn{background:var(--head-2)}.split .su{background:#a8452e}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-2);background:var(--paper);border-radius:99px;padding:5px 12px;cursor:pointer;font-size:.85rem}
+.chip:hover{border-color:var(--head-2)}
+.result{border-radius:8px;padding:10px 14px;margin-block:10px;font-weight:600}
+.result.zl{background:var(--bad-bg);color:var(--bad)}
+.result.vu{background:var(--ok-bg);color:var(--ok)}
+.result.neu{background:var(--paper-3)}
+.bs{font-family:var(--mono);font-size:.86rem;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:6px 0;overflow-x:auto;white-space:pre-wrap}
+.calc{width:100%;max-width:560px;min-width:0;border:none;background:none}
+.calc td{border:none;padding:3px 6px}
+.calc tr.eq td{border-top:1.5px solid var(--ink);font-weight:700}
+.calc tr.res td{border-bottom:3px double var(--ink)}
+.err{color:var(--bad);font-weight:600}
+
+/* Tasks */
+.tasks-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-block:30px 6px;border-bottom:2px solid var(--head);padding-bottom:4px}
+.tasks-h h3{margin:0;color:var(--ink)}
+.tasks-h span{color:var(--muted);font-size:.9rem}
+.task{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-block:12px}
+.task.s-ok{border-color:var(--ok)}.task.s-bad{border-color:var(--bad)}.task.s-part{border-color:var(--part)}
+.th{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;font-size:.82rem;color:var(--muted);font-weight:600}
+.th .no{color:var(--head-2);letter-spacing:.04em}
+:root[data-theme="dark"] .th .no{color:var(--erloes)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .th .no{color:var(--erloes)}}
+.q{margin-bottom:10px}
+.q p{margin-bottom:6px}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);cursor:pointer}
+.opt input{margin-top:4px;accent-color:var(--head-2)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.numrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.numrow input{width:160px}
+input.right,select.right{border-color:var(--ok);background:var(--ok-bg)}
+input.wrong,select.wrong{border-color:var(--bad);background:var(--bad-bg)}
+input.part,select.part{border-color:var(--part);background:var(--part-bg)}
+.bk{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start}
+.bk .side h5{margin:0 0 6px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bk .an{align-self:center;font-family:var(--serif);font-style:italic;font-size:1.1rem;color:var(--muted);padding-top:18px}
+.bk .row{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:6px;margin-bottom:6px}
+.bk .row select{width:100%;min-width:0}
+.bk .row input{width:100%}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--head);background:var(--head);color:var(--head-ink);border-radius:6px;padding:8px 16px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--head-2)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn:disabled{opacity:.5;cursor:default}
+.fb{margin-top:12px;border-radius:6px;padding:10px 12px;font-size:.95rem}
+.fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}.fb.part{background:var(--part-bg)}
+.fb .v{font-weight:700;display:block;margin-bottom:3px}
+.fb.ok .v{color:var(--ok)}.fb.bad .v{color:var(--bad)}.fb.part .v{color:var(--part)}
+.fb p{margin:4px 0 0}
+.sol{display:inline-grid;grid-template-columns:auto auto;gap:0 16px;font-variant-numeric:tabular-nums;margin-top:6px;font-size:.92rem}
+.sol .an2{grid-column:1/-1;font-style:italic;color:var(--muted)}
+.sol .r{text-align:right}
+details.tip{margin-top:8px;font-size:.9rem}
+details.tip summary{cursor:pointer;color:var(--muted)}
+
+/* Start */
+.goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-block:16px}
+.goal{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left}
+.goal:hover{border-color:var(--head-2)}
+.goal b{display:block;font-family:var(--serif);font-size:1.05rem;margin-bottom:3px}
+.goal span{color:var(--muted);font-size:.88rem}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.88rem;margin-block:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* Ergebnis */
+.score{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:18px}
+.note{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:var(--head);color:var(--head-ink);font-family:var(--serif);font-size:2.6rem;font-weight:700}
+.score .big{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.foot{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--line);padding-top:10px}
+
+@media (max-width:640px){
+  .bk{grid-template-columns:1fr}
+  .bk .an{padding-top:0;text-align:center}
+  .stat3{grid-template-columns:1fr}
+  .dialog{grid-template-columns:1fr}
+  .dialog dt{margin-top:6px}
+  .score{grid-template-columns:1fr;justify-items:start}
+  .field input,.field select{width:118px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.confirm{margin-top:12px;border:2px solid var(--part);background:var(--part-bg);border-radius:6px;padding:10px 12px}
+.confirm p{margin:0;font-weight:600}
+/* Tabellen-Aufgaben */
+.gwrap{overflow-x:auto;margin-block:6px}
+table.gtab{min-width:520px}
+table.gtab td,table.gtab th{padding:5px 7px;vertical-align:middle}
+table.gtab td.n{white-space:nowrap}
+table.gtab input[type=text]{width:100%;min-width:86px}
+table.gtab select{width:100%;min-width:110px}
+table.gtab tr.sumrow td{border-top:2px solid var(--ink);font-weight:600}
+table.gtab td.right-c{background:var(--ok-bg)}
+.solt{min-width:420px}
+/* Widgets */
+.wtab{min-width:560px}
+.wtab input[type=text]{width:100%;min-width:76px}
+.wtab td.out{font-weight:600;text-align:right;white-space:nowrap}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.kpi>div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.kpi small{display:block;color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em}
+.kpi b{font-size:1.15rem;font-variant-numeric:tabular-nums}
+.kpi span{display:block;font-size:.8rem;color:var(--muted)}
+.chart{width:100%;max-width:560px;height:auto;display:block;margin-top:8px}
+.chart text{fill:var(--muted);font-size:15px;font-family:var(--sans)}
+.devbar{height:12px;border-radius:3px;display:inline-block;vertical-align:middle}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+/* Test */
+.startbox{display:grid;gap:14px;max-width:560px}
+.startbox .field input{width:100%}
+.grp{display:flex;gap:10px;flex-wrap:wrap}
+.grp button{flex:1 1 140px;border:2px solid var(--line-2);background:var(--paper-2);border-radius:8px;padding:12px;cursor:pointer;font-family:var(--serif);font-size:1.1rem;font-weight:700}
+.grp button[aria-pressed="true"]{border-color:var(--head);background:var(--head);color:var(--head-ink)}
+.who{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.92rem;color:var(--muted);margin-top:10px}
+.who b{color:var(--ink)}
+.aufg{margin-block:34px 8px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--head);padding-bottom:4px}
+.aufg h2{margin:0;font-size:1.4rem}
+.aufg span{color:var(--muted);font-size:.9rem}
+.submitbox{margin-top:30px;background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:16px}
+.submitbox p{margin:0 0 10px}
+.warn{color:var(--part);font-weight:600}
+.task.unans{border-style:dashed}
+#e-tbl{min-width:0}
+table.gtab td:first-child,table.gtab th:first-child{position:sticky;left:0;z-index:1;background:var(--paper-2);box-shadow:1px 0 0 var(--line)}
+table.gtab th:first-child{background:var(--paper-3)}
+@media (max-width:640px){table.gtab td:first-child{max-width:132px;white-space:normal;font-size:.86rem}}
+</style>
+
+</head>
+<body>
+<header class="masthead"><div class="wrap">
+<div class="eyebrow">Selbstlernseite · Lernfeld 11 · Kosten- und Leistungsrechnung</div><h1>BAB im Handel</h1><p>Handlungskosten auf Warengruppen verteilen, Wareneinsatz und Handlungskostenzuschlag berechnen und in der Kalkulation anwenden.</p></div></header>
+<nav class="navbar" aria-label="Kapitel"><div class="wrap">
+<div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="start" aria-selected="true">Start</button><button class="tab" role="tab" data-tab="k1">1 · Handlungskosten <span class="badge" data-badge="k1"></span></button><button class="tab" role="tab" data-tab="k2">2 · BAB aufstellen <span class="badge" data-badge="k2"></span></button><button class="tab" role="tab" data-tab="k3">3 · Zuschlagssätze <span class="badge" data-badge="k3"></span></button><button class="tab" role="tab" data-tab="k4">4 · Anwendung <span class="badge" data-badge="k4"></span></button><button class="tab" role="tab" data-tab="k5">5 · Komplexaufgabe <span class="badge" data-badge="k5"></span></button><button class="tab" role="tab" data-tab="ergebnis">Ergebnis</button></div>
+<div class="progress"><span>Fortschritt</span><div class="bar"><i id="barFill"></i></div><b id="barTxt">0 / 0 P</b></div>
+</div></nav>
+<main class="wrap">
+<section class="panel" id="p-start"><h2>Handlungssituation</h2>
+<div class="situation">
+<p>Die <b>Schuhhandel Meier GmbH</b> führt drei Warengruppen: Damen-, Herren- und Kinderschuhe. Die Auszubildende Lena Hofmann soll für Filialleiter Herrn Brandt herausfinden, welchen Zuschlag sie auf den Bezugspreis rechnen muss, damit die Preise alle Kosten decken.</p>
+<dl class="dialog">
+<dt>Herr Brandt:</dt><dd>„Bisher rechnen wir überall pauschal 27 % Handlungskosten auf den Bezugspreis. Ich habe den Verdacht, dass die Kinderschuhe damit viel zu billig sind.“</dd>
+<dt>Lena:</dt><dd>„Woher soll ich wissen, welche Kosten zu den Kinderschuhen gehören? Die Miete und die Gehälter zahlen wir doch für den ganzen Laden.“</dd>
+<dt>Herr Brandt:</dt><dd>„Genau dafür gibt es den Betriebsabrechnungsbogen. Wir verteilen jede Kostenart mit einem passenden Schlüssel auf die Warengruppen. Dann sehen wir, wie viel Handlungskosten jede Warengruppe im Verhältnis zu ihrem Wareneinsatz verursacht.“</dd>
+</dl></div>
+<h3>Das lernst du auf dieser Seite</h3>
+<div class="goals">
+<button class="goal" data-go="k1"><b>1 · Handlungskosten</b><span>Was zählt dazu, was ist eine Kostenstelle, welcher Schlüssel passt?</span></button>
+<button class="goal" data-go="k2"><b>2 · BAB aufstellen</b><span>Kosten mit Schlüsseln auf die Warengruppen verteilen</span></button>
+<button class="goal" data-go="k3"><b>3 · Zuschlagssätze</b><span>Wareneinsatz und Handlungskostenzuschlag berechnen</span></button>
+<button class="goal" data-go="k4"><b>4 · Anwendung</b><span>Selbstkostenpreis kalkulieren, Abteilungsergebnis deuten</span></button>
+<button class="goal" data-go="k5"><b>5 · Komplexaufgabe</b><span>Ein Quartal komplett vom BAB bis zum Abteilungsergebnis</span></button>
+</div>
+<h3>So arbeitest du</h3>
+<ul>
+<li>Lies in jedem Kapitel zuerst die Erklärung und probiere den <b>BAB-Rechner</b> in Kapitel 3 aus.</li>
+<li>Nach <b>Prüfen</b> fragt die Seite noch einmal nach. Erst mit <b>Ja, prüfen</b> bekommst du die Rückmeldung, danach ist die Aufgabe gesperrt. Mit <b>Abbrechen</b> kannst du weiter ändern.</li>
+<li>Beträge kannst du so eingeben: <span class="num">4800</span>, <span class="num">4.800</span> oder <span class="num">4.800,00</span>. Prozentsätze mit zwei Nachkommastellen, z. B. <span class="num">25,40</span>.</li>
+<li>Folgefehler werden berücksichtigt: Rechnest du mit deinem eigenen falschen Zwischenergebnis richtig weiter, bekommst du die Punkte.</li>
+<li>Bei Tabellen gibt es Teilpunkte für jedes richtige Feld.</li>
+</ul></section>
+
+<section class="panel" id="p-k1" hidden>
+<h2>1 · Handlungskosten und Kostenstellen</h2>
+<p>Ein Einzelhändler kauft Ware ein und verkauft sie mit Aufschlag weiter. Der Aufschlag muss zwei Dinge abdecken: die <b>Handlungskosten</b> und den <b>Gewinn</b>.</p>
+<div class="grid2">
+<div class="card"><h4>Handlungskosten</h4><p>Alle Kosten, die im Handelsbetrieb für Einkauf, Lagerung, Verkauf und Verwaltung entstehen: Personal, Miete, Energie, Werbung, Abschreibungen, Versicherungen, Kommunikation …</p></div>
+<div class="card"><h4>Nicht dazu gehört</h4><p>Der <b>Bezugspreis</b> der Ware. Er ist die Grundlage, auf die der Zuschlag gerechnet wird. Für die verkaufte Ware einer Periode heißt er <b>Wareneinsatz</b>.</p></div>
+</div>
+<p>Die meisten Handlungskosten sind <b>Gemeinkosten</b>: Die Miete zahlt Meier für den ganzen Laden, nicht für ein bestimmtes Paar Schuhe. Um trotzdem zu wissen, welche Warengruppe welche Kosten verursacht, bildet man <b>Kostenstellen</b>. Im Einzelhandel sind das meist die Warengruppen oder Abteilungen.</p>
+<h3>Verteilungsschlüssel</h3>
+<p>Für jede Kostenart wählt man einen Schlüssel, der möglichst gut abbildet, wer die Kosten verursacht.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kostenart</th><th>typischer Schlüssel</th></tr>
+<tr><td>Personalkosten</td><td>Gehaltsliste, Anzahl der Mitarbeiter je Abteilung</td></tr>
+<tr><td>Miete, Reinigung, Heizung</td><td>Fläche in m² (Heizung auch beheizte Fläche oder Raum in m³)</td></tr>
+<tr><td>Energie</td><td>Zählerstände, Anzahl und Leistung der Geräte, Verhältniszahlen</td></tr>
+<tr><td>Werbung</td><td>Umsatz oder Anteil an der Werbefläche</td></tr>
+<tr><td>Abschreibungen</td><td>Wert der Ladeneinrichtung je Abteilung</td></tr>
+<tr><td>Allgemeine Kosten</td><td>gleichmäßig oder nach Wareneinsatz</td></tr>
+</table></div>
+<div class="grid2">
+<div class="card"><h4>Einzelkosten</h4><p>Lassen sich einer Warengruppe direkt zurechnen: Aufwendungen für Waren, Provision für einen bestimmten Auftrag, Zustellkosten für eine Kundenlieferung.</p></div>
+<div class="card"><h4>Gemeinkosten</h4><p>Entstehen für mehrere Warengruppen gemeinsam: Miete, Gehälter, Steuern, Abschreibungen. Sie werden im BAB verteilt.</p></div>
+</div>
+<div class="merke"><ul><li>Handlungskosten = alle Kosten des Handelsbetriebs <b>außer</b> dem Bezugspreis (Einstandspreis) der Ware.</li><li>Kostenstellen im Einzelhandel = Warengruppen bzw. Abteilungen.</li><li>Der Verteilungsschlüssel soll die Kosten <b>verursachungsgerecht</b> zuordnen.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 1</h3><span data-secpts="k1"></span></div><div data-task="a1"></div><div data-task="a2"></div><div data-task="a3"></div><div data-task="a4"></div><div data-task="a5"></div><div data-task="a6"></div>
+</section>
+
+<section class="panel" id="p-k2" hidden>
+<h2>2 · Den BAB aufstellen</h2>
+<p>Der Betriebsabrechnungsbogen ist eine Tabelle. In den Zeilen stehen die Kostenarten, in den Spalten die Warengruppen. So gehst du vor:</p>
+<ol>
+<li><b>Schlüssel addieren:</b> z. B. 5 : 3 : 2 ergibt 10 Anteile.</li>
+<li><b>Wert eines Anteils:</b> Betrag ÷ Summe der Anteile, z. B. 180.000 € ÷ 10 = 18.000 €.</li>
+<li><b>Anteile verteilen:</b> Damen 5 × 18.000 € = 90.000 €, Herren 3 × 18.000 € = 54.000 €, Kinder 2 × 18.000 € = 36.000 €.</li>
+<li><b>Spalten addieren:</b> Summe der Handlungskosten je Warengruppe.</li>
+</ol>
+<p>Prozent-Schlüssel (50 % : 25 % : 25 %) rechnest du direkt. Bei Flächen oder Umsätzen gilt dasselbe wie bei Verhältniszahlen: Flächen 250 : 150 : 100 m² sind 500 m² zusammen.</p>
+<div class="bsp"><span class="lbl">Beispiel: BAB der Schuhhandel Meier GmbH (Geschäftsjahr)</span>
+<div class="tbl-wrap"><table><tr><th>Kostenart</th><th class="n">Gesamt €</th><th>Schlüssel</th><th class="n">Damen</th><th class="n">Herren</th><th class="n">Kinder</th></tr><tr><td>Personalkosten</td><td class="n">180.000,00</td><td>Mitarbeiter 5 : 3 : 2</td><td class="n">90.000,00</td><td class="n">54.000,00</td><td class="n">36.000,00</td></tr><tr><td>Miete</td><td class="n">60.000,00</td><td>Fläche 250 : 150 : 100 m²</td><td class="n">30.000,00</td><td class="n">18.000,00</td><td class="n">12.000,00</td></tr><tr><td>Energie</td><td class="n">12.000,00</td><td>2 : 1 : 1</td><td class="n">6.000,00</td><td class="n">3.000,00</td><td class="n">3.000,00</td></tr><tr><td>Werbung</td><td class="n">24.000,00</td><td>50 % : 25 % : 25 %</td><td class="n">12.000,00</td><td class="n">6.000,00</td><td class="n">6.000,00</td></tr><tr><td>Abschreibungen</td><td class="n">20.000,00</td><td>2 : 1 : 1</td><td class="n">10.000,00</td><td class="n">5.000,00</td><td class="n">5.000,00</td></tr><tr><td>Sonstige Kosten</td><td class="n">15.000,00</td><td>1 : 1 : 1</td><td class="n">5.000,00</td><td class="n">5.000,00</td><td class="n">5.000,00</td></tr><tr class="sum"><td>Summe Handlungskosten</td><td class="n">311.000,00</td><td></td><td class="n">153.000,00</td><td class="n">91.000,00</td><td class="n">67.000,00</td></tr><tr><td>Wareneinsatz</td><td></td><td></td><td class="n">510.000,00</td><td class="n">364.000,00</td><td class="n">335.000,00</td></tr><tr class="sum"><td>Handlungskostenzuschlagssatz</td><td></td><td></td><td class="n">30,00 %</td><td class="n">25,00 %</td><td class="n">20,00 %</td></tr></table></div>
+<p>Der Zuschlag wird in Kapitel 3 erklärt.</p></div>
+<div class="merke"><ul><li>Probe: Die Summe aller verteilten Beträge muss den Gesamtkosten entsprechen.</li><li>Kosten einer allgemeinen Kostenstelle (z. B. Verwaltung) werden zuerst gesammelt und dann auf die Warengruppen umgelegt.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 2</h3><span data-secpts="k2"></span></div><div data-task="b1"></div><div data-task="b2"></div><div data-task="b3"></div><div data-task="b4"></div><div data-task="b5"></div>
+</section>
+
+<section class="panel" id="p-k3" hidden>
+<h2>3 · Wareneinsatz und Handlungskostenzuschlag</h2>
+<p>Die Handlungskosten einer Warengruppe werden ins Verhältnis zu ihrem <b>Wareneinsatz</b> gesetzt. Der Wareneinsatz ist der Wert der verkauften Ware zu Bezugspreisen.</p>
+<div class="formula">Wareneinsatz = Anfangsbestand + Wareneinkäufe − Schlussbestand<br>Handlungskostenzuschlagssatz (HKZ) = Handlungskosten × 100 ÷ Wareneinsatz</div>
+<p>Im Schulbuch heißt er <b>Handlungskostenzuschlagssatz</b>, in manchen Kalkulationen auch „Zuschlag für allgemeine Handlungskosten“. Gemeint ist immer dasselbe.</p>
+<p>Ein HKZ von 30 % bedeutet: Auf je 100 € Wareneinsatz entfallen 30 € Handlungskosten. Dieser Zuschlag wird in der Kalkulation auf den Bezugspreis jedes Artikels gerechnet.</p>
+<div class="widget" id="w-bab">
+<div class="wt">BAB-Rechner</div>
+<div class="ws">Ändere Beträge, Schlüssel oder Wareneinsatz. Schlüssel schreibst du so: <span class="num">5:3:2</span> oder <span class="num">50:25:25</span>. Voreingestellt ist das Beispiel aus Kapitel 2.</div>
+<div class="tbl-wrap"><table class="wtab" id="babsim"></table></div>
+<p id="babmsg" style="margin-top:8px"></p>
+</div>
+<div class="merke"><ul><li>Jede Warengruppe bekommt ihren eigenen Zuschlag.</li><li>Den Prozentsatz rundest du auf zwei Nachkommastellen.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 3</h3><span data-secpts="k3"></span></div><div data-task="c1"></div><div data-task="c2"></div><div data-task="c3"></div><div data-task="c4"></div>
+</section>
+
+<section class="panel" id="p-k4" hidden>
+<h2>4 · Den Zuschlag anwenden</h2>
+<p>Mit dem Handlungskostenzuschlag berechnet der Einzelhändler den <b>Selbstkostenpreis</b> eines Artikels. Darauf kommen Gewinnzuschlag und Umsatzsteuer.</p>
+<div class="tbl-wrap"><table class="calc">
+<tr><td>Bezugspreis</td><td class="n">80,00 €</td></tr>
+<tr><td>+ Handlungskosten (30 %)</td><td class="n">24,00 €</td></tr>
+<tr class="eq"><td>= Selbstkostenpreis</td><td class="n">104,00 €</td></tr>
+<tr><td>+ Gewinnzuschlag (10 %)</td><td class="n">10,40 €</td></tr>
+<tr class="eq"><td>= Nettoverkaufspreis</td><td class="n">114,40 €</td></tr>
+<tr><td>+ Umsatzsteuer (19 %)</td><td class="n">21,74 €</td></tr>
+<tr class="eq res"><td>= Bruttoverkaufspreis</td><td class="n">136,14 €</td></tr>
+</table></div>
+<p>Für eine ganze Warengruppe zeigt das <b>Abteilungsergebnis</b>, ob sie ihre Kosten deckt:</p>
+<div class="formula">Selbstkosten der Abteilung = Wareneinsatz + Handlungskosten<br>Abteilungsergebnis (Gewinn/Verlust) = Umsatzerlöse − Selbstkosten<br>Gewinn-/Verlustsatz = Abteilungsergebnis × 100 ÷ Selbstkosten</div>
+<h3>Zeitvergleich und Nachkalkulation</h3>
+<p>Der BAB wird jedes Jahr neu aufgestellt. Beim <b>Zeitvergleich</b> vergleicht man die Kosten einer Abteilung mit dem Vorjahr. Bei der <b>Nachkalkulation</b> prüft man, ob die geplanten Kosten (Soll) mit den tatsächlichen (Ist) übereinstimmen. Weichen sie stark ab, muss der Zuschlagssatz angepasst werden.</p>
+<div class="formula">Abweichung in % = (Berichtsjahr − Vorjahr) × 100 ÷ Vorjahr</div>
+<div class="merke"><ul><li>Ohne den richtigen Zuschlag deckt der Preis die Handlungskosten nicht.</li><li>Ein negatives Abteilungsergebnis ist ein Warnsignal. Ob man die Warengruppe aufgibt, entscheidet man aber erst mit der Deckungsbeitragsrechnung.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 4</h3><span data-secpts="k4"></span></div><div data-task="d1"></div><div data-task="d2"></div><div data-task="d3"></div><div data-task="d4"></div><div data-task="d5"></div><div data-task="d6"></div><div data-task="d7"></div>
+</section>
+
+<section class="panel" id="p-k5" hidden>
+<h2>5 · Komplexaufgabe: Filiale Neustadt, 1. Quartal</h2>
+<div class="bsp"><span class="lbl">Ausgangsdaten</span>
+<div class="tbl-wrap"><table><tr><th>Kostenart</th><th class="n">Betrag €</th><th>Verteilung Damen : Herren : Kinder</th></tr>
+<tr><td>Gehälter</td><td class="n">45.000,00</td><td>4 : 3 : 2</td></tr><tr><td>Miete</td><td class="n">18.000,00</td><td>200 : 150 : 100 m²</td></tr><tr><td>Werbung</td><td class="n">6.000,00</td><td>50 % : 30 % : 20 %</td></tr><tr><td>Energie</td><td class="n">3.000,00</td><td>1 : 1 : 1</td></tr><tr><td>Abschreibungen</td><td class="n">4.500,00</td><td>2 : 2 : 1</td></tr></table></div>
+<div class="tbl-wrap"><table><tr><th>Warenbewegungen €</th><th class="n">Damen</th><th class="n">Herren</th><th class="n">Kinder</th></tr>
+<tr><td>Anfangsbestand</td><td class="n">50.000,00</td><td class="n">30.000,00</td><td class="n">20.000,00</td></tr>
+<tr><td>Wareneinkäufe</td><td class="n">140.200,00</td><td class="n">78.000,00</td><td class="n">45.500,00</td></tr>
+<tr><td>Schlussbestand lt. Inventur</td><td class="n">55.000,00</td><td class="n">28.000,00</td><td class="n">18.000,00</td></tr></table></div></div>
+<div class="tasks-h"><h3>Aufgaben</h3><span data-secpts="k5"></span></div><div data-task="k1"></div><div data-task="k2"></div><div data-task="k3"></div><div data-task="k4"></div><div data-task="k5"></div><div data-task="k5b"></div><div data-task="k6"></div>
+</section>
+<section class="panel" id="p-ergebnis" hidden>
+<h2>Dein Ergebnis</h2>
+<div class="score"><div class="note" id="e-note">–</div><div><div class="big" id="e-pts"></div><div id="e-pct" style="color:var(--muted)"></div><p id="e-msg" style="margin:8px 0 0"></p></div></div>
+<div class="tbl-wrap"><table id="e-tbl"></table></div>
+<p style="font-size:.88rem;color:var(--muted)">Notenschlüssel der IHK: ab 92 % = 1 · ab 81 % = 2 · ab 67 % = 3 · ab 50 % = 4 · ab 30 % = 5 · unter 30 % = 6</p>
+<div id="e-open"></div>
+<div class="actions"><button class="btn ghost" id="resetBtn">Alle Antworten zurücksetzen</button><span id="resetHint" style="font-size:.88rem;color:var(--muted)"></span></div>
+</section>
+<div class="foot">Selbstlernseite · Kosten- und Leistungsrechnung · Kaufleute im Einzelhandel, 3. Lehrjahr · Schuhhandel Meier GmbH (Modellunternehmen)</div>
+</main>
+<script>
+(function(){
+"use strict";
+/* ===== Gemeinsamer Kern: Hilfsfunktionen und Aufgabentypen ===== */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function parseDE(s){
+  if(s==null) return NaN;
+  s=String(s).trim().replace(/[\s€%]/g,'').replace(/−/g,'-');
+  if(!s) return NaN;
+  if(s.includes(',')) s=s.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,'');
+  if(!/^-?\d*\.?\d+$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+const fmtN=(n,d=2)=>isFinite(n)?n.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d}):'–';
+const fmt=n=>fmtN(n,2);
+const eur=n=>fmt(n)+' €';
+const r2=n=>Math.round(n*100)/100;
+const eq=(a,b,tol=0.005)=>isFinite(a)&&isFinite(b)&&Math.abs(a-b)<=tol+1e-9;
+const f1=n=>String(n).replace('.',',');
+function showVal(v,unit,dec){
+  const d=dec==null?2:dec;
+  if(unit==='%') return fmtN(v,d)+' %';
+  if(unit==='€') return fmtN(v,d)+' €';
+  return fmtN(v,d)+(unit?' '+unit:'');
+}
+
+/* Antworten der Lernenden (nach dem Einlesen) – für Folgefehler */
+const ANS={};
+const num=id=>ANS[id]&&isFinite(ANS[id].v)?ANS[id].v:null;
+const cell=(id,k)=>{const a=ANS[id];if(!a||!a.cells)return null;const v=a.cells[k];return isFinite(v)?v:null;};
+const ffDiv=(a,b,m=1)=>(a==null||b==null||b===0)?null:a/b*m;
+const ffSum=(...xs)=>xs.some(x=>x==null)?null:xs.reduce((s,x)=>s+x,0);
+
+function pfx(id){return 'q'+id.replace(/[^A-Za-z0-9]/g,'_');}
+
+function taskBody(id,t){
+  const p=pfx(id);
+  if(t.type==='mc') return `<div class="opts" role="radiogroup">${t.o.map((o,i)=>`<label class="opt"><input type="radio" name="${p}" id="${p}-o${i}" value="${i}"><span>${o}</span></label>`).join('')}</div>`;
+  if(t.type==='num') return `<div class="numrow"><input type="text" id="${p}-in" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span>${t.unit||''}</span></div>`;
+  /* grid */
+  let h=`<div class="gwrap"><table class="gtab"><tr>${t.head.map((c,i)=>`<th${i?' class="n"':''}>${c}</th>`).join('')}</tr>`;
+  t.rows.forEach(r=>{
+    const cls=r.sum?' class="sumrow"':'';
+    h+=`<tr${cls}>`+r.c.map((c,i)=>{
+      if(c==null) return '<td></td>';
+      if(typeof c==='object'){
+        if(c.sel) return `<td><select id="${p}-${c.k}" aria-label="${r.c[0]}"><option value="-1">– wählen –</option>${c.sel.map((o,j)=>`<option value="${j}">${o}</option>`).join('')}</select></td>`;
+        return `<td><input type="text" id="${p}-${c.k}" inputmode="decimal" autocomplete="off" aria-label="${(r.c[0]+' '+(t.head[i]||'')).replace(/<[^>]+>/g,'')}" placeholder="${c.unit||''}"></td>`;
+      }
+      if(typeof c==='number') return `<td class="n">${fmtN(c,t.dec==null?2:t.dec)}</td>`;
+      return `<td${i?' class="n"':''}>${c}</td>`;
+    }).join('')+'</tr>';
+  });
+  return h+'</table></div>';
+}
+function gridCells(t){const out=[];t.rows.forEach(r=>r.c.forEach(c=>{if(c&&typeof c==='object')out.push(c);}));return out;}
+
+function readTask(id,t){
+  const p=pfx(id);
+  if(t.type==='mc'){const s=$(`input[name="${p}"]:checked`);ANS[id]={v:s?+s.value:null};}
+  else if(t.type==='num'){ANS[id]={v:parseDE($(`#${p}-in`).value),raw:$(`#${p}-in`).value};}
+  else{const cells={};gridCells(t).forEach(c=>{const el=$(`#${p}-${c.k}`);cells[c.k]=c.sel?(+el.value>=0?+el.value:NaN):parseDE(el.value);});ANS[id]={cells};}
+}
+function isAnswered(id,t){
+  const p=pfx(id);
+  if(t.type==='mc') return !!$(`input[name="${p}"]:checked`);
+  if(t.type==='num') return $(`#${p}-in`).value.trim()!=='';
+  return gridCells(t).some(c=>{const el=$(`#${p}-${c.k}`);return c.sel?+el.value>=0:el.value.trim()!=='';});
+}
+function emptyMsg(id,t){
+  const p=pfx(id);
+  if(t.type==='mc') return $(`input[name="${p}"]:checked`)?'':'Bitte wähle eine Antwort aus.';
+  if(t.type==='num') return isFinite(parseDE($(`#${p}-in`).value))?'':'Bitte gib eine Zahl ein, z. B. 1.250,00.';
+  return isAnswered(id,t)?'':'Bitte fülle die Tabelle aus.';
+}
+
+/* Bewerten: markiert Felder, liefert {got, ff, empty} */
+function gradeTask(id,t){
+  const p=pfx(id),A=ANS[id];let got=0,ff=false,empty=false;
+  if(t.type==='mc'){
+    empty=A.v==null;
+    $$(`input[name="${p}"]`).forEach((inp,i)=>{const o=inp.closest('.opt');if(i===t.a)o.classList.add('right');else if(i===A.v)o.classList.add('wrong');});
+    got=A.v===t.a?t.pts:0;
+  }else if(t.type==='num'){
+    const inp=$(`#${p}-in`);empty=!String(A.raw||'').trim();const tol=t.tol==null?0.005:t.tol;
+    if(eq(A.v,t.a,tol)) got=t.pts;
+    else if(t.ff){let f=null;try{f=t.ff();}catch(e){}if(f!=null&&isFinite(f)&&!eq(f,t.a,tol)&&eq(A.v,f,tol)){got=t.pts;ff=true;}}
+    if(!empty) inp.classList.add(got?'right':'wrong');
+  }else{
+    const cs=gridCells(t);let ok=0,any=false;
+    cs.forEach(c=>{
+      const el=$(`#${p}-${c.k}`),v=A.cells[c.k],tol=c.tol==null?(t.tol==null?0.005:t.tol):c.tol;
+      if(isFinite(v)) any=true;
+      let good=c.sel?v===c.a:eq(v,c.a,tol);
+      if(!good&&!c.sel&&c.ff){let f=null;try{f=c.ff();}catch(e){}if(f!=null&&isFinite(f)&&!eq(f,c.a,tol)&&eq(v,f,tol)){good=true;ff=true;}}
+      if(isFinite(v)) el.classList.add(good?'right':'wrong');
+      if(good) ok++;
+    });
+    empty=!any;
+    got=Math.round(ok/cs.length*t.pts*2)/2;
+  }
+  return {got,ff,empty};
+}
+function solutionHTML(t){
+  if(t.type==='num') return `<p><b>Musterlösung:</b> ${showVal(t.a,t.unit,t.dec)}</p>`;
+  if(t.type==='mc') return '';
+  let h=`<p><b>Musterlösung:</b></p><div class="gwrap"><table class="gtab solt"><tr>${t.head.map((c,i)=>`<th${i?' class="n"':''}>${c}</th>`).join('')}</tr>`;
+  t.rows.forEach(r=>{h+=`<tr${r.sum?' class="sumrow"':''}>`+r.c.map((c,i)=>{
+    if(c==null) return '<td></td>';
+    if(typeof c==='object') return `<td class="n right-c">${c.sel?c.sel[c.a]:showVal(c.a,c.unit==='€'?'':c.unit,c.dec==null?(t.dec==null?2:t.dec):c.dec)}</td>`;
+    if(typeof c==='number') return `<td class="n">${fmtN(c,t.dec==null?2:t.dec)}</td>`;
+    return `<td${i?' class="n"':''}>${c}</td>`;}).join('')+'</tr>';});
+  return h+'</table></div>';
+}
+function noteOf(p){return p>=92?1:p>=81?2:p>=67?3:p>=50?4:p>=30?5:6;}
+const NOTE_TXT={1:'sehr gut',2:'gut',3:'befriedigend',4:'ausreichend',5:'mangelhaft',6:'ungenügend'};
+
+const TABS=["start","k1","k2","k3","k4","k5","ergebnis"];
+const SECS={"k1":"1 · Handlungskosten","k2":"2 · BAB aufstellen","k3":"3 · Zuschlagssätze","k4":"4 · Anwendung","k5":"5 · Komplexaufgabe"};
+const T={"a1":{"sec":"k1","no":"1.1","pts":1,"type":"mc","q":"Was versteht man im Einzelhandel unter <b>Handlungskosten</b>?","o":["Den Bezugspreis der eingekauften Waren","Alle Kosten, die im Handelsbetrieb für Einkauf, Lagerung, Verkauf und Verwaltung der Waren entstehen – ohne den Bezugspreis der Waren","Nur die Personalkosten des Verkaufspersonals","Alle Aufwendungen laut GuV-Konto einschließlich der neutralen Aufwendungen"],"a":1,"ex":"Handlungskosten sind z. B. Personal-, Raum-, Energie-, Werbe- und Verwaltungskosten sowie Abschreibungen. Der Bezugspreis der Ware gehört nicht dazu, er ist die Bezugsgröße."},"a2":{"sec":"k1","no":"1.2","pts":1,"type":"mc","q":"Welche Kosten gehören <b>nicht</b> zu den Handlungskosten?","o":["Miete für das Ladenlokal","Gehalt der Filialleiterin","Bezugspreis der verkauften Sneaker","Kosten für Prospektwerbung"],"a":2,"ex":"Der Bezugspreis (Wareneinsatz) ist kein Handlungskostenbestandteil. Auf ihn wird der Handlungskostenzuschlag gerechnet."},"a3":{"sec":"k1","no":"1.3","pts":1,"type":"mc","q":"Wozu dient der Betriebsabrechnungsbogen (BAB) im Einzelhandel?","o":["Er ersetzt die Inventur.","Er verteilt die Handlungskosten verursachungsgerecht auf die Warengruppen (Kostenstellen) und ermittelt je Warengruppe einen Handlungskostenzuschlag.","Er berechnet die Umsatzsteuer-Zahllast.","Er listet alle Lieferanten mit ihren Konditionen auf."],"a":1,"ex":"Im BAB werden die Handlungskosten mit Verteilungsschlüsseln auf die Warengruppen verteilt. Je Warengruppe wird dann der Zuschlagssatz auf den Wareneinsatz berechnet."},"a4":{"sec":"k1","no":"1.4","pts":1,"type":"mc","q":"Welcher Verteilungsschlüssel ist für die <b>Ladenmiete</b> am besten geeignet?","o":["Anzahl der Mitarbeiter","Verkaufsfläche in m²","Anzahl der Lieferanten","Gleichmäßig auf alle Warengruppen"],"a":1,"ex":"Die Miete wird für Fläche bezahlt. Wer mehr Fläche belegt, verursacht mehr Mietkosten."},"a5":{"sec":"k1","no":"1.5","pts":1,"type":"mc","q":"Welcher Verteilungsschlüssel passt am besten für die <b>Gehälter des Verkaufspersonals</b>?","o":["Anzahl der Mitarbeiter bzw. Gehaltsliste je Abteilung","Anzahl der Steckdosen","Wareneinsatz","Anzahl der Schaufenster"],"a":0,"ex":"Gehälter lassen sich über die Gehaltsliste oder die Zahl der Beschäftigten einer Abteilung zuordnen."},"a6":{"sec":"k1","no":"1.6","pts":1,"type":"mc","q":"Welche Kosten sind im Einzelhandel <b>Einzelkosten</b>, lassen sich also einer Warengruppe direkt zurechnen?","o":["Miete für den Verkaufsraum","Gewerbesteuer","Aufwendungen für Waren und die Provision für einen bestimmten Auftrag","Gehälter der Verwaltung"],"a":2,"ex":"Einzelkosten (z. B. Aufwendungen für Waren, Provision, Zustellkosten für eine Kundenlieferung) werden direkt zugerechnet. Gemeinkosten (Miete, Gehälter, Steuern, Abschreibungen) entstehen für mehrere Warengruppen und werden im BAB verteilt."},"b1":{"sec":"k2","no":"2.1","pts":1,"type":"num","unit":"€","q":"Die Miete von 7.200,00 € wird nach der Verkaufsfläche verteilt: Damen 300 m², Herren 200 m², Kinder 100 m². Wie viel Miete trägt die Abteilung <b>Herrenschuhe</b>?","a":2400,"ex":"7.200 € ÷ 600 m² = 12 € je m². Herren: 200 m² × 12 € = 2.400 €."},"b2":{"sec":"k2","no":"2.2","pts":1,"type":"num","unit":"€","q":"Energiekosten von 4.500,00 € werden im Verhältnis 3 : 1 : 1 verteilt (Damen : Herren : Kinder). Anteil der Abteilung <b>Damenschuhe</b>?","a":2700,"ex":"3 + 1 + 1 = 5 Anteile. 4.500 € ÷ 5 = 900 € je Anteil. Damen: 3 × 900 € = 2.700 €."},"b3":{"sec":"k2","no":"2.3","pts":1,"type":"num","unit":"€","q":"Werbekosten von 9.000,00 € werden nach dem Umsatz verteilt: Damen 400.000 €, Herren 200.000 €, Kinder 150.000 €. Anteil der Abteilung <b>Kinderschuhe</b>?","a":1800,"ex":"Gesamtumsatz 750.000 €. Kinder: 9.000 € × 150.000 ÷ 750.000 = 1.800 €."},"b4":{"sec":"k2","no":"2.4","pts":5,"type":"grid","head":["Kostenart","Gesamt €","Schlüssel","Damen","Herren","Kinder"],"rows":[{"c":["Personalkosten",24000,"3 : 2 : 1",{"k":"r1D","a":12000},{"k":"r1H","a":8000},{"k":"r1K","a":4000}]},{"c":["Miete",6000,"250 : 150 : 100 m²",{"k":"r2D","a":3000},{"k":"r2H","a":1800},{"k":"r2K","a":1200}]},{"c":["Energie",1800,"2 : 1 : 1",{"k":"r3D","a":900},{"k":"r3H","a":450},{"k":"r3K","a":450}]},{"c":["Sonstige Kosten",2400,"1 : 1 : 1",{"k":"r4D","a":800},{"k":"r4H","a":800},{"k":"r4K","a":800}]},{"c":["Summe Handlungskosten",34200,"",{"k":"sD","a":16700,"ff":()=>ffSum(cell('b4','r1D'),cell('b4','r2D'),cell('b4','r3D'),cell('b4','r4D'))},{"k":"sH","a":11050,"ff":()=>ffSum(cell('b4','r1H'),cell('b4','r2H'),cell('b4','r3H'),cell('b4','r4H'))},{"k":"sK","a":6450,"ff":()=>ffSum(cell('b4','r1K'),cell('b4','r2K'),cell('b4','r3K'),cell('b4','r4K'))}],"sum":true}],"q":"Vervollständige den BAB der Schuhhandel Meier GmbH für den Monat März. Verteile die Kosten nach den angegebenen Schlüsseln und bilde die Summen.","ex":"Je Kostenart: Betrag ÷ Summe der Schlüsselteile × Anteil der Abteilung. Beispiel Personal: 24.000 ÷ 6 = 4.000; Damen 3 × 4.000 = 12.000 €. Die Summen ergeben die Handlungskosten je Warengruppe."},"b5":{"sec":"k2","no":"2.5","pts":1,"type":"mc","q":"Viele Einzelhändler führen eine <b>allgemeine Kostenstelle Verwaltung</b> (Hilfskostenstelle). Wie wird sie im BAB behandelt?","o":["Ihre Kosten bleiben dort stehen und werden nie verteilt.","Ihre Kosten werden gesammelt und anschließend nach einem Schlüssel auf die Warengruppen (Hauptkostenstellen) umgelegt.","Ihre Kosten werden vom Umsatz abgezogen.","Ihre Kosten werden als neutraler Aufwand behandelt."],"a":1,"ex":"Die Verwaltung arbeitet für alle Warengruppen. Ihre Kosten werden deshalb umgelegt, bevor die Zuschlagssätze berechnet werden."},"c1":{"sec":"k3","no":"3.1","pts":1,"type":"mc","q":"Was ist der <b>Wareneinsatz</b>?","o":["Der Wert der eingekauften Waren zu Bezugspreisen","Der Wert der verkauften Waren zu Bezugspreisen","Der Wert der verkauften Waren zu Verkaufspreisen","Der Inventurbestand am Jahresende"],"a":1,"ex":"Wareneinsatz = Anfangsbestand + Einkäufe − Schlussbestand. Er zeigt, was die verkaufte Ware im Einkauf gekostet hat."},"c2":{"sec":"k3","no":"3.2","pts":3,"type":"grid","head":["","Damenschuhe","Herrenschuhe","Kinderschuhe"],"rows":[{"c":["Anfangsbestand",34000,22000,12000]},{"c":["+ Wareneinkäufe",62800,39500,20500]},{"c":["− Schlussbestand",30000,19000,11000]},{"c":["= Wareneinsatz",{"k":"D","a":66800},{"k":"H","a":42500},{"k":"K","a":21500}],"sum":true}],"q":"Berechne den Wareneinsatz der drei Warengruppen im März.","ex":"Wareneinsatz = Anfangsbestand + Wareneinkäufe − Schlussbestand."},"c3":{"sec":"k3","no":"3.3","pts":3,"type":"grid","head":["","Damenschuhe","Herrenschuhe","Kinderschuhe"],"rows":[{"c":["Handlungskostenzuschlagssatz in %",{"k":"D","a":25,"ff":()=>{const h=cell('b4','sD'),w=cell('c2','D');return (h==null||!w)?null:Math.round(h/w*10000)/100;},"unit":"%","tol":0.01},{"k":"H","a":26,"ff":()=>{const h=cell('b4','sH'),w=cell('c2','H');return (h==null||!w)?null:Math.round(h/w*10000)/100;},"unit":"%","tol":0.01},{"k":"K","a":30,"ff":()=>{const h=cell('b4','sK'),w=cell('c2','K');return (h==null||!w)?null:Math.round(h/w*10000)/100;},"unit":"%","tol":0.01}]}],"q":"Berechne die Handlungskostenzuschlagssätze (zwei Nachkommastellen). Verwende deine Handlungskosten aus Aufgabe 2.4 und deinen Wareneinsatz aus Aufgabe 3.2.","ex":"HKZ = Handlungskosten × 100 ÷ Wareneinsatz. Damen: 16.700,00 × 100 ÷ 66.800,00 = 25,00 %. Herren: 26,00 %. Kinder: 30,00 %."},"c4":{"sec":"k3","no":"3.4","pts":1,"type":"mc","q":"Warum hat jede Warengruppe einen eigenen Handlungskostenzuschlag?","o":["Weil das Finanzamt das vorschreibt.","Weil die Warengruppen im Verhältnis zu ihrem Wareneinsatz unterschiedlich hohe Handlungskosten verursachen (z. B. mehr Beratung bei Kinderschuhen).","Weil die Umsatzsteuersätze unterschiedlich sind.","Weil die Lieferanten unterschiedliche Rabatte geben."],"a":1,"ex":"Ein einheitlicher Zuschlag würde Kosten falsch zurechnen: beratungsintensive Ware würde zu billig, andere zu teuer kalkuliert."},"d1":{"sec":"k4","no":"4.1","pts":1,"type":"num","unit":"€","q":"Ein Paar Kinderschuhe hat einen Bezugspreis von 40,00 €. Der Handlungskostenzuschlag beträgt 30 %. Berechne den <b>Selbstkostenpreis</b>.","a":52,"ex":"Selbstkostenpreis = Bezugspreis + Handlungskosten = 40,00 + 30 % von 40,00 = 40,00 + 12,00 = 52,00 €."},"d2":{"sec":"k4","no":"4.2","pts":1,"type":"num","unit":"€","q":"Damenstiefel: Bezugspreis 86,00 €, Handlungskostenzuschlag 25 %. Selbstkostenpreis?","a":107.5,"ex":"86,00 × 1,25 = 107,50 €."},"d3":{"sec":"k4","no":"4.3","pts":1,"type":"num","unit":"€","q":"Abteilung Herrenschuhe im März: Umsatzerlöse 61.300,00 €, Wareneinsatz 42.500,00 €, Handlungskosten 11.050,00 €. Berechne das <b>Abteilungsergebnis</b>.","a":7750,"ex":"Abteilungsergebnis = Umsatzerlöse − Wareneinsatz − Handlungskosten = 61.300 − 42.500 − 11.050 = 7.750 €."},"d4":{"sec":"k4","no":"4.4","pts":1,"type":"mc","q":"Die Kinderschuhe haben mit 30 % den höchsten Handlungskostenzuschlag. Was folgt daraus für die Kalkulation?","o":["Kinderschuhe müssen mit dem höheren Zuschlag kalkuliert werden, sonst decken ihre Preise die Handlungskosten nicht.","Kinderschuhe sollten sofort aus dem Sortiment genommen werden.","Der Zuschlag spielt für die Preise keine Rolle.","Man sollte für alle Warengruppen 30 % nehmen."],"a":0,"ex":"Der Zuschlag gibt an, welcher Anteil auf den Bezugspreis für die Handlungskosten aufgeschlagen werden muss. Über eine Sortimentsbereinigung entscheidet man erst mit der Deckungsbeitragsrechnung."},"d5":{"sec":"k4","no":"4.5","pts":1,"type":"mc","q":"Was passiert, wenn Meier für alle Warengruppen einen <b>einheitlichen</b> Zuschlag von 27 % verwendet (Damen eigentlich 25 %, Kinder 30 %)?","o":["Nichts, das Ergebnis ist gleich.","Damenschuhe werden zu teuer, Kinderschuhe zu billig kalkuliert.","Damenschuhe werden zu billig, Kinderschuhe zu teuer kalkuliert.","Alle Preise werden zu niedrig."],"a":1,"ex":"Damen bekämen 2 Prozentpunkte zu viel, Kinder 3 Prozentpunkte zu wenig Zuschlag."},"d6":{"sec":"k4","no":"4.6","pts":3,"type":"grid","head":["Kostenart","Vorjahr €","Berichtsjahr €","Abweichung in %"],"rows":[{"c":["Personalkosten",36000,39600,{"k":"z0","a":10,"unit":"%","tol":0.01}]},{"c":["Miete",12000,12600,{"k":"z1","a":5,"unit":"%","tol":0.01}]},{"c":["Energie",3000,2850,{"k":"z2","a":-5,"unit":"%","tol":0.01}]},{"c":["Summe",51000,55050,{"k":"zs","a":7.94,"unit":"%","tol":0.01}],"sum":true}],"q":"Zeitvergleich: Vergleiche die Handlungskosten der Abteilung Kinderschuhe mit dem Vorjahr. Berechne die Abweichungen in % vom Vorjahr (zwei Nachkommastellen, Minuszeichen bei Rückgang).","ex":"Abweichung in % = (Berichtsjahr − Vorjahr) × 100 ÷ Vorjahr. Personal +10,00 %, Miete +5,00 %, Energie −5,00 %, Summe 7,94 %."},"d7":{"sec":"k4","no":"4.7","pts":1,"type":"mc","q":"Was zeigt der Zeitvergleich der Abteilung Kinderschuhe?","o":["Die Kosten sind überall gesunken.","Die Personalkosten sind am stärksten gestiegen. Meier sollte die Ursachen prüfen (z. B. Tariferhöhung, Neueinstellung, mehr Stunden) und den Zuschlagssatz anpassen.","Die Energiekosten sind das größte Problem.","Ein Zeitvergleich ist im Einzelhandel nicht üblich."],"a":1,"ex":"Beim Zeitvergleich werden die Kosten zweier Perioden verglichen. Größere Abweichungen müssen analysiert werden."},"k1":{"sec":"k5","no":"5.1","pts":6,"type":"grid","head":["Kostenart","Gesamt €","Schlüssel","Damen","Herren","Kinder"],"rows":[{"c":["Gehälter",45000,"4 : 3 : 2",{"k":"r1D","a":20000},{"k":"r1H","a":15000},{"k":"r1K","a":10000}]},{"c":["Miete",18000,"200 : 150 : 100 m²",{"k":"r2D","a":8000},{"k":"r2H","a":6000},{"k":"r2K","a":4000}]},{"c":["Werbung",6000,"50 % : 30 % : 20 %",{"k":"r3D","a":3000},{"k":"r3H","a":1800},{"k":"r3K","a":1200}]},{"c":["Energie",3000,"1 : 1 : 1",{"k":"r4D","a":1000},{"k":"r4H","a":1000},{"k":"r4K","a":1000}]},{"c":["Abschreibungen",4500,"2 : 2 : 1",{"k":"r5D","a":1800},{"k":"r5H","a":1800},{"k":"r5K","a":900}]},{"c":["Summe Handlungskosten",76500,"",{"k":"sD","a":33800,"ff":()=>ffSum(cell('k1','r1D'),cell('k1','r2D'),cell('k1','r3D'),cell('k1','r4D'),cell('k1','r5D'))},{"k":"sH","a":25600,"ff":()=>ffSum(cell('k1','r1H'),cell('k1','r2H'),cell('k1','r3H'),cell('k1','r4H'),cell('k1','r5H'))},{"k":"sK","a":17100,"ff":()=>ffSum(cell('k1','r1K'),cell('k1','r2K'),cell('k1','r3K'),cell('k1','r4K'),cell('k1','r5K'))}],"sum":true}],"q":"Erstelle den BAB für das 1. Quartal: Verteile die Handlungskosten und bilde die Summen je Warengruppe.","ex":"Jede Kostenart nach ihrem Schlüssel verteilen, dann spaltenweise addieren."},"k2":{"sec":"k5","no":"5.2","pts":3,"type":"grid","head":["","Damenschuhe","Herrenschuhe","Kinderschuhe"],"rows":[{"c":["Anfangsbestand",50000,30000,20000]},{"c":["+ Wareneinkäufe",140200,78000,45500]},{"c":["− Schlussbestand",55000,28000,18000]},{"c":["= Wareneinsatz",{"k":"D","a":135200},{"k":"H","a":80000},{"k":"K","a":47500}],"sum":true}],"q":"Berechne den Wareneinsatz je Warengruppe.","ex":"Wareneinsatz = Anfangsbestand + Wareneinkäufe − Schlussbestand."},"k3":{"sec":"k5","no":"5.3","pts":3,"type":"grid","head":["","Damenschuhe","Herrenschuhe","Kinderschuhe"],"rows":[{"c":["Handlungskostenzuschlagssatz in %",{"k":"D","a":25,"ff":()=>{const h=cell('k1','sD'),w=cell('k2','D');return (h==null||!w)?null:Math.round(h/w*10000)/100;},"unit":"%","tol":0.01},{"k":"H","a":32,"ff":()=>{const h=cell('k1','sH'),w=cell('k2','H');return (h==null||!w)?null:Math.round(h/w*10000)/100;},"unit":"%","tol":0.01},{"k":"K","a":36,"ff":()=>{const h=cell('k1','sK'),w=cell('k2','K');return (h==null||!w)?null:Math.round(h/w*10000)/100;},"unit":"%","tol":0.01}]}],"q":"Berechne die Handlungskostenzuschlagssätze (zwei Nachkommastellen).","ex":"Damen 33.800,00 × 100 ÷ 135.200,00 = 25,00 %; Herren 32,00 %; Kinder 36,00 %."},"k4":{"sec":"k5","no":"5.4","pts":1,"type":"num","unit":"€","q":"Ein Herren-Sneaker hat einen Bezugspreis von 75,00 €. Berechne mit dem Zuschlag der Herrenschuhe den Selbstkostenpreis.","a":99,"ff":()=>{const z=cell('k3','H');return z==null?null:Math.round(75*(1+z/100)*100)/100;},"ex":"75,00 × (1 + 32,00 %) = 99,00 €."},"k5":{"sec":"k5","no":"5.5","pts":1,"type":"num","unit":"€","q":"Die Abteilung Kinderschuhe erzielte im Quartal Umsatzerlöse von 62.000,00 €. Berechne das Abteilungsergebnis (Verlust mit Minuszeichen).","a":-2600,"ff":()=>{const w=cell('k2','K'),h=cell('k1','sK');return (w==null||h==null)?null:62000-w-h;},"ex":"62.000,00 − Wareneinsatz 47.500,00 − Handlungskosten 17.100,00 = -2.600,00 €."},"k5b":{"sec":"k5","no":"5.6","pts":1,"type":"num","unit":"%","tol":0.01,"a":-4.02,"ff":()=>{const w=cell('k2','K'),h=cell('k1','sK'),e=num('k5');if(w==null||h==null)return null;const sk=w+h;return Math.round(((e!=null?e:62000-sk))/sk*10000)/100;},"q":"Berechne den <b>Verlustsatz</b> der Kinderschuhe in % der Selbstkosten (Selbstkosten = Wareneinsatz + Handlungskosten; Minuszeichen, zwei Nachkommastellen).","ex":"Selbstkosten = 47.500,00 + 17.100,00 = 64.600,00 €. Verlustsatz = -2.600,00 × 100 ÷ 64.600,00 = -4,02 %."},"k6":{"sec":"k5","no":"5.7","pts":1,"type":"mc","q":"Wie ist das Ergebnis der Kinderschuhe zu deuten?","o":["Die Verkaufspreise der Kinderschuhe decken Wareneinsatz und Handlungskosten nicht. Meier sollte die Preise mit dem richtigen Zuschlag kalkulieren oder Kosten senken. Ob die Warengruppe bleibt, klärt die Deckungsbeitragsrechnung.","Die Kinderschuhe müssen sofort aus dem Sortiment.","Das Ergebnis ist ohne Bedeutung, weil der Gesamtbetrieb Gewinn macht.","Der Verlust entsteht durch die Umsatzsteuer."],"a":0,"ex":"Ein Verlust nach Vollkosten heißt nicht automatisch „aufgeben“: Fixe Kosten wie Miete fallen weiter an. Das prüft man mit dem Deckungsbeitrag."}};
+
+(function(){
+  const rows=[['Personalkosten',180000,'5:3:2'],['Miete',60000,'250:150:100'],['Energie',12000,'2:1:1'],['Werbung',24000,'50:25:25'],['Abschreibungen',20000,'2:1:1'],['Sonstige Kosten',15000,'1:1:1']];
+  const we=[510000,364000,335000];
+  const tb=$('#babsim');
+  let h='<tr><th>Kostenart</th><th>Betrag €</th><th>Schlüssel</th><th class="n">Damen</th><th class="n">Herren</th><th class="n">Kinder</th></tr>';
+  rows.forEach((r,i)=>{h+=`<tr><td>${r[0]}</td><td><input type="text" id="bs-a${i}" value="${fmt(r[1])}" inputmode="decimal" aria-label="${r[0]} Betrag"></td><td><input type="text" id="bs-k${i}" value="${r[2]}" style="text-align:left" aria-label="${r[0]} Schlüssel"></td><td class="out" id="bs-o${i}0"></td><td class="out" id="bs-o${i}1"></td><td class="out" id="bs-o${i}2"></td></tr>`;});
+  h+='<tr class="sum"><td>Summe Handlungskosten</td><td class="out" id="bs-tot"></td><td></td><td class="out" id="bs-s0"></td><td class="out" id="bs-s1"></td><td class="out" id="bs-s2"></td></tr>';
+  h+='<tr><td>Wareneinsatz</td><td></td><td></td>'+we.map((w,j)=>`<td><input type="text" id="bs-w${j}" value="${fmt(w)}" inputmode="decimal" aria-label="Wareneinsatz ${j+1}"></td>`).join('')+'</tr>';
+  h+='<tr class="sum"><td>Handlungskostenzuschlagssatz</td><td></td><td></td><td class="out" id="bs-z0"></td><td class="out" id="bs-z1"></td><td class="out" id="bs-z2"></td></tr>';
+  tb.innerHTML=h;
+  function calc(){
+    const s=[0,0,0];let tot=0,err='';
+    rows.forEach((r,i)=>{const a=parseDE($('#bs-a'+i).value),ks=$('#bs-k'+i).value.split(':').map(parseDE);
+      const ok=isFinite(a)&&ks.length===3&&ks.every(k=>isFinite(k)&&k>=0)&&ks.reduce((x,y)=>x+y,0)>0;
+      if(!ok){err=`Bitte prüfe Betrag und Schlüssel bei „${r[0]}“ (drei Zahlen mit Doppelpunkt).`;[0,1,2].forEach(j=>$(`#bs-o${i}${j}`).textContent='–');return;}
+      const sum=ks.reduce((x,y)=>x+y,0);tot+=a;
+      ks.forEach((k,j)=>{const v=a*k/sum;s[j]+=v;$(`#bs-o${i}${j}`).textContent=fmt(v);});});
+    $('#bs-tot').textContent=fmt(tot);
+    s.forEach((v,j)=>{$('#bs-s'+j).textContent=fmt(v);const w=parseDE($('#bs-w'+j).value);$('#bs-z'+j).textContent=isFinite(w)&&w>0?fmt(v/w*100)+' %':'–';});
+    $('#babmsg').innerHTML=err?`<span class="err">${err}</span>`:'Probe: Die drei Summen ergeben zusammen <b>'+eur(s[0]+s[1]+s[2])+'</b> und damit genau die Gesamtkosten.';
+  }
+  tb.addEventListener('input',calc);calc();
+})();
+
+/* ===== Übungsmodus: Reiter, Prüfen mit Sicherheitsabfrage, Fortschritt, Ergebnis ===== */
+const RES={};
+function show(tab){
+  if(!TABS.includes(tab)) tab=TABS[0];
+  $$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab?'true':'false'));
+  TABS.forEach(x=>$('#p-'+x).hidden=x!==tab);
+  if(tab==='ergebnis') renderResult();
+  try{history.replaceState(null,'','#'+tab);}catch(e){}
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);window.scrollTo({top:$('.masthead').offsetHeight,behavior:'smooth'});}));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.go);window.scrollTo({top:$('.masthead').offsetHeight});}));
+
+function renderTask(el){
+  const id=el.dataset.task,t=T[id];
+  el.className='task';
+  el.innerHTML=`<div class="th"><span class="no">Aufgabe ${t.no}</span><span>${t.pts} ${t.pts===1?'Punkt':'Punkte'}</span></div>
+  <div class="q">${t.q}</div>${taskBody(id,t)}
+  ${t.tip?`<details class="tip"><summary>Tipp anzeigen</summary>${t.tip}</details>`:''}
+  <div class="actions"><button class="btn" data-check="${id}">Prüfen</button></div>
+  <div class="confirm" hidden><p>Antwort wirklich prüfen lassen? Danach kannst du bei dieser Aufgabe nichts mehr ändern.</p><div class="actions" style="margin-top:8px"><button class="btn" data-confirm="${id}">Ja, prüfen</button><button class="btn ghost" data-cancel="${id}">Abbrechen, weiter bearbeiten</button></div></div>
+  <div class="fb" hidden></div>`;
+}
+const taskEl=id=>$(`[data-task="${id}"]`);
+function flash(fb,txt){fb.className='fb part';fb.hidden=false;fb.innerHTML=`<span class="v">${txt}</span>`;}
+function ask(id){const el=taskEl(id),fb=$('.fb',el),m=emptyMsg(id,T[id]);if(m){flash(fb,m);return;}
+  fb.hidden=true;$('[data-check]',el).hidden=true;const c=$('.confirm',el);c.hidden=false;$('[data-confirm]',c).focus();}
+function cancelAsk(id){const el=taskEl(id);$('.confirm',el).hidden=true;const b=$('[data-check]',el);b.hidden=false;b.focus();}
+function check(id){
+  const t=T[id],el=taskEl(id),fb=$('.fb',el);
+  readTask(id,t);const r=gradeTask(id,t);
+  RES[id]={got:r.got,max:t.pts};
+  const v=r.got===t.pts?'ok':r.got>0?'part':'bad';
+  el.classList.add('s-'+v);
+  const head={ok:r.ff?'Richtig – Folgefehler berücksichtigt.':'Richtig!',part:`Teilweise richtig (${f1(r.got)} von ${t.pts} P).`,bad:'Leider falsch.'}[v];
+  let msg='';
+  if(v!=='ok'||r.ff){msg=(r.ff?'<p>Du hast mit deinem eigenen Zwischenergebnis richtig weitergerechnet.</p>':'')+solutionHTML(t)+`<p>${t.ex}</p>`;}
+  else if(t.exOk) msg=`<p>${t.exOk}</p>`;
+  fb.className='fb '+v;fb.hidden=false;fb.innerHTML=`<span class="v">${head}</span>${msg}`;
+  $$('input,select',el).forEach(x=>x.disabled=true);
+  const b=$('[data-check]',el);b.disabled=true;b.textContent='Geprüft';
+  update();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-check]');if(b&&!b.disabled){ask(b.dataset.check);return;}
+  const y=e.target.closest('[data-confirm]');if(y){const id=y.dataset.confirm,el=taskEl(id);$('.confirm',el).hidden=true;$('[data-check]',el).hidden=false;check(id);return;}
+  const n=e.target.closest('[data-cancel]');if(n)cancelAsk(n.dataset.cancel);});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.task input[type=text]')){e.preventDefault();const b=$('[data-check]',e.target.closest('.task'));if(b&&!b.disabled&&!b.hidden)ask(b.dataset.check);}});
+
+const secIds=s=>Object.keys(T).filter(k=>T[k].sec===s);
+const secMax=s=>secIds(s).reduce((a,k)=>a+T[k].pts,0);
+const secGot=s=>secIds(s).filter(k=>RES[k]).reduce((a,k)=>a+RES[k].got,0);
+const TOTAL=Object.values(T).reduce((a,t)=>a+t.pts,0);
+function update(){
+  const got=Object.values(RES).reduce((a,r)=>a+r.got,0),done=Object.values(RES).reduce((a,r)=>a+r.max,0);
+  $('#barFill').style.width=(done/TOTAL*100)+'%';
+  $('#barTxt').textContent=`${f1(got)} / ${f1(done)} P · ${Object.keys(RES).length}/${Object.keys(T).length} Aufgaben`;
+  Object.keys(SECS).forEach(s=>{const b=$(`[data-badge="${s}"]`),ids=secIds(s),d=ids.filter(k=>RES[k]).length;
+    if(b){b.textContent=`${d}/${ids.length}`;b.classList.toggle('full',d===ids.length);}
+    const sp=$(`[data-secpts="${s}"]`);if(sp)sp.textContent=`${f1(secGot(s))} von ${secMax(s)} Punkten`;});
+  if(typeof onUpdate==='function') onUpdate();
+}
+function renderResult(){
+  const got=Object.values(RES).reduce((a,r)=>a+r.got,0),cnt=Object.keys(RES).length,all=Object.keys(T).length,p=got/TOTAL*100,g=noteOf(p);
+  $('#e-note').textContent=cnt?g:'–';
+  $('#e-pts').textContent=`${f1(got)} von ${TOTAL} Punkten`;
+  $('#e-pct').textContent=cnt?`${p.toLocaleString('de-DE',{maximumFractionDigits:1})} % · Note ${g} (${NOTE_TXT[g]})`:'Noch keine Aufgabe geprüft.';
+  $('#e-msg').textContent=!cnt?'Starte mit Kapitel 1.':cnt<all?`Du hast ${cnt} von ${all} Aufgaben bearbeitet. Die Note bezieht sich auf alle ${TOTAL} Punkte.`:
+    g<=2?'Stark! Du beherrschst das Thema sicher.':g<=4?'Solide Basis. Schau dir die Erklärungen zu deinen Fehlern noch einmal an.':'Arbeite die Kapitel noch einmal durch und nutze die Rechner zum Üben.';
+  let h='<tr><th>Kapitel</th><th class="n">Aufgaben</th><th class="n">Punkte</th><th class="n">Anteil</th></tr>';
+  Object.keys(SECS).forEach(s=>{const ids=secIds(s),d=ids.filter(k=>RES[k]).length,m=secMax(s),gg=secGot(s);
+    h+=`<tr><td>${SECS[s]}</td><td class="n">${d}/${ids.length}</td><td class="n">${f1(gg)} / ${m}</td><td class="n">${Math.round(gg/m*100)} %</td></tr>`;});
+  h+=`<tr class="sum"><td>Gesamt</td><td class="n">${cnt}/${all}</td><td class="n">${f1(got)} / ${TOTAL}</td><td class="n">${Math.round(p)} %</td></tr>`;
+  $('#e-tbl').innerHTML=h;
+  const wrong=Object.keys(RES).filter(k=>RES[k].got<RES[k].max);
+  $('#e-open').innerHTML=wrong.length?`<h3>Noch einmal ansehen</h3><p>${wrong.map(k=>`<button class="chip" data-jump="${k}">Aufgabe ${T[k].no}</button>`).join(' ')}</p>`:'';
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const id=b.dataset.jump;show(T[id].sec);setTimeout(()=>taskEl(id).scrollIntoView({behavior:'smooth',block:'center'}),30);});
+let armedReset=false;
+$('#resetBtn').addEventListener('click',()=>{
+  if(!armedReset){armedReset=true;$('#resetBtn').textContent='Wirklich alles löschen?';$('#resetHint').textContent='Zum Bestätigen noch einmal tippen.';setTimeout(()=>{armedReset=false;$('#resetBtn').textContent='Alle Antworten zurücksetzen';$('#resetHint').textContent='';},4000);return;}
+  armedReset=false;Object.keys(RES).forEach(k=>delete RES[k]);Object.keys(ANS).forEach(k=>delete ANS[k]);
+  $$('[data-task]').forEach(renderTask);$('#resetBtn').textContent='Alle Antworten zurücksetzen';$('#resetHint').textContent='Alle Antworten wurden gelöscht.';update();renderResult();
+});
+$$('[data-task]').forEach(renderTask);update();
+show((location.hash||'').slice(1)||TABS[0]);
+
+})();
+</script>
+</body>
+</html>

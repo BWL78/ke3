@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deckungsbeitragsrechnung</title>
+<style>
+:root{
+  --paper:#f2ead8; --paper-2:#fbf7ec; --paper-3:#efe5cf;
+  --ink:#2a2620; --muted:#6b6254; --line:#d6c8aa; --line-2:#c2b28f;
+  --head:#1e3a5f; --head-2:#2b4f7c; --head-ink:#f6f1e4;
+  --bestand:#3b7a37; --aufwand:#7b3e88; --erloes:#256f9e; --ust:#a8452e; --neutral:#4d4a44;
+  --ok:#2e7a38; --ok-bg:#e3efd9; --bad:#ae2f28; --bad-bg:#f6e0dc; --part:#9a6a12; --part-bg:#f5ead0;
+  --merke:#e7eed2; --merke-line:#9fb46a; --bsp:#e1eaf3; --bsp-line:#8fb0d1;
+  --focus:#d08a1a;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#1a1916; --paper-2:#24221e; --paper-3:#2c2924;
+    --ink:#ece5d5; --muted:#a79e8c; --line:#3c382f; --line-2:#565044;
+    --head:#1c3556; --head-2:#28496f; --head-ink:#f1ecdf;
+    --bestand:#86c57e; --aufwand:#cc9fd8; --erloes:#7cb9e2; --ust:#e8907a; --neutral:#c9c2b3;
+    --ok:#8fd08f; --ok-bg:#1f3322; --bad:#f08c82; --bad-bg:#3a2220; --part:#e6b85c; --part-bg:#372d18;
+    --merke:#262d1c; --merke-line:#6f8445; --bsp:#1c2632; --bsp-line:#44678c; --focus:#f0b048;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#1a1916; --paper-2:#24221e; --paper-3:#2c2924;
+  --ink:#ece5d5; --muted:#a79e8c; --line:#3c382f; --line-2:#565044;
+  --head:#1c3556; --head-2:#28496f; --head-ink:#f1ecdf;
+  --bestand:#86c57e; --aufwand:#cc9fd8; --erloes:#7cb9e2; --ust:#e8907a; --neutral:#c9c2b3;
+  --ok:#8fd08f; --ok-bg:#1f3322; --bad:#f08c82; --bad-bg:#3a2220; --part:#e6b85c; --part-bg:#372d18;
+  --merke:#262d1c; --merke-line:#6f8445; --bsp:#1c2632; --bsp-line:#44678c; --focus:#f0b048;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);-webkit-text-size-adjust:100%}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+h1,h2,h3,h4{font-family:var(--serif);line-height:1.2;text-wrap:balance;margin:0}
+h2{font-size:1.65rem;margin-block:28px 10px}
+h3{font-size:1.25rem;margin-block:26px 8px;color:var(--head-2)}
+:root[data-theme="dark"] h3{color:var(--erloes)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h3{color:var(--erloes)}}
+p{margin:0 0 12px;max-width:68ch}
+ul{margin:0 0 12px;padding-left:1.2em;max-width:68ch}
+li{margin-bottom:4px}
+.num,.tk,td.n{font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Header */
+.masthead{background:var(--head);color:var(--head-ink);padding-block:26px 22px;border-bottom:4px solid var(--line-2)}
+.masthead .eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.masthead h1{font-size:clamp(1.7rem,4.5vw,2.5rem);margin-top:6px}
+.masthead p{margin:8px 0 0;opacity:.88;max-width:60ch}
+
+/* Nav */
+.navbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper-3);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-block:8px 0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);border-bottom:none;background:transparent;padding:8px 14px 9px;border-radius:8px 8px 0 0;cursor:pointer;color:var(--muted);font-weight:600;font-size:.92rem;display:flex;gap:8px;align-items:center}
+.tab[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--line-2)}
+.tab .badge{font-size:.74rem;font-weight:600;background:var(--paper-2);border:1px solid var(--line);border-radius:99px;padding:0 7px;font-variant-numeric:tabular-nums}
+.tab .badge.full{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.progress{display:flex;align-items:center;gap:12px;padding-block:7px;font-size:.85rem;color:var(--muted)}
+.bar{flex:1;height:8px;background:var(--paper-2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--head-2);transition:width .4s}
+.progress b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+main{padding-block:8px 60px}
+.panel[hidden]{display:none!important}
+
+/* Boxes */
+.merke,.bsp,.situation{border-radius:6px;padding:14px 16px;margin-block:14px;max-width:100%}
+.merke{background:var(--merke);border-left:5px solid var(--merke-line)}
+.merke::before{content:"Merke";display:block;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bestand);margin-bottom:4px}
+.bsp{background:var(--bsp);border-left:5px solid var(--bsp-line)}
+.bsp .lbl{font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--erloes);margin-bottom:4px;display:block}
+.merke p:last-child,.bsp p:last-child,.merke ul:last-child{margin-bottom:0}
+.situation{background:var(--paper-2);border:1px solid var(--line)}
+.dialog{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+.dialog dt{font-weight:700;white-space:nowrap}
+.dialog dd{margin:0;font-style:italic;max-width:64ch}
+.formula{font-family:var(--serif);font-size:1.12rem;background:var(--paper-2);border:1px dashed var(--line-2);border-radius:6px;padding:10px 14px;margin-block:10px;display:inline-block;max-width:100%}
+.formula b{font-weight:700}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-block:14px}
+.card{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.card h4{font-size:1.05rem;margin-bottom:6px}
+.acc-b{color:var(--bestand);font-weight:600}.acc-a{color:var(--aufwand);font-weight:600}.acc-e{color:var(--erloes);font-weight:600}.acc-u{color:var(--ust);font-weight:600}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;margin-block:12px}
+table{border-collapse:collapse;width:100%;min-width:520px;background:var(--paper-2)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--paper-3);font-size:.85rem;letter-spacing:.02em}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.sum td{font-weight:700;border-top:2px solid var(--ink)}
+
+/* T-Konten */
+.tks{display:flex;flex-wrap:wrap;gap:18px 26px;margin-block:14px}
+.tk{flex:1 1 230px;max-width:340px;font-size:.9rem}
+.tk-h{display:grid;grid-template-columns:auto 1fr auto;border-bottom:2px solid var(--ink);padding-bottom:2px;font-weight:700}
+.tk-h .t{text-align:center;font-family:var(--serif);font-size:1rem}
+.tk-b{display:grid;grid-template-columns:1fr 1fr}
+.tk-b>div{padding:3px 6px 4px;min-height:1.6em}
+.tk-b>div+div{border-left:2px solid var(--ink)}
+.tk-r{display:flex;justify-content:space-between;gap:6px;padding:1px 0}
+.tk-r span:first-child{color:var(--muted)}
+.tk-r.hi{background:color-mix(in srgb,var(--part) 18%,transparent);border-radius:3px;padding-inline:3px;margin-inline:-3px}
+.tk-r.hi span:first-child{color:var(--ink);font-weight:600}
+.tk-s{display:grid;grid-template-columns:1fr 1fr}
+.tk-s>div{border-top:1px solid var(--ink);border-bottom:3px double var(--ink);text-align:right;padding:1px 6px;font-weight:700}
+.tk-s>div+div{border-left:2px solid var(--ink)}
+.tk.c-b .t{color:var(--bestand)}.tk.c-a .t{color:var(--aufwand)}.tk.c-e .t{color:var(--erloes)}.tk.c-u .t{color:var(--ust)}
+.tk.schema .tk-r{justify-content:center;text-align:center;padding:6px 2px;border-radius:4px;margin:3px 0}
+.tk.schema .tk-r span{color:var(--ink)!important}
+.sch-b{background:color-mix(in srgb,var(--bestand) 16%,transparent)}
+.sch-a{background:color-mix(in srgb,var(--aufwand) 16%,transparent)}
+.sch-x{background:color-mix(in srgb,var(--part) 22%,transparent)}
+
+/* Widgets */
+.widget{background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:16px;margin-block:18px;box-shadow:0 1px 0 var(--line)}
+.widget>.wt{font-family:var(--serif);font-size:1.15rem;font-weight:700;margin-bottom:4px}
+.widget>.ws{color:var(--muted);font-size:.9rem;margin-bottom:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:3px;font-size:.85rem;color:var(--muted)}
+.field input,.field select{min-width:0;width:130px}
+input[type=text],select{background:var(--paper);border:1px solid var(--line-2);border-radius:6px;padding:7px 9px;font-variant-numeric:tabular-nums}
+input[type=text]{text-align:right}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+.seg button{border:none;background:var(--paper);padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--head);color:var(--head-ink)}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat3>div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.stat3 small{display:block;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.stat3 b{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.split{display:flex;height:26px;border-radius:5px;overflow:hidden;margin-top:10px;border:1px solid var(--line)}
+.split div{display:flex;align-items:center;justify-content:center;font-size:.76rem;color:#fff;white-space:nowrap;overflow:hidden;transition:flex-basis .3s}
+.split .sn{background:var(--head-2)}.split .su{background:#a8452e}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-2);background:var(--paper);border-radius:99px;padding:5px 12px;cursor:pointer;font-size:.85rem}
+.chip:hover{border-color:var(--head-2)}
+.result{border-radius:8px;padding:10px 14px;margin-block:10px;font-weight:600}
+.result.zl{background:var(--bad-bg);color:var(--bad)}
+.result.vu{background:var(--ok-bg);color:var(--ok)}
+.result.neu{background:var(--paper-3)}
+.bs{font-family:var(--mono);font-size:.86rem;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:6px 0;overflow-x:auto;white-space:pre-wrap}
+.calc{width:100%;max-width:560px;min-width:0;border:none;background:none}
+.calc td{border:none;padding:3px 6px}
+.calc tr.eq td{border-top:1.5px solid var(--ink);font-weight:700}
+.calc tr.res td{border-bottom:3px double var(--ink)}
+.err{color:var(--bad);font-weight:600}
+
+/* Tasks */
+.tasks-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-block:30px 6px;border-bottom:2px solid var(--head);padding-bottom:4px}
+.tasks-h h3{margin:0;color:var(--ink)}
+.tasks-h span{color:var(--muted);font-size:.9rem}
+.task{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-block:12px}
+.task.s-ok{border-color:var(--ok)}.task.s-bad{border-color:var(--bad)}.task.s-part{border-color:var(--part)}
+.th{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;font-size:.82rem;color:var(--muted);font-weight:600}
+.th .no{color:var(--head-2);letter-spacing:.04em}
+:root[data-theme="dark"] .th .no{color:var(--erloes)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .th .no{color:var(--erloes)}}
+.q{margin-bottom:10px}
+.q p{margin-bottom:6px}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);cursor:pointer}
+.opt input{margin-top:4px;accent-color:var(--head-2)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.numrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.numrow input{width:160px}
+input.right,select.right{border-color:var(--ok);background:var(--ok-bg)}
+input.wrong,select.wrong{border-color:var(--bad);background:var(--bad-bg)}
+input.part,select.part{border-color:var(--part);background:var(--part-bg)}
+.bk{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start}
+.bk .side h5{margin:0 0 6px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bk .an{align-self:center;font-family:var(--serif);font-style:italic;font-size:1.1rem;color:var(--muted);padding-top:18px}
+.bk .row{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:6px;margin-bottom:6px}
+.bk .row select{width:100%;min-width:0}
+.bk .row input{width:100%}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--head);background:var(--head);color:var(--head-ink);border-radius:6px;padding:8px 16px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--head-2)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn:disabled{opacity:.5;cursor:default}
+.fb{margin-top:12px;border-radius:6px;padding:10px 12px;font-size:.95rem}
+.fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}.fb.part{background:var(--part-bg)}
+.fb .v{font-weight:700;display:block;margin-bottom:3px}
+.fb.ok .v{color:var(--ok)}.fb.bad .v{color:var(--bad)}.fb.part .v{color:var(--part)}
+.fb p{margin:4px 0 0}
+.sol{display:inline-grid;grid-template-columns:auto auto;gap:0 16px;font-variant-numeric:tabular-nums;margin-top:6px;font-size:.92rem}
+.sol .an2{grid-column:1/-1;font-style:italic;color:var(--muted)}
+.sol .r{text-align:right}
+details.tip{margin-top:8px;font-size:.9rem}
+details.tip summary{cursor:pointer;color:var(--muted)}
+
+/* Start */
+.goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-block:16px}
+.goal{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left}
+.goal:hover{border-color:var(--head-2)}
+.goal b{display:block;font-family:var(--serif);font-size:1.05rem;margin-bottom:3px}
+.goal span{color:var(--muted);font-size:.88rem}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.88rem;margin-block:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* Ergebnis */
+.score{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:18px}
+.note{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:var(--head);color:var(--head-ink);font-family:var(--serif);font-size:2.6rem;font-weight:700}
+.score .big{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.foot{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--line);padding-top:10px}
+
+@media (max-width:640px){
+  .bk{grid-template-columns:1fr}
+  .bk .an{padding-top:0;text-align:center}
+  .stat3{grid-template-columns:1fr}
+  .dialog{grid-template-columns:1fr}
+  .dialog dt{margin-top:6px}
+  .score{grid-template-columns:1fr;justify-items:start}
+  .field input,.field select{width:118px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.confirm{margin-top:12px;border:2px solid var(--part);background:var(--part-bg);border-radius:6px;padding:10px 12px}
+.confirm p{margin:0;font-weight:600}
+/* Tabellen-Aufgaben */
+.gwrap{overflow-x:auto;margin-block:6px}
+table.gtab{min-width:520px}
+table.gtab td,table.gtab th{padding:5px 7px;vertical-align:middle}
+table.gtab td.n{white-space:nowrap}
+table.gtab input[type=text]{width:100%;min-width:86px}
+table.gtab select{width:100%;min-width:110px}
+table.gtab tr.sumrow td{border-top:2px solid var(--ink);font-weight:600}
+table.gtab td.right-c{background:var(--ok-bg)}
+.solt{min-width:420px}
+/* Widgets */
+.wtab{min-width:560px}
+.wtab input[type=text]{width:100%;min-width:76px}
+.wtab td.out{font-weight:600;text-align:right;white-space:nowrap}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.kpi>div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.kpi small{display:block;color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em}
+.kpi b{font-size:1.15rem;font-variant-numeric:tabular-nums}
+.kpi span{display:block;font-size:.8rem;color:var(--muted)}
+.chart{width:100%;max-width:560px;height:auto;display:block;margin-top:8px}
+.chart text{fill:var(--muted);font-size:15px;font-family:var(--sans)}
+.devbar{height:12px;border-radius:3px;display:inline-block;vertical-align:middle}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+/* Test */
+.startbox{display:grid;gap:14px;max-width:560px}
+.startbox .field input{width:100%}
+.grp{display:flex;gap:10px;flex-wrap:wrap}
+.grp button{flex:1 1 140px;border:2px solid var(--line-2);background:var(--paper-2);border-radius:8px;padding:12px;cursor:pointer;font-family:var(--serif);font-size:1.1rem;font-weight:700}
+.grp button[aria-pressed="true"]{border-color:var(--head);background:var(--head);color:var(--head-ink)}
+.who{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.92rem;color:var(--muted);margin-top:10px}
+.who b{color:var(--ink)}
+.aufg{margin-block:34px 8px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--head);padding-bottom:4px}
+.aufg h2{margin:0;font-size:1.4rem}
+.aufg span{color:var(--muted);font-size:.9rem}
+.submitbox{margin-top:30px;background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:16px}
+.submitbox p{margin:0 0 10px}
+.warn{color:var(--part);font-weight:600}
+.task.unans{border-style:dashed}
+#e-tbl{min-width:0}
+table.gtab td:first-child,table.gtab th:first-child{position:sticky;left:0;z-index:1;background:var(--paper-2);box-shadow:1px 0 0 var(--line)}
+table.gtab th:first-child{background:var(--paper-3)}
+@media (max-width:640px){table.gtab td:first-child{max-width:132px;white-space:normal;font-size:.86rem}}
+</style>
+
+</head>
+<body>
+<header class="masthead"><div class="wrap">
+<div class="eyebrow">Selbstlernseite · Lernfeld 11 · Kosten- und Leistungsrechnung</div><h1>Deckungsbeitragsrechnung</h1><p>Fixe und variable Kosten trennen, Deckungsbeiträge berechnen und damit über Sortiment, Sonderpreise und Preisuntergrenzen entscheiden.</p></div></header>
+<nav class="navbar" aria-label="Kapitel"><div class="wrap">
+<div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="start" aria-selected="true">Start</button><button class="tab" role="tab" data-tab="k1">1 · Fix und variabel <span class="badge" data-badge="k1"></span></button><button class="tab" role="tab" data-tab="k2">2 · Deckungsbeitrag <span class="badge" data-badge="k2"></span></button><button class="tab" role="tab" data-tab="k3">3 · Sortiment <span class="badge" data-badge="k3"></span></button><button class="tab" role="tab" data-tab="k4">4 · Zusatzauftrag <span class="badge" data-badge="k4"></span></button><button class="tab" role="tab" data-tab="k5">5 · Komplexaufgabe <span class="badge" data-badge="k5"></span></button><button class="tab" role="tab" data-tab="ergebnis">Ergebnis</button></div>
+<div class="progress"><span>Fortschritt</span><div class="bar"><i id="barFill"></i></div><b id="barTxt">0 / 0 P</b></div>
+</div></nav>
+<main class="wrap">
+<section class="panel" id="p-start"><h2>Handlungssituation</h2>
+<div class="situation">
+<p>Die Abteilung Kinderschuhe der <b>Schuhhandel Meier GmbH</b> zeigt nach dem BAB einen Verlust. Filialleiter Herr Brandt überlegt, die Kinderschuhe aufzugeben. Lena Hofmann soll das vorher durchrechnen.</p>
+<dl class="dialog">
+<dt>Herr Brandt:</dt><dd>„Die Kinderschuhe bringen Verlust. Wenn wir sie streichen, steht die Filiale besser da.“</dd>
+<dt>Lena:</dt><dd>„Aber die Miete und die Gehälter zahlen wir doch trotzdem weiter. Die Kosten verschwinden ja nicht mit den Kinderschuhen.“</dd>
+<dt>Herr Brandt:</dt><dd>„Stimmt. Dann rechnen wir anders: Was bringt jede Warengruppe über ihre eigenen, variablen Kosten hinaus ein? Das ist der Deckungsbeitrag.“</dd>
+</dl></div>
+<h3>Das lernst du auf dieser Seite</h3>
+<div class="goals">
+<button class="goal" data-go="k1"><b>1 · Fix und variabel</b><span>Kosten nach ihrem Verhalten bei Mengenänderungen trennen</span></button>
+<button class="goal" data-go="k2"><b>2 · Deckungsbeitrag</b><span>DB je Stück, DB gesamt, Betriebsergebnis, Gewinnschwelle</span></button>
+<button class="goal" data-go="k3"><b>3 · Sortiment</b><span>Warengruppe aufgeben oder behalten?</span></button>
+<button class="goal" data-go="k4"><b>4 · Zusatzauftrag</b><span>Sonderpreise und Preisuntergrenzen</span></button>
+<button class="goal" data-go="k5"><b>5 · Komplexaufgabe</b><span>Abteilung Sportschuhe durchrechnen und entscheiden</span></button>
+</div>
+<h3>So arbeitest du</h3>
+<ul>
+<li>Lies die Erklärung und probiere die Rechner aus (Kapitel 2 und 3).</li>
+<li>Nach <b>Prüfen</b> fragt die Seite noch einmal nach. Erst mit <b>Ja, prüfen</b> bekommst du die Rückmeldung, danach ist die Aufgabe gesperrt. Mit <b>Abbrechen</b> kannst du weiter ändern.</li>
+<li>Beträge kannst du so eingeben: <span class="num">11200</span>, <span class="num">11.200</span> oder <span class="num">11.200,00</span>. Verluste mit Minuszeichen: <span class="num">-2000</span>.</li>
+<li>Folgefehler werden berücksichtigt. Bei Tabellen gibt es Teilpunkte.</li>
+</ul></section>
+
+<section class="panel" id="p-k1" hidden>
+<h2>1 · Fixe und variable Kosten</h2>
+<p>Die Vollkostenrechnung (BAB, Handlungskostenzuschlag) verteilt <b>alle</b> Kosten auf die Warengruppen. Für Entscheidungen wie „Warengruppe aufgeben?“ oder „Sonderpreis annehmen?“ reicht das nicht. Man muss wissen, welche Kosten sich durch die Entscheidung überhaupt ändern.</p>
+<div class="grid2">
+<div class="card"><h4>Variable Kosten</h4><p>Ändern sich mit der verkauften Menge. Im Einzelhandel vor allem der <b>Wareneinsatz</b> (Einstandspreis der verkauften Ware). Dazu kommen <b>variable Handlungskosten</b> wie Umsatzprovision, Verpackung, Lieferung oder Montage je Stück.</p></div>
+<div class="card"><h4>Fixe (Handlungs-)Kosten</h4><p>Fallen unabhängig von der Menge an: <b>Miete, Gehälter, Abschreibungen, Versicherungen</b>. Je verkauftem Stück werden sie kleiner, je mehr man verkauft.</p></div>
+</div>
+<div class="merke"><ul><li>Die <b>Teilkostenrechnung</b> (Deckungsbeitragsrechnung) rechnet einem Artikel nur die variablen Kosten zu.</li><li>Die Fixkosten werden als Block vom gesamten Deckungsbeitrag abgezogen.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 1</h3><span data-secpts="k1"></span></div><div data-task="a1"></div><div data-task="a2"></div><div data-task="a3"></div>
+</section>
+
+<section class="panel" id="p-k2" hidden>
+<h2>2 · Der Deckungsbeitrag</h2>
+<div class="formula">Deckungsbeitrag je Stück = Nettoverkaufspreis − Einstandspreis − variable Handlungskosten<br>Deckungsbeitrag gesamt = DB je Stück × Menge<br>Betriebsergebnis = DB gesamt − Fixkosten<br>Gewinnschwelle (Menge) = Fixkosten ÷ DB je Stück</div>
+<p>Der Deckungsbeitrag ist der Betrag, der nach Abzug der variablen Kosten übrig bleibt, um die Fixkosten zu <b>decken</b>. Sind alle Fixkosten gedeckt, entsteht Gewinn. Die Menge, bei der DB gesamt und Fixkosten gleich sind, heißt <b>Gewinnschwelle</b> (Break-even-Point).</p>
+<div class="widget">
+<div class="wt">Gewinnschwellen-Rechner</div>
+<div class="ws">Laufschuh „Runner“. Ändere Preis, variable Kosten oder Fixkosten.</div>
+<div class="controls">
+<label class="field">Preis netto je Paar €<input type="text" id="be-p" inputmode="decimal" value="90,00"></label>
+<label class="field">variable Kosten je Paar €<input type="text" id="be-v" inputmode="decimal" value="54,00"></label>
+<label class="field">Fixkosten im Monat €<input type="text" id="be-f" inputmode="decimal" value="7.200,00"></label>
+</div>
+<div class="kpi" id="be-kpi"></div>
+<svg class="chart" id="be-chart" viewBox="0 0 480 300" role="img" aria-label="Erlöse und Kosten in Abhängigkeit von der Menge"></svg>
+<p style="font-size:.85rem;color:var(--muted)"><span style="color:var(--erloes)">━</span> Umsatzerlöse · <span style="color:var(--aufwand)">━</span> Gesamtkosten · <span>┅</span> Fixkosten</p>
+</div>
+<div class="merke"><ul><li>Positiver DB: Der Artikel trägt zur Deckung der Fixkosten bei.</li><li>Negativer DB: Nicht einmal die variablen Kosten sind gedeckt. Jeder Verkauf erhöht den Verlust.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 2</h3><span data-secpts="k2"></span></div><div data-task="b1"></div><div data-task="b2"></div><div data-task="b3"></div><div data-task="b4"></div><div data-task="b5"></div>
+</section>
+
+<section class="panel" id="p-k3" hidden>
+<h2>3 · Sortimentsentscheidungen</h2>
+<p>Nach der Vollkostenrechnung macht die Abteilung Kinderschuhe Verlust. Die Deckungsbeitragsrechnung zeigt, was passiert, wenn man sie aufgibt.</p>
+<div class="bsp"><span class="lbl">Beispiel: Schuhhandel Meier GmbH, Monat</span>
+<div class="tbl-wrap"><table><tr><th>Warengruppe</th><th class="n">Umsatz</th><th class="n">variable Kosten</th><th class="n">DB</th><th class="n">Fixkosten anteilig</th><th class="n">Ergebnis Vollkosten</th></tr><tr><td>Damenschuhe</td><td class="n">120.000,00</td><td class="n">72.000,00</td><td class="n">48.000,00</td><td class="n">30.000,00</td><td class="n">18.000,00</td></tr><tr><td>Herrenschuhe</td><td class="n">80.000,00</td><td class="n">52.000,00</td><td class="n">28.000,00</td><td class="n">20.000,00</td><td class="n">8.000,00</td></tr><tr><td>Kinderschuhe</td><td class="n">40.000,00</td><td class="n">30.000,00</td><td class="n">10.000,00</td><td class="n">14.000,00</td><td class="n">-4.000,00</td></tr></table></div></div>
+<div class="widget">
+<div class="wt">Sortiments-Rechner</div>
+<div class="ws">Nimm eine Warengruppe aus dem Sortiment. Die Fixkosten von 64.000 € bleiben.</div>
+<div id="so-box"></div>
+</div>
+<h3>Relativer Deckungsbeitrag</h3>
+<p>Der absolute DB hängt stark vom Umsatz ab. Um die Ertragskraft von Warengruppen zu vergleichen, bezieht man den DB auf den Umsatz:</p>
+<div class="formula">Relativer Deckungsbeitrag = Deckungsbeitrag × 100 ÷ Umsatzerlöse</div>
+<p>Ein relativer DB von 40 % heißt: Von 100 € Umsatz bleiben 40 € zur Deckung der Fixkosten. Für die Sortimentsgestaltung ordnet man die Warengruppen nach dem relativen DB.</p>
+<div class="merke"><ul><li>Eine Warengruppe mit <b>positivem DB</b> behält man, solange die Fixkosten durch ihre Aufgabe nicht sinken.</li><li>Neben den Zahlen zählen Verbundkäufe, Sortimentsbreite und Kundenbindung.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 3</h3><span data-secpts="k3"></span></div><div data-task="c1"></div><div data-task="c2"></div><div data-task="c3"></div><div data-task="c4"></div><div data-task="c5"></div><div data-task="c6"></div>
+</section>
+
+<section class="panel" id="p-k4" hidden>
+<h2>4 · Zusatzaufträge und Preisuntergrenzen</h2>
+<p>Ein Verein, eine Schule oder ein Betrieb fragt nach einer großen Menge zu einem Sonderpreis. Ob sich das lohnt, zeigt der Deckungsbeitrag des Auftrags.</p>
+<div class="grid2">
+<div class="card"><h4>Kurzfristige (absolute) Preisuntergrenze</h4><p>= <b>variable Kosten je Stück</b> (Einstandspreis + variable Handlungskosten, z. B. Lieferung, Montage). Der Deckungsbeitrag ist dann 0. Liegt der Preis darüber, verbessert jedes Stück das Ergebnis (wenn die Fixkosten gleich bleiben).</p></div>
+<div class="card"><h4>Langfristige Preisuntergrenze</h4><p>= <b>Selbstkosten je Stück</b> (Bezugspreis + Handlungskosten). Auf Dauer müssen auch die Fixkosten gedeckt sein.</p></div>
+</div>
+<div class="formula">Ergebnisänderung durch Zusatzauftrag = (Sonderpreis − variable Kosten je Stück) × Menge</div>
+<h3>Preisaktionen</h3>
+<p>Senkt der Händler den Preis, sinkt der DB je Stück. Die Aktion lohnt sich nur, wenn der Mehrabsatz den gesamten Deckungsbeitrag erhöht. Vergleiche deshalb immer den <b>DB gesamt</b> mit und ohne Aktion.</p>
+<div class="merke"><ul><li>Annehmen, wenn der Sonderpreis über den variablen Kosten liegt und Personal und Ware reichen.</li><li>Risiken: Stammkunden verlangen denselben Preis, das Preisimage leidet.</li></ul></div>
+<div class="tasks-h"><h3>Aufgaben zu Kapitel 4</h3><span data-secpts="k4"></span></div><div data-task="d1"></div><div data-task="d2"></div><div data-task="d3"></div><div data-task="d4"></div><div data-task="d5"></div><div data-task="d6"></div><div data-task="d7"></div>
+</section>
+
+<section class="panel" id="p-k5" hidden>
+<h2>5 · Komplexaufgabe: Abteilung Sportschuhe</h2>
+<div class="bsp"><span class="lbl">Ausgangsdaten (Monat)</span>
+<div class="tbl-wrap"><table><tr><th>Artikel</th><th class="n">Preis netto</th><th class="n">variable Kosten</th><th class="n">verkaufte Paar</th></tr>
+<tr><td>Runner</td><td class="n">95,00</td><td class="n">57,00</td><td class="n">300</td></tr><tr><td>Court</td><td class="n">60,00</td><td class="n">42,00</td><td class="n">200</td></tr><tr><td>Kids</td><td class="n">40,00</td><td class="n">32,00</td><td class="n">150</td></tr></table></div>
+<p>Fixkosten der Abteilung: 12.000,00 € im Monat.</p></div>
+<div class="tasks-h"><h3>Aufgaben</h3><span data-secpts="k5"></span></div><div data-task="k1"></div><div data-task="k2"></div><div data-task="k3"></div><div data-task="k4"></div><div data-task="k5"></div><div data-task="k6"></div><div data-task="k7"></div>
+</section>
+<section class="panel" id="p-ergebnis" hidden>
+<h2>Dein Ergebnis</h2>
+<div class="score"><div class="note" id="e-note">–</div><div><div class="big" id="e-pts"></div><div id="e-pct" style="color:var(--muted)"></div><p id="e-msg" style="margin:8px 0 0"></p></div></div>
+<div class="tbl-wrap"><table id="e-tbl"></table></div>
+<p style="font-size:.88rem;color:var(--muted)">Notenschlüssel der IHK: ab 92 % = 1 · ab 81 % = 2 · ab 67 % = 3 · ab 50 % = 4 · ab 30 % = 5 · unter 30 % = 6</p>
+<div id="e-open"></div>
+<div class="actions"><button class="btn ghost" id="resetBtn">Alle Antworten zurücksetzen</button><span id="resetHint" style="font-size:.88rem;color:var(--muted)"></span></div>
+</section>
+<div class="foot">Selbstlernseite · Kosten- und Leistungsrechnung · Kaufleute im Einzelhandel, 3. Lehrjahr · Schuhhandel Meier GmbH (Modellunternehmen)</div>
+</main>
+<script>
+(function(){
+"use strict";
+/* ===== Gemeinsamer Kern: Hilfsfunktionen und Aufgabentypen ===== */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function parseDE(s){
+  if(s==null) return NaN;
+  s=String(s).trim().replace(/[\s€%]/g,'').replace(/−/g,'-');
+  if(!s) return NaN;
+  if(s.includes(',')) s=s.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,'');
+  if(!/^-?\d*\.?\d+$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+const fmtN=(n,d=2)=>isFinite(n)?n.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d}):'–';
+const fmt=n=>fmtN(n,2);
+const eur=n=>fmt(n)+' €';
+const r2=n=>Math.round(n*100)/100;
+const eq=(a,b,tol=0.005)=>isFinite(a)&&isFinite(b)&&Math.abs(a-b)<=tol+1e-9;
+const f1=n=>String(n).replace('.',',');
+function showVal(v,unit,dec){
+  const d=dec==null?2:dec;
+  if(unit==='%') return fmtN(v,d)+' %';
+  if(unit==='€') return fmtN(v,d)+' €';
+  return fmtN(v,d)+(unit?' '+unit:'');
+}
+
+/* Antworten der Lernenden (nach dem Einlesen) – für Folgefehler */
+const ANS={};
+const num=id=>ANS[id]&&isFinite(ANS[id].v)?ANS[id].v:null;
+const cell=(id,k)=>{const a=ANS[id];if(!a||!a.cells)return null;const v=a.cells[k];return isFinite(v)?v:null;};
+const ffDiv=(a,b,m=1)=>(a==null||b==null||b===0)?null:a/b*m;
+const ffSum=(...xs)=>xs.some(x=>x==null)?null:xs.reduce((s,x)=>s+x,0);
+
+function pfx(id){return 'q'+id.replace(/[^A-Za-z0-9]/g,'_');}
+
+function taskBody(id,t){
+  const p=pfx(id);
+  if(t.type==='mc') return `<div class="opts" role="radiogroup">${t.o.map((o,i)=>`<label class="opt"><input type="radio" name="${p}" id="${p}-o${i}" value="${i}"><span>${o}</span></label>`).join('')}</div>`;
+  if(t.type==='num') return `<div class="numrow"><input type="text" id="${p}-in" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span>${t.unit||''}</span></div>`;
+  /* grid */
+  let h=`<div class="gwrap"><table class="gtab"><tr>${t.head.map((c,i)=>`<th${i?' class="n"':''}>${c}</th>`).join('')}</tr>`;
+  t.rows.forEach(r=>{
+    const cls=r.sum?' class="sumrow"':'';
+    h+=`<tr${cls}>`+r.c.map((c,i)=>{
+      if(c==null) return '<td></td>';
+      if(typeof c==='object'){
+        if(c.sel) return `<td><select id="${p}-${c.k}" aria-label="${r.c[0]}"><option value="-1">– wählen –</option>${c.sel.map((o,j)=>`<option value="${j}">${o}</option>`).join('')}</select></td>`;
+        return `<td><input type="text" id="${p}-${c.k}" inputmode="decimal" autocomplete="off" aria-label="${(r.c[0]+' '+(t.head[i]||'')).replace(/<[^>]+>/g,'')}" placeholder="${c.unit||''}"></td>`;
+      }
+      if(typeof c==='number') return `<td class="n">${fmtN(c,t.dec==null?2:t.dec)}</td>`;
+      return `<td${i?' class="n"':''}>${c}</td>`;
+    }).join('')+'</tr>';
+  });
+  return h+'</table></div>';
+}
+function gridCells(t){const out=[];t.rows.forEach(r=>r.c.forEach(c=>{if(c&&typeof c==='object')out.push(c);}));return out;}
+
+function readTask(id,t){
+  const p=pfx(id);
+  if(t.type==='mc'){const s=$(`input[name="${p}"]:checked`);ANS[id]={v:s?+s.value:null};}
+  else if(t.type==='num'){ANS[id]={v:parseDE($(`#${p}-in`).value),raw:$(`#${p}-in`).value};}
+  else{const cells={};gridCells(t).forEach(c=>{const el=$(`#${p}-${c.k}`);cells[c.k]=c.sel?(+el.value>=0?+el.value:NaN):parseDE(el.value);});ANS[id]={cells};}
+}
+function isAnswered(id,t){
+  const p=pfx(id);
+  if(t.type==='mc') return !!$(`input[name="${p}"]:checked`);
+  if(t.type==='num') return $(`#${p}-in`).value.trim()!=='';
+  return gridCells(t).some(c=>{const el=$(`#${p}-${c.k}`);return c.sel?+el.value>=0:el.value.trim()!=='';});
+}
+function emptyMsg(id,t){
+  const p=pfx(id);
+  if(t.type==='mc') return $(`input[name="${p}"]:checked`)?'':'Bitte wähle eine Antwort aus.';
+  if(t.type==='num') return isFinite(parseDE($(`#${p}-in`).value))?'':'Bitte gib eine Zahl ein, z. B. 1.250,00.';
+  return isAnswered(id,t)?'':'Bitte fülle die Tabelle aus.';
+}
+
+/* Bewerten: markiert Felder, liefert {got, ff, empty} */
+function gradeTask(id,t){
+  const p=pfx(id),A=ANS[id];let got=0,ff=false,empty=false;
+  if(t.type==='mc'){
+    empty=A.v==null;
+    $$(`input[name="${p}"]`).forEach((inp,i)=>{const o=inp.closest('.opt');if(i===t.a)o.classList.add('right');else if(i===A.v)o.classList.add('wrong');});
+    got=A.v===t.a?t.pts:0;
+  }else if(t.type==='num'){
+    const inp=$(`#${p}-in`);empty=!String(A.raw||'').trim();const tol=t.tol==null?0.005:t.tol;
+    if(eq(A.v,t.a,tol)) got=t.pts;
+    else if(t.ff){let f=null;try{f=t.ff();}catch(e){}if(f!=null&&isFinite(f)&&!eq(f,t.a,tol)&&eq(A.v,f,tol)){got=t.pts;ff=true;}}
+    if(!empty) inp.classList.add(got?'right':'wrong');
+  }else{
+    const cs=gridCells(t);let ok=0,any=false;
+    cs.forEach(c=>{
+      const el=$(`#${p}-${c.k}`),v=A.cells[c.k],tol=c.tol==null?(t.tol==null?0.005:t.tol):c.tol;
+      if(isFinite(v)) any=true;
+      let good=c.sel?v===c.a:eq(v,c.a,tol);
+      if(!good&&!c.sel&&c.ff){let f=null;try{f=c.ff();}catch(e){}if(f!=null&&isFinite(f)&&!eq(f,c.a,tol)&&eq(v,f,tol)){good=true;ff=true;}}
+      if(isFinite(v)) el.classList.add(good?'right':'wrong');
+      if(good) ok++;
+    });
+    empty=!any;
+    got=Math.round(ok/cs.length*t.pts*2)/2;
+  }
+  return {got,ff,empty};
+}
+function solutionHTML(t){
+  if(t.type==='num') return `<p><b>Musterlösung:</b> ${showVal(t.a,t.unit,t.dec)}</p>`;
+  if(t.type==='mc') return '';
+  let h=`<p><b>Musterlösung:</b></p><div class="gwrap"><table class="gtab solt"><tr>${t.head.map((c,i)=>`<th${i?' class="n"':''}>${c}</th>`).join('')}</tr>`;
+  t.rows.forEach(r=>{h+=`<tr${r.sum?' class="sumrow"':''}>`+r.c.map((c,i)=>{
+    if(c==null) return '<td></td>';
+    if(typeof c==='object') return `<td class="n right-c">${c.sel?c.sel[c.a]:showVal(c.a,c.unit==='€'?'':c.unit,c.dec==null?(t.dec==null?2:t.dec):c.dec)}</td>`;
+    if(typeof c==='number') return `<td class="n">${fmtN(c,t.dec==null?2:t.dec)}</td>`;
+    return `<td${i?' class="n"':''}>${c}</td>`;}).join('')+'</tr>';});
+  return h+'</table></div>';
+}
+function noteOf(p){return p>=92?1:p>=81?2:p>=67?3:p>=50?4:p>=30?5:6;}
+const NOTE_TXT={1:'sehr gut',2:'gut',3:'befriedigend',4:'ausreichend',5:'mangelhaft',6:'ungenügend'};
+
+const TABS=["start","k1","k2","k3","k4","k5","ergebnis"];
+const SECS={"k1":"1 · Fix und variabel","k2":"2 · Deckungsbeitrag","k3":"3 · Sortiment","k4":"4 · Zusatzauftrag","k5":"5 · Komplexaufgabe"};
+const T={"a1":{"sec":"k1","no":"1.1","pts":1,"type":"mc","q":"Welche Kosten sind im Einzelhandel typischerweise <b>variabel</b>?","o":["Die Miete für das Ladenlokal","Der Wareneinsatz, also der Bezugspreis der verkauften Ware","Das Gehalt der Filialleiterin","Die Abschreibung der Ladeneinrichtung"],"a":1,"ex":"Je mehr Paar Schuhe verkauft werden, desto höher ist der Wareneinsatz. Miete, Gehälter und Abschreibungen fallen unabhängig von der Absatzmenge an."},"a2":{"sec":"k1","no":"1.2","pts":1,"type":"mc","q":"Was kennzeichnet <b>fixe Kosten</b>?","o":["Sie steigen mit jedem verkauften Stück.","Sie fallen unabhängig von der Absatzmenge in gleicher Höhe an.","Sie entstehen nur bei Sonderaufträgen.","Sie sind immer neutrale Aufwendungen."],"a":1,"ex":"Fixe Kosten bleiben (kurzfristig) gleich, egal ob viel oder wenig verkauft wird. Je Stück sinken sie aber, je mehr man verkauft."},"a3":{"sec":"k1","no":"1.3","pts":3,"type":"grid","head":["Kostenart","fix oder variabel?"],"rows":[{"c":["Miete für das Ladenlokal",{"k":"x0","sel":["fix","variabel"],"a":0}]},{"c":["Bezugspreis der verkauften Sneaker",{"k":"x1","sel":["fix","variabel"],"a":1}]},{"c":["Gehalt der Filialleiterin",{"k":"x2","sel":["fix","variabel"],"a":0}]},{"c":["Umsatzprovision der Verkäufer (2 % vom Umsatz)",{"k":"x3","sel":["fix","variabel"],"a":1}]},{"c":["Abschreibung der Ladeneinrichtung",{"k":"x4","sel":["fix","variabel"],"a":0}]},{"c":["Tragetasche je verkauftem Paar",{"k":"x5","sel":["fix","variabel"],"a":1}]}],"q":"Ordne zu: Sind die Kosten der Schuhhandel Meier GmbH fix oder variabel?","ex":"Variabel sind Kosten, die mit der verkauften Menge steigen: Wareneinsatz, Umsatzprovision, Verpackung je Paar. Miete, Gehalt und Abschreibung sind fix."},"b1":{"sec":"k2","no":"2.1","pts":1,"type":"num","unit":"€","a":32,"q":"Ein Sneaker kostet netto 79,00 €. Die variablen Kosten (Bezugspreis) betragen 47,00 € je Paar. Berechne den <b>Deckungsbeitrag je Paar</b>.","ex":"DB je Stück = Nettoverkaufspreis − variable Kosten je Stück = 79,00 − 47,00 = 32,00 €."},"b2":{"sec":"k2","no":"2.2","pts":1,"type":"num","unit":"€","a":11200,"ff":()=>{const d=num('b1');return d==null?null:d*350;},"q":"Im Monat werden 350 Paar verkauft. Wie hoch ist der <b>Deckungsbeitrag insgesamt</b>?","ex":"350 × 32,00 € = 11.200,00 €."},"b3":{"sec":"k2","no":"2.3","pts":1,"type":"num","unit":"€","a":2800,"ff":()=>{const d=num('b2');return d==null?null:d-8400;},"q":"Die Fixkosten der Abteilung betragen 8.400,00 € im Monat. Berechne das <b>Betriebsergebnis</b>.","ex":"Betriebsergebnis = DB gesamt − Fixkosten = 11.200,00 − 8.400,00 = 2.800,00 €."},"b4":{"sec":"k2","no":"2.4","pts":1,"type":"num","unit":"Paar","dec":0,"a":263,"ff":()=>{const d=num('b1');return d>0?Math.ceil(8400/d):null;},"q":"Wie viele Paar muss Meier mindestens verkaufen, damit kein Verlust entsteht (<b>Gewinnschwelle</b>)? Runde auf ganze Paare auf.","ex":"Gewinnschwelle = Fixkosten ÷ DB je Stück = 8.400,00 ÷ 32,00 = 262,50 → 263 Paar."},"b5":{"sec":"k2","no":"2.5","pts":1,"type":"mc","q":"Welche Aussage zum Deckungsbeitrag ist richtig?","o":["Ein positiver Deckungsbeitrag bedeutet immer Gewinn.","Solange der Deckungsbeitrag positiv ist, trägt der Artikel zur Deckung der Fixkosten bei.","Der Deckungsbeitrag enthält die Fixkosten.","Der Deckungsbeitrag ist der Umsatz abzüglich aller Kosten."],"a":1,"ex":"Der DB deckt zuerst die Fixkosten. Erst wenn alle Fixkosten gedeckt sind, entsteht Gewinn."},"c1":{"sec":"k3","no":"3.1","pts":4,"type":"grid","head":["Monat","Sportschuhe","Wanderschuhe","Pflegeartikel","Gesamt"],"rows":[{"c":["Umsatzerlöse",90000,60000,15000,165000]},{"c":["− variable Kosten",54000,39000,9000,102000]},{"c":["= Deckungsbeitrag",{"k":"dg0","a":36000},{"k":"dg1","a":21000},{"k":"dg2","a":6000},{"k":"dT","a":63000,"ff":()=>ffSum(cell('c1','dg0'),cell('c1','dg1'),cell('c1','dg2'))}],"sum":true},{"c":["− Fixkosten (anteilig)",24000,18000,8000,50000]},{"c":["= Ergebnis (Vollkosten)",{"k":"eg0","a":12000,"ff":()=>{const d=cell('c1','dg0');return d==null?null:d-24000;}},{"k":"eg1","a":3000,"ff":()=>{const d=cell('c1','dg1');return d==null?null:d-18000;}},{"k":"eg2","a":-2000,"ff":()=>{const d=cell('c1','dg2');return d==null?null:d-8000;}},{"k":"eT","a":13000,"ff":()=>ffSum(cell('c1','eg0'),cell('c1','eg1'),cell('c1','eg2'))}],"sum":true}],"q":"Ergänze die Tabelle der Schuhhandel Meier GmbH: Deckungsbeiträge und Ergebnisse nach Vollkosten (Verlust mit Minuszeichen).","ex":"DB = Umsatzerlöse − variable Kosten. Ergebnis nach Vollkosten = DB − anteilige Fixkosten."},"c2":{"sec":"k3","no":"3.2","pts":1,"type":"mc","q":"Die Pflegeartikel zeigen nach Vollkosten einen Verlust. Sollte Meier sie aus dem Sortiment nehmen, wenn die Fixkosten gleich bleiben?","o":["Ja, denn jede Warengruppe mit Verlust muss weg.","Nein, denn ihr Deckungsbeitrag von 6.000,00 € deckt einen Teil der Fixkosten. Ohne sie sinkt das Betriebsergebnis.","Ja, denn dann sinken die Fixkosten.","Das lässt sich nicht beurteilen."],"a":1,"ex":"Die Fixkosten (Miete, Gehälter) bleiben, wenn die Pflegeartikel wegfallen. Es fehlt dann ihr Deckungsbeitrag."},"c3":{"sec":"k3","no":"3.3","pts":1,"type":"num","unit":"€","a":7000,"ff":()=>{const a=cell('c1','dg0'),b=cell('c1','dg1');return (a==null||b==null)?null:a+b-50000;},"q":"Berechne das Betriebsergebnis, wenn die Pflegeartikel aufgegeben werden und die Fixkosten von 50.000,00 € bleiben.","ex":"36.000,00 + 21.000,00 − 50.000,00 = 7.000,00 €. Vorher: 13.000,00 €."},"c4":{"sec":"k3","no":"3.4","pts":1,"type":"mc","q":"Wann wäre es sinnvoll, eine Warengruppe aufzugeben?","o":["Sobald das Vollkostenergebnis negativ ist","Wenn ihr Deckungsbeitrag negativ ist oder die Fläche mit einer anderen Warengruppe einen höheren Deckungsbeitrag bringt","Wenn sie weniger als 10 % des Umsatzes bringt","Nie"],"a":1,"ex":"Entscheidend ist der Deckungsbeitrag. Auch qualitative Gründe zählen: Pflegeartikel ergänzen das Schuhsortiment (Verbundkauf)."},"c5":{"sec":"k3","no":"3.5","pts":2,"type":"grid","head":["Warengruppe","Umsatz €","variable Kosten €","DB €","relativer DB %"],"rows":[{"c":["Taschen",40000,26000,{"k":"d0","a":14000},{"k":"r0","a":35,"ff":()=>{const d=cell('c5','d0');return d==null?null:Math.round(d/40000*10000)/100;},"unit":"%","tol":0.01}]},{"c":["Strumpfwaren",12000,6000,{"k":"d1","a":6000},{"k":"r1","a":50,"ff":()=>{const d=cell('c5','d1');return d==null?null:Math.round(d/12000*10000)/100;},"unit":"%","tol":0.01}]},{"c":["Einlagen",20000,15000,{"k":"d2","a":5000},{"k":"r2","a":25,"ff":()=>{const d=cell('c5','d2');return d==null?null:Math.round(d/20000*10000)/100;},"unit":"%","tol":0.01}]}],"q":"Berechne für drei kleinere Warengruppen den Deckungsbeitrag und den relativen Deckungsbeitrag (zwei Nachkommastellen).","ex":"Relativer DB = DB × 100 ÷ Umsatzerlöse. Taschen 14.000 € = 35,00 %; Strumpfwaren 6.000 € = 50,00 %; Einlagen 5.000 € = 25,00 %."},"c6":{"sec":"k3","no":"3.6","pts":1,"type":"mc","q":"In welcher Reihenfolge sollte Meier die drei Warengruppen nach ihrer <b>Ertragskraft</b> fördern?","o":["Taschen – Einlagen – Strumpfwaren (nach dem absoluten DB)","Strumpfwaren – Taschen – Einlagen (nach dem relativen DB)","Einlagen – Strumpfwaren – Taschen","Die Reihenfolge ist egal."],"a":1,"ex":"Nach dem absoluten DB lägen die Taschen vorn. Je 100 € Umsatz bringen aber die Strumpfwaren den höchsten DB (50 €). Für die Sortimentsgestaltung zählt der relative DB."},"d1":{"sec":"k4","no":"4.1","pts":1,"type":"mc","q":"Was ist die <b>kurzfristige (absolute) Preisuntergrenze</b>?","o":["Einstandspreis + variable Handlungskosten je Stück (die variablen Kosten)","Die Selbstkosten je Stück","Der Bruttoverkaufspreis","Null Euro"],"a":0,"ex":"Kurzfristig reicht es, wenn der Preis die variablen Kosten deckt. Jeder Euro darüber ist Deckungsbeitrag."},"d2":{"sec":"k4","no":"4.2","pts":1,"type":"mc","q":"Was ist die <b>langfristige Preisuntergrenze</b>?","o":["Die variablen Kosten je Stück","Die Selbstkosten (Vollkosten) je Stück","Der Preis der Konkurrenz","Der Bezugspreis ohne Rabatt"],"a":1,"ex":"Auf Dauer müssen alle Kosten gedeckt sein, auch die Fixkosten."},"d3":{"sec":"k4","no":"4.3","pts":1,"type":"num","unit":"€","a":840,"q":"Ein Sportverein möchte 120 Paar Hallenschuhe zum Sonderpreis von 38,00 € netto je Paar kaufen. Die variablen Kosten betragen 31,00 € je Paar, die Fixkosten ändern sich nicht. Um wie viel <b>verändert sich das Betriebsergebnis</b>?","ex":"(38,00 − 31,00) × 120 = 840,00 € mehr."},"d4":{"sec":"k4","no":"4.4","pts":1,"type":"mc","q":"Soll Meier den Auftrag des Sportvereins annehmen?","o":["Nein, der Preis liegt unter den Selbstkosten.","Ja, der Preis liegt über den variablen Kosten und das Ergebnis steigt. Meier sollte aber prüfen, ob Stammkunden dann auch Rabatt verlangen.","Nein, Zusatzaufträge sind im Einzelhandel verboten.","Ja, aber nur, wenn der Preis über dem Normalpreis liegt."],"a":1,"ex":"Ein positiver Deckungsbeitrag verbessert das Ergebnis, solange die Fixkosten unverändert bleiben."},"d5":{"sec":"k4","no":"4.5","pts":1,"type":"num","unit":"€","a":38.75,"q":"Der Handlungskostenzuschlag der Sportschuhe beträgt 25 %. Berechne mit dem Bezugspreis von 31,00 € die <b>langfristige Preisuntergrenze</b> (Selbstkosten) je Paar.","ex":"31,00 × 1,25 = 38,75 €. Langfristig darf der Preis nicht darunter liegen."},"d6":{"sec":"k4","no":"4.6","pts":3,"type":"grid","head":["Laufschuh „Pace“","ohne Aktion","mit Aktion"],"rows":[{"c":["Absatzmenge (Paar)","60","90"]},{"c":["Verkaufspreis brutto",119,101.15]},{"c":["Verkaufspreis netto",{"k":"n0","a":100},{"k":"n1","a":85}]},{"c":["− Einstandspreis",52,52]},{"c":["− variable Handlungskosten",8,8]},{"c":["= DB je Paar",{"k":"d0","a":40,"ff":()=>{const n=cell('d6','n0');return n==null?null:Math.round((n-60.0)*100)/100;}},{"k":"d1","a":25,"ff":()=>{const n=cell('d6','n1');return n==null?null:Math.round((n-60.0)*100)/100;}}],"sum":true},{"c":["= DB gesamt",{"k":"g0","a":2400,"ff":()=>{const d=cell('d6','d0');return d==null?null:Math.round(d*60*100)/100;}},{"k":"g1","a":2250,"ff":()=>{const d=cell('d6','d1');return d==null?null:Math.round(d*90*100)/100;}}],"sum":true}],"q":"Preisaktion: Meier überlegt, den Laufschuh „Pace“ um 15 % billiger anzubieten. Erwartet wird dadurch 50 % mehr Absatz. Ergänze die Tabelle.","ex":"Netto = brutto ÷ 1,19: 100,00 € bzw. 85,00 €. DB je Paar = netto − Einstandspreis − variable Handlungskosten: 40,00 € bzw. 25,00 €. DB gesamt: 2.400,00 € bzw. 2.250,00 €."},"d7":{"sec":"k4","no":"4.7","pts":1,"type":"mc","q":"Ist die Preisaktion sinnvoll?","o":["Ja, weil mehr Paar verkauft werden.","Nein, der gesamte Deckungsbeitrag sinkt um 150,00 €. Der Mehrabsatz gleicht den niedrigeren DB je Paar nicht aus.","Ja, weil der Preis über den variablen Kosten liegt.","Das lässt sich nicht beurteilen."],"a":1,"ex":"Entscheidend ist der gesamte DB. Damit die Aktion sich lohnt, müssten mindestens 96 Paar verkauft werden."},"k1":{"sec":"k5","no":"5.1","pts":3,"type":"grid","head":["Monat","Runner","Court","Kids"],"rows":[{"c":["Verkaufspreis netto je Paar",95,60,40]},{"c":["− variable Kosten je Paar",57,42,32]},{"c":["= DB je Paar",{"k":"d0","a":38},{"k":"d1","a":18},{"k":"d2","a":8}],"sum":true},{"c":["× verkaufte Paar","300","200","150"]},{"c":["= DB gesamt",{"k":"g0","a":11400,"ff":()=>{const d=cell('k1','d0');return d==null?null:d*300;}},{"k":"g1","a":3600,"ff":()=>{const d=cell('k1','d1');return d==null?null:d*200;}},{"k":"g2","a":1200,"ff":()=>{const d=cell('k1','d2');return d==null?null:d*150;}}],"sum":true}],"q":"Berechne die Deckungsbeiträge je Paar und insgesamt.","ex":"DB je Paar = Preis − variable Kosten; DB gesamt = DB je Paar × Menge."},"k2":{"sec":"k5","no":"5.2","pts":1,"type":"num","unit":"€","a":4200,"ff":()=>{const a=cell('k1','g0'),b=cell('k1','g1'),c=cell('k1','g2');return (a==null||b==null||c==null)?null:a+b+c-12000;},"q":"Die Fixkosten der Abteilung Sportschuhe betragen 12.000,00 € im Monat. Berechne das Betriebsergebnis.","ex":"16.200,00 − 12.000,00 = 4.200,00 €."},"k3":{"sec":"k5","no":"5.3","pts":1,"type":"num","unit":"€","a":180,"q":"Eine Schule möchte 60 Paar „Court“ zu 45,00 € netto je Paar. Um wie viel ändert sich das Betriebsergebnis (Fixkosten unverändert)?","ex":"(45 − 42) × 60 = 180 € mehr."},"k4":{"sec":"k5","no":"5.4","pts":1,"type":"mc","q":"Wie beurteilst du den Auftrag der Schule?","o":["Annehmen: Er bringt einen positiven Deckungsbeitrag. Meier muss aber darauf achten, dass Stammkunden nicht ebenfalls 45 € verlangen.","Ablehnen: Der Preis liegt unter dem normalen Verkaufspreis.","Ablehnen: Der Deckungsbeitrag ist negativ.","Annehmen: Der Preis deckt die Selbstkosten."],"a":0,"ex":"45 € liegen über den variablen Kosten von 42 €, aber unter dem Normalpreis von 60 €. Kurzfristig lohnt es sich."},"k5":{"sec":"k5","no":"5.5","pts":1,"type":"num","unit":"€","a":32,"q":"Wie hoch ist die kurzfristige (absolute) Preisuntergrenze für ein Paar „Kids“?","ex":"Kurzfristige Preisuntergrenze = variable Kosten je Paar = 32,00 €."},"k6":{"sec":"k5","no":"5.6","pts":1,"type":"mc","q":"Verteilt man die Fixkosten nach dem Umsatz, zeigt „Kids“ einen Verlust. Was empfiehlst du?","o":["„Kids“ sofort auslisten","„Kids“ behalten, weil der Deckungsbeitrag positiv ist. Ohne „Kids“ fehlen 1.200 € zur Deckung der Fixkosten.","Die Fixkosten nur auf „Runner“ verteilen","Den Preis von „Kids“ auf 32 € senken"],"a":1,"ex":"Der DB von „Kids“ (8 € × 150 = 1.200 €) hilft, die Fixkosten zu tragen. Ohne „Kids“ sinkt das Betriebsergebnis um 1.200 €."},"k7":{"sec":"k5","no":"5.7","pts":1,"type":"num","unit":"Paar","dec":0,"a":50,"ff":()=>{const d=cell('k1','d0');return d>0?Math.ceil(1900/d):null;},"q":"Meier plant eine Werbeaktion für „Runner“, die 1.900,00 € zusätzliche Fixkosten verursacht. Wie viele Paar „Runner“ müssen dadurch <b>zusätzlich</b> verkauft werden, damit sich die Aktion lohnt? Runde auf ganze Paare auf.","ex":"1.900,00 ÷ DB je Paar 38,00 = 50,00 → 50 Paar."}};
+
+(function(){
+  function be(){
+    const p=parseDE($('#be-p').value),v=parseDE($('#be-v').value),f=parseDE($('#be-f').value),k=$('#be-kpi'),svg=$('#be-chart');
+    if(![p,v,f].every(isFinite)||p<=0||v<0||f<0){k.innerHTML='<p class="err">Bitte gültige Zahlen eingeben.</p>';svg.innerHTML='';return;}
+    const db=p-v;
+    if(db<=0){k.innerHTML=`<div><small>DB je Paar</small><b class="neg">${eur(db)}</b><span>Der Preis deckt nicht einmal die variablen Kosten. Es gibt keine Gewinnschwelle.</span></div>`;svg.innerHTML='';return;}
+    const bep=f/db,xmax=Math.max(10,Math.ceil(bep*2/10)*10),ymax=Math.max(p*xmax,f+v*xmax);
+    k.innerHTML=`<div><small>DB je Paar</small><b>${eur(db)}</b><span>${fmt(p)} − ${fmt(v)}</span></div><div><small>Gewinnschwelle</small><b>${fmtN(bep,1)} Paar</b><span>${fmt(f)} ÷ ${fmt(db)}</span></div><div><small>Ergebnis bei ${Math.round(xmax*0.75)} Paar</small><b class="${db*Math.round(xmax*0.75)-f>=0?'pos':'neg'}">${eur(db*Math.round(xmax*0.75)-f)}</b><span>DB gesamt − Fixkosten</span></div>`;
+    const L=58,R=462,Tp=18,B=258,X=x=>L+x/xmax*(R-L),Y=y=>B-y/ymax*(B-Tp);
+    const ln=(x1,y1,x2,y2,c,d)=>`<line x1="${X(x1)}" y1="${Y(y1)}" x2="${X(x2)}" y2="${Y(y2)}" style="stroke:${c};stroke-width:2.5${d?';stroke-dasharray:6 5':''}"/>`;
+    let s=`<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" style="stroke:var(--line-2)"/><line x1="${L}" y1="${Tp}" x2="${L}" y2="${B}" style="stroke:var(--line-2)"/>`;
+    s+=ln(0,f,xmax,f,'var(--muted)',1)+ln(0,f,xmax,f+v*xmax,'var(--aufwand)')+ln(0,0,xmax,p*xmax,'var(--erloes)');
+    s+=`<line x1="${X(bep)}" y1="${Y(p*bep)}" x2="${X(bep)}" y2="${B}" style="stroke:var(--ink);stroke-dasharray:2 3"/><circle cx="${X(bep)}" cy="${Y(p*bep)}" r="5" style="fill:var(--ink)"/>`;
+    s+=`<text x="${X(bep)+10}" y="${Y(p*bep)+22}" style="fill:var(--ink);font-weight:600">Gewinnschwelle</text>`;
+    s+=`<text x="${L}" y="${B+18}" text-anchor="middle">0</text><text x="${X(bep)}" y="${B+18}" text-anchor="middle">${fmtN(bep,0)}</text><text x="${R}" y="${B+18}" text-anchor="end">${xmax} Paar</text>`;
+    s+=`<text x="${L-6}" y="${Y(ymax)+4}" text-anchor="end">${fmtN(ymax/1000,0)} T€</text><text x="${L-6}" y="${Y(f)+4}" text-anchor="end">${fmtN(f/1000,1)} T€</text><text x="${L-6}" y="${B+4}" text-anchor="end">0</text>`;
+    s+=`<text x="${X(xmax*0.18)}" y="${Y(f+v*xmax*0.18)+16}" style="fill:var(--aufwand)">Verlust</text><text x="${X(xmax*0.85)}" y="${Y(p*xmax*0.85)-10}" text-anchor="end" style="fill:var(--erloes)">Gewinn</text>`;
+    svg.innerHTML=s;
+  }
+  ['#be-p','#be-v','#be-f'].forEach(i=>$(i).addEventListener('input',be));be();
+
+  const G=[['Damenschuhe',120000,72000],['Herrenschuhe',80000,52000],['Kinderschuhe',40000,30000]],FIX=64000;
+  const box=$('#so-box');
+  box.innerHTML='<div class="presets" style="margin-bottom:10px">'+G.map((g,i)=>`<label class="chip"><input type="checkbox" id="so-${i}" checked> ${g[0]} im Sortiment</label>`).join('')+'</div><div class="tbl-wrap"><table class="wtab" id="so-t"></table></div><div id="so-r"></div>';
+  function so(){
+    let h='<tr><th>Warengruppe</th><th class="n">Umsatz</th><th class="n">variable Kosten</th><th class="n">DB</th></tr>',db=0;
+    G.forEach((g,i)=>{const on=$('#so-'+i).checked;if(on)db+=g[1]-g[2];h+=`<tr style="${on?'':'opacity:.4;text-decoration:line-through'}"><td>${g[0]}</td><td class="out">${fmt(on?g[1]:0)}</td><td class="out">${fmt(on?g[2]:0)}</td><td class="out">${fmt(on?g[1]-g[2]:0)}</td></tr>`;});
+    h+=`<tr class="sum"><td>Summe DB</td><td></td><td></td><td class="out">${fmt(db)}</td></tr><tr><td>− Fixkosten</td><td></td><td></td><td class="out">${fmt(FIX)}</td></tr><tr class="sum"><td>Betriebsergebnis</td><td></td><td></td><td class="out ${db-FIX>=0?'pos':'neg'}">${fmt(db-FIX)}</td></tr>`;
+    $('#so-t').innerHTML=h;
+    const base=G.reduce((a,g)=>a+g[1]-g[2],0)-FIX,diff=db-FIX-base;
+    $('#so-r').innerHTML=diff===0?'<div class="result neu">Alle Warengruppen im Sortiment: Betriebsergebnis '+eur(base)+'.</div>':`<div class="result ${diff<0?'zl':'vu'}">Gegenüber dem vollen Sortiment ${diff<0?'sinkt':'steigt'} das Betriebsergebnis um ${eur(Math.abs(diff))}. Es fehlt der Deckungsbeitrag der entfernten Warengruppe, die Fixkosten bleiben.</div>`;
+  }
+  box.addEventListener('change',so);so();
+})();
+
+/* ===== Übungsmodus: Reiter, Prüfen mit Sicherheitsabfrage, Fortschritt, Ergebnis ===== */
+const RES={};
+function show(tab){
+  if(!TABS.includes(tab)) tab=TABS[0];
+  $$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab?'true':'false'));
+  TABS.forEach(x=>$('#p-'+x).hidden=x!==tab);
+  if(tab==='ergebnis') renderResult();
+  try{history.replaceState(null,'','#'+tab);}catch(e){}
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);window.scrollTo({top:$('.masthead').offsetHeight,behavior:'smooth'});}));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.go);window.scrollTo({top:$('.masthead').offsetHeight});}));
+
+function renderTask(el){
+  const id=el.dataset.task,t=T[id];
+  el.className='task';
+  el.innerHTML=`<div class="th"><span class="no">Aufgabe ${t.no}</span><span>${t.pts} ${t.pts===1?'Punkt':'Punkte'}</span></div>
+  <div class="q">${t.q}</div>${taskBody(id,t)}
+  ${t.tip?`<details class="tip"><summary>Tipp anzeigen</summary>${t.tip}</details>`:''}
+  <div class="actions"><button class="btn" data-check="${id}">Prüfen</button></div>
+  <div class="confirm" hidden><p>Antwort wirklich prüfen lassen? Danach kannst du bei dieser Aufgabe nichts mehr ändern.</p><div class="actions" style="margin-top:8px"><button class="btn" data-confirm="${id}">Ja, prüfen</button><button class="btn ghost" data-cancel="${id}">Abbrechen, weiter bearbeiten</button></div></div>
+  <div class="fb" hidden></div>`;
+}
+const taskEl=id=>$(`[data-task="${id}"]`);
+function flash(fb,txt){fb.className='fb part';fb.hidden=false;fb.innerHTML=`<span class="v">${txt}</span>`;}
+function ask(id){const el=taskEl(id),fb=$('.fb',el),m=emptyMsg(id,T[id]);if(m){flash(fb,m);return;}
+  fb.hidden=true;$('[data-check]',el).hidden=true;const c=$('.confirm',el);c.hidden=false;$('[data-confirm]',c).focus();}
+function cancelAsk(id){const el=taskEl(id);$('.confirm',el).hidden=true;const b=$('[data-check]',el);b.hidden=false;b.focus();}
+function check(id){
+  const t=T[id],el=taskEl(id),fb=$('.fb',el);
+  readTask(id,t);const r=gradeTask(id,t);
+  RES[id]={got:r.got,max:t.pts};
+  const v=r.got===t.pts?'ok':r.got>0?'part':'bad';
+  el.classList.add('s-'+v);
+  const head={ok:r.ff?'Richtig – Folgefehler berücksichtigt.':'Richtig!',part:`Teilweise richtig (${f1(r.got)} von ${t.pts} P).`,bad:'Leider falsch.'}[v];
+  let msg='';
+  if(v!=='ok'||r.ff){msg=(r.ff?'<p>Du hast mit deinem eigenen Zwischenergebnis richtig weitergerechnet.</p>':'')+solutionHTML(t)+`<p>${t.ex}</p>`;}
+  else if(t.exOk) msg=`<p>${t.exOk}</p>`;
+  fb.className='fb '+v;fb.hidden=false;fb.innerHTML=`<span class="v">${head}</span>${msg}`;
+  $$('input,select',el).forEach(x=>x.disabled=true);
+  const b=$('[data-check]',el);b.disabled=true;b.textContent='Geprüft';
+  update();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-check]');if(b&&!b.disabled){ask(b.dataset.check);return;}
+  const y=e.target.closest('[data-confirm]');if(y){const id=y.dataset.confirm,el=taskEl(id);$('.confirm',el).hidden=true;$('[data-check]',el).hidden=false;check(id);return;}
+  const n=e.target.closest('[data-cancel]');if(n)cancelAsk(n.dataset.cancel);});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.task input[type=text]')){e.preventDefault();const b=$('[data-check]',e.target.closest('.task'));if(b&&!b.disabled&&!b.hidden)ask(b.dataset.check);}});
+
+const secIds=s=>Object.keys(T).filter(k=>T[k].sec===s);
+const secMax=s=>secIds(s).reduce((a,k)=>a+T[k].pts,0);
+const secGot=s=>secIds(s).filter(k=>RES[k]).reduce((a,k)=>a+RES[k].got,0);
+const TOTAL=Object.values(T).reduce((a,t)=>a+t.pts,0);
+function update(){
+  const got=Object.values(RES).reduce((a,r)=>a+r.got,0),done=Object.values(RES).reduce((a,r)=>a+r.max,0);
+  $('#barFill').style.width=(done/TOTAL*100)+'%';
+  $('#barTxt').textContent=`${f1(got)} / ${f1(done)} P · ${Object.keys(RES).length}/${Object.keys(T).length} Aufgaben`;
+  Object.keys(SECS).forEach(s=>{const b=$(`[data-badge="${s}"]`),ids=secIds(s),d=ids.filter(k=>RES[k]).length;
+    if(b){b.textContent=`${d}/${ids.length}`;b.classList.toggle('full',d===ids.length);}
+    const sp=$(`[data-secpts="${s}"]`);if(sp)sp.textContent=`${f1(secGot(s))} von ${secMax(s)} Punkten`;});
+  if(typeof onUpdate==='function') onUpdate();
+}
+function renderResult(){
+  const got=Object.values(RES).reduce((a,r)=>a+r.got,0),cnt=Object.keys(RES).length,all=Object.keys(T).length,p=got/TOTAL*100,g=noteOf(p);
+  $('#e-note').textContent=cnt?g:'–';
+  $('#e-pts').textContent=`${f1(got)} von ${TOTAL} Punkten`;
+  $('#e-pct').textContent=cnt?`${p.toLocaleString('de-DE',{maximumFractionDigits:1})} % · Note ${g} (${NOTE_TXT[g]})`:'Noch keine Aufgabe geprüft.';
+  $('#e-msg').textContent=!cnt?'Starte mit Kapitel 1.':cnt<all?`Du hast ${cnt} von ${all} Aufgaben bearbeitet. Die Note bezieht sich auf alle ${TOTAL} Punkte.`:
+    g<=2?'Stark! Du beherrschst das Thema sicher.':g<=4?'Solide Basis. Schau dir die Erklärungen zu deinen Fehlern noch einmal an.':'Arbeite die Kapitel noch einmal durch und nutze die Rechner zum Üben.';
+  let h='<tr><th>Kapitel</th><th class="n">Aufgaben</th><th class="n">Punkte</th><th class="n">Anteil</th></tr>';
+  Object.keys(SECS).forEach(s=>{const ids=secIds(s),d=ids.filter(k=>RES[k]).length,m=secMax(s),gg=secGot(s);
+    h+=`<tr><td>${SECS[s]}</td><td class="n">${d}/${ids.length}</td><td class="n">${f1(gg)} / ${m}</td><td class="n">${Math.round(gg/m*100)} %</td></tr>`;});
+  h+=`<tr class="sum"><td>Gesamt</td><td class="n">${cnt}/${all}</td><td class="n">${f1(got)} / ${TOTAL}</td><td class="n">${Math.round(p)} %</td></tr>`;
+  $('#e-tbl').innerHTML=h;
+  const wrong=Object.keys(RES).filter(k=>RES[k].got<RES[k].max);
+  $('#e-open').innerHTML=wrong.length?`<h3>Noch einmal ansehen</h3><p>${wrong.map(k=>`<button class="chip" data-jump="${k}">Aufgabe ${T[k].no}</button>`).join(' ')}</p>`:'';
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const id=b.dataset.jump;show(T[id].sec);setTimeout(()=>taskEl(id).scrollIntoView({behavior:'smooth',block:'center'}),30);});
+let armedReset=false;
+$('#resetBtn').addEventListener('click',()=>{
+  if(!armedReset){armedReset=true;$('#resetBtn').textContent='Wirklich alles löschen?';$('#resetHint').textContent='Zum Bestätigen noch einmal tippen.';setTimeout(()=>{armedReset=false;$('#resetBtn').textContent='Alle Antworten zurücksetzen';$('#resetHint').textContent='';},4000);return;}
+  armedReset=false;Object.keys(RES).forEach(k=>delete RES[k]);Object.keys(ANS).forEach(k=>delete ANS[k]);
+  $$('[data-task]').forEach(renderTask);$('#resetBtn').textContent='Alle Antworten zurücksetzen';$('#resetHint').textContent='Alle Antworten wurden gelöscht.';update();renderResult();
+});
+$$('[data-task]').forEach(renderTask);update();
+show((location.hash||'').slice(1)||TABS[0]);
+
+})();
+</script>
+</body>
+</html>
