@@ -717,16 +717,14 @@ function buildQuiz(){
 function showResult(){
   var card=document.getElementById('result-card');if(card)card.style.display='block';
   var pct=Math.round(qC/QUIZ.length*100);
-  var mss;
-  if(pct>=95)mss=15;else if(pct>=90)mss=14;else if(pct>=85)mss=13;else if(pct>=80)mss=12;
-  else if(pct>=75)mss=11;else if(pct>=70)mss=10;else if(pct>=65)mss=9;else if(pct>=60)mss=8;
-  else if(pct>=55)mss=7;else if(pct>=50)mss=6;else if(pct>=45)mss=5;else if(pct>=40)mss=4;
-  else if(pct>=34)mss=3;else if(pct>=27)mss=2;else if(pct>=20)mss=1;else mss=0;
-  var note=mss+' MSS-Punkte',txt;
-  if(pct>=80)txt="Sehr gut! Du beherrschst die Kostentr\u00e4gerrechnung sicher.";
-  else if(pct>=65)txt="Gut. Sieh dir die Aufgaben mit Fehlern noch einmal an.";
+  var nt;
+  if(pct>=92)nt='1 \u2013 sehr gut';else if(pct>=81)nt='2 \u2013 gut';else if(pct>=67)nt='3 \u2013 befriedigend';
+  else if(pct>=50)nt='4 \u2013 ausreichend';else if(pct>=30)nt='5 \u2013 mangelhaft';else nt='6 \u2013 ungen\u00fcgend';
+  var note='Note '+nt+' (IHK-Schl\u00fcssel)',txt;
+  if(pct>=81)txt="Sehr gut! Du beherrschst die Kostentr\u00e4gerrechnung sicher.";
+  else if(pct>=67)txt="Gut. Sieh dir die Aufgaben mit Fehlern noch einmal an.";
   else if(pct>=50)txt="Rechne das Kalkulationsschema vorw\u00e4rts und r\u00fcckw\u00e4rts noch einmal durch.";
-  else if(pct>=34)txt="Arbeite besonders die Bezugsgr\u00f6\u00dfen der Prozents\u00e4tze noch einmal durch.";
+  else if(pct>=30)txt="Arbeite besonders die Bezugsgr\u00f6\u00dfen der Prozents\u00e4tze noch einmal durch.";
   else txt="Geh die Kapitel noch einmal von vorn durch und nutze die Rechenaufgaben.";
   var s=document.getElementById('res-score');
   if(s)s.textContent=qC+' von '+QUIZ.length+' richtig ('+pct+' %)';
