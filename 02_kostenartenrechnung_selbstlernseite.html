@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kostenartenrechnung &ndash; Selbstlernseite</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#1a1a2e;--bg:#f5f0e8;--light:#faf7f2;--teal:#2d6e7e;--teal-l:#e4f0f3;
+--gold:#b8860b;--gold-l:#fdf6dc;--red:#c84b31;--red-l:#fdecea;--green:#2e7d32;--green-l:#e8f5e9;
+--border:#d4c8a8;--shadow:0 2px 8px rgba(26,26,46,.1);--r:6px;}
+body{font-family:Georgia,serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+header{background:var(--ink);color:#fff;padding:1.7rem 1.5rem 1.4rem;text-align:center;}
+header .bc{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;margin-bottom:.4rem;}
+header h1{font-size:1.7rem;font-weight:normal;margin-bottom:.3rem;}
+header .desc{font-family:'Trebuchet MS',sans-serif;font-size:.83rem;color:#b0c0d8;max-width:640px;margin:0 auto;}
+.ps{background:#0d1124;padding:.5rem 1.5rem;display:flex;align-items:center;gap:.8rem;}
+.ps .lbl{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;white-space:nowrap;}
+.pb{flex:1;background:#2a3050;border-radius:99px;height:5px;}
+.pb-fill{height:100%;background:var(--teal);border-radius:99px;width:0;transition:width .4s;}
+.pb-pct{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;min-width:3.4rem;text-align:right;}
+nav.tabs{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:50;}
+nav.tabs::-webkit-scrollbar{display:none;}
+nav.tabs button{flex:0 0 auto;background:none;border:none;padding:.62rem .85rem;font-family:'Trebuchet MS',sans-serif;font-size:.76rem;font-weight:600;color:#666;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+nav.tabs button.active,nav.tabs button:hover{color:var(--teal);border-bottom-color:var(--teal);}
+nav.tabs button.done::after{content:' \2713';color:var(--green);font-size:.7rem;}
+main{max-width:900px;margin:0 auto;padding:1.4rem 1rem 3rem;}
+.tab-panel{display:none;scroll-margin-top:50px;}.tab-panel.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.4rem;margin-bottom:1rem;box-shadow:var(--shadow);scroll-margin-top:50px;}
+.card h2{font-size:1.02rem;color:var(--teal);margin-bottom:.6rem;}
+.card p,.card li{font-size:.92rem;line-height:1.72;margin-bottom:.3rem;}
+.card ul{padding-left:1.2rem;margin:.3rem 0;}
+.def-box{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:0 var(--r) var(--r) 0;padding:.75rem 1rem;margin:.6rem 0;font-size:.92rem;}
+.info-gold{background:var(--gold-l);border-left:4px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.info-teal{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.info-green{background:var(--green-l);border-left:4px solid var(--green);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:.7rem 0;}
+.gbox{border-radius:var(--r);padding:.85rem 1rem;border:2px solid;}
+.gbox .gt{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.3rem;}
+.gbox p{font-size:.86rem;margin:0;}
+table.t{width:100%;border-collapse:collapse;font-size:.86rem;margin:.6rem 0;}
+table.t th{background:var(--ink);color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:.78rem;padding:.45rem .6rem;text-align:left;}
+table.t td{padding:.45rem .6rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55;overflow-wrap:break-word;}
+table.t tr:nth-child(even) td{background:var(--light);}
+.formel{background:var(--ink);color:#e8f0fe;border-radius:var(--r);padding:.75rem 1rem;margin:.6rem 0;text-align:center;font-size:.92rem;}
+.formel .ft{font-family:'Trebuchet MS',sans-serif;font-size:.7rem;color:#8ca0be;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;}
+.formelbox{background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.7rem 1rem;margin-bottom:.8rem;font-family:'Trebuchet MS',sans-serif;font-size:.87rem;line-height:1.8;}
+.schritte{display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem;}
+.schritt{display:flex;gap:.7rem;align-items:flex-start;background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;font-size:.89rem;}
+.sn{background:var(--teal);color:#fff;width:1.55rem;height:1.55rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.8rem;flex-shrink:0;}
+/* Simulation */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.check-btn{font-family:'Trebuchet MS',sans-serif;font-size:.8rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.35rem .8rem;cursor:pointer;}
+.check-btn.grau{background:#777;}.check-btn.grau:hover{background:#5f5f5f;}
+
+
+/* Glossar */
+.gl{border-bottom:1.5px dotted var(--teal);cursor:help;color:inherit;}
+.gl::after{content:'?';font-family:'Trebuchet MS',sans-serif;font-size:.62em;font-weight:700;color:#fff;background:var(--teal);border-radius:50%;width:1.05em;height:1.05em;display:inline-flex;align-items:center;justify-content:center;vertical-align:super;margin-left:.15em;line-height:1;}
+.gl.aktiv{background:var(--gold-l);border-bottom-color:var(--gold);}
+.gl.aktiv::after{background:var(--gold);}
+.gl-tip{position:absolute;display:none;z-index:200;background:#fff;border:2px solid var(--teal);border-radius:var(--r);padding:.7rem .85rem .75rem;box-shadow:0 4px 16px rgba(26,26,46,.22);font-family:Georgia,serif;}
+.gl-tip strong{display:block;font-family:'Trebuchet MS',sans-serif;font-size:.85rem;color:var(--teal);margin-bottom:.3rem;padding-right:1.2rem;}
+.gl-tip p{font-size:.85rem;line-height:1.6;margin:0;color:var(--ink);}
+.gl-tip .gl-x{position:absolute;top:.35rem;right:.45rem;width:1.15rem;height:1.15rem;border:1px solid var(--teal);border-radius:3px;color:var(--teal);font-family:'Trebuchet MS',sans-serif;font-size:.72rem;line-height:1.05rem;text-align:center;cursor:pointer;}
+/* Aufgaben */
+.rechen-block{background:var(--light);border:1.5px solid var(--teal);border-radius:var(--r);padding:.95rem 1.1rem;margin-bottom:.85rem;}
+.rechen-title{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;font-weight:700;color:var(--teal);margin-bottom:.3rem;}
+.rechen-kontext{font-size:.88rem;line-height:1.62;margin-bottom:.6rem;color:#333;overflow-wrap:break-word;}
+.rechen-row{margin-bottom:.6rem;}
+.rechen-frage{font-size:.88rem;font-weight:600;margin-bottom:.3rem;overflow-wrap:break-word;}
+.rechen-inline{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.rechen-inp{border:1.5px solid var(--border);border-radius:4px;padding:.3rem .5rem;font-size:.88rem;width:125px;font-family:Georgia,serif;text-align:right;}
+.rechen-inp.ok{border-color:var(--green);background:var(--green-l);}
+.rechen-inp.nok{border-color:var(--red);background:var(--red-l);}
+.rechen-unit{font-size:.83rem;color:#666;min-width:1.2rem;}
+.rechen-check{font-family:'Trebuchet MS',sans-serif;font-size:.78rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.32rem .78rem;cursor:pointer;}
+.rechen-check:hover{background:#235a68;}
+.rechen-fb{font-size:.83rem;margin-top:.3rem;padding:.38rem .65rem;border-radius:4px;line-height:1.5;display:none;overflow-wrap:break-word;}
+.rechen-fb.show{display:block;}
+.rechen-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.rechen-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.zu-block,.aufg-block{background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.75rem .95rem;margin-bottom:.5rem;scroll-margin-top:50px;}
+.zu-nr,.aufg-nr{font-family:'Trebuchet MS',sans-serif;font-size:.72rem;font-weight:700;color:var(--teal);margin-bottom:.22rem;}
+.zu-text{font-size:.91rem;margin-bottom:.45rem;line-height:1.6;overflow-wrap:break-word;}
+.zu-sel{background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:.32rem .55rem;font-size:.87rem;width:100%;max-width:300px;}
+.zu-sel.ok{border-color:var(--green);background:var(--green-l);}
+.zu-sel.nok{border-color:var(--red);background:var(--red-l);}
+.zu-fb{font-size:.84rem;margin-top:.35rem;line-height:1.55;display:none;padding:.42rem .7rem;border-radius:4px;overflow-wrap:break-word;}
+.zu-fb.show{display:block;}
+.zu-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.zu-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.aufg-frage{font-size:.91rem;margin-bottom:.45rem;line-height:1.6;overflow-wrap:break-word;hyphens:auto;font-weight:600;}
+.aufg-opts{display:flex;flex-direction:column;gap:.28rem;}
+.aufg-btn{width:100%;white-space:normal;overflow-wrap:break-word;hyphens:auto;background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:.5rem .8rem;font-size:.87rem;font-family:Georgia,serif;text-align:left;cursor:pointer;line-height:1.5;}
+.aufg-btn:hover:not(:disabled){background:var(--teal-l);border-color:var(--teal);}
+.aufg-btn.correct{background:var(--green-l);border-color:var(--green);color:var(--green);font-weight:600;}
+.aufg-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.aufg-btn:disabled{cursor:default;opacity:.92;}
+.aufg-fb{margin-top:.45rem;padding:.45rem .75rem;border-radius:4px;font-size:.85rem;line-height:1.6;display:none;overflow-wrap:break-word;}
+.aufg-fb.show{display:block;}
+.aufg-fb.correct{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.aufg-fb.wrong{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.quiz-block{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--shadow);scroll-margin-top:50px;}
+.quiz-nr{font-family:'Trebuchet MS',sans-serif;font-size:.74rem;color:var(--teal);font-weight:700;margin-bottom:.25rem;}
+.quiz-frage{font-size:.94rem;font-weight:600;margin-bottom:.65rem;line-height:1.6;overflow-wrap:break-word;hyphens:auto;}
+.mc-opts{display:flex;flex-direction:column;gap:.3rem;}
+.mc-btn{width:100%;white-space:normal;overflow-wrap:break-word;hyphens:auto;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.5rem .82rem;font-size:.88rem;font-family:Georgia,serif;text-align:left;cursor:pointer;line-height:1.5;}
+.mc-btn:hover:not(:disabled){background:var(--teal-l);border-color:var(--teal);}
+.mc-btn.correct{background:var(--green-l);border-color:var(--green);color:var(--green);font-weight:600;}
+.mc-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.mc-btn:disabled{cursor:default;opacity:.92;}
+.fb-box{margin-top:.5rem;padding:.55rem .82rem;border-radius:var(--r);font-size:.85rem;line-height:1.6;display:none;overflow-wrap:break-word;}
+.fb-box.show{display:block;}
+.fb-box.correct{background:var(--green-l);border-left:4px solid var(--green);color:#1b5e20;}
+.fb-box.wrong{background:var(--red-l);border-left:4px solid var(--red);color:#b71c1c;}
+.result-card{background:#fff;border:2px solid var(--teal);border-radius:var(--r);padding:1.4rem;text-align:center;}
+.result-score{font-size:1.32rem;color:#555;font-family:'Trebuchet MS',sans-serif;}
+.result-note{font-size:2.3rem;font-weight:700;color:var(--teal);margin:.3rem 0;}
+.tab-nav{display:flex;justify-content:space-between;margin-top:1.3rem;border-top:1px solid var(--border);padding-top:.85rem;gap:.5rem;}
+.btn-nav{font-family:'Trebuchet MS',sans-serif;font-size:.79rem;font-weight:700;padding:.42rem .85rem;border-radius:4px;border:1.5px solid var(--teal);color:var(--teal);background:transparent;cursor:pointer;}
+.btn-nav:hover{background:var(--teal);color:#fff;}
+.btn-nav.primary{background:var(--teal);color:#fff;}
+@media print{nav.tabs,.ps,.tab-nav{display:none!important;}.tab-panel{display:block!important;}
+.gl::after{display:none;}.gl-tip{display:none!important;}
+.card{box-shadow:none!important;break-inside:avoid;}body{background:#fff!important;}@page{margin:1.5cm;}}
+@media(max-width:600px){.grid2{grid-template-columns:1fr;}header h1{font-size:1.33rem;}
+main{padding:1rem .7rem 2.5rem;}.aufg-btn,.mc-btn{font-size:.86rem;padding:.5rem .65rem;}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.bgbar{display:flex;align-items:center;gap:.7rem;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.5rem .8rem;margin-bottom:.8rem;}
+.bgbar .bgl{font-family:'Trebuchet MS',sans-serif;font-size:.76rem;color:#666;white-space:nowrap;}
+.bgtrack{flex:1;background:#e8e0cc;border-radius:99px;height:6px;}
+.bgfill{height:100%;background:var(--teal);border-radius:99px;width:0;transition:width .35s;}
+.bgpct{font-family:'Trebuchet MS',sans-serif;font-size:.76rem;font-weight:700;color:var(--teal);min-width:3.4rem;text-align:right;}
+
+
+
+
+
+
+
+.rg label{display:block;font-family:'Trebuchet MS',sans-serif;font-size:.79rem;color:#444;margin-bottom:.15rem;}
+.rv{font-weight:700;color:var(--teal);font-size:.9rem;}
+.rg input[type=range]{width:100%;accent-color:var(--teal);height:1.4rem;}
+
+
+
+
+
+
+
+
+
+
+
+.check-btn{font-family:'Trebuchet MS',sans-serif;font-size:.79rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.33rem .8rem;cursor:pointer;}
+.check-btn.grau{background:#777;}.check-btn.grau:hover{background:#5f5f5f;}
+table.t td.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.t td.sieg-a{background:#e3f2fd!important;color:#1565c0;font-weight:700;}
+table.t td.sieg-b{background:var(--red-l)!important;color:var(--red);font-weight:700;}
+.card h3{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;color:var(--ink);margin:.8rem 0 .4rem;}
+
+
+
+.denk{background:var(--gold-l);border:1.5px dashed var(--gold);border-radius:var(--r);padding:.75rem 1rem;margin-top:.7rem;font-size:.89rem;}
+.denk ul{padding-left:1.2rem;margin-top:.3rem;}
+.denk li{margin-bottom:.22rem;font-size:.88rem;}
+.regler{grid-template-columns:1fr 1fr;}
+sup{font-size:.72em;}sub{font-size:.72em;}
+table.t tr.sum td{background:var(--teal-l);border-top:2px solid var(--teal);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.fazit{border-radius:var(--r);padding:.55rem .9rem;font-size:.89rem;text-align:center;font-family:'Trebuchet MS',sans-serif;}
+.fazit.a{background:var(--green-l);border:1.5px solid var(--green);color:#1b5e20;}
+.fazit.b{background:var(--red-l);border:1.5px solid var(--red);color:#8c2f1c;}
+.fazit.neutral{background:var(--gold-l);border:1.5px solid var(--gold);color:#7a5c08;}
+
+
+
+
+
+
+
+
+
+.prst{font-family:'Trebuchet MS',sans-serif;font-size:.77rem;font-weight:700;background:#fff;border:1.5px solid var(--gold);color:var(--gold);border-radius:4px;padding:.32rem .7rem;cursor:pointer;}
+.prst:hover{background:var(--gold);color:#fff;}
+
+}
+
+
+
+
+
+
+
+
+
+
+@media(max-width:640px){.dreifeld,.grid3,.grid2{grid-template-columns:1fr;}}
+
+.dreifeld{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin:.7rem 0;}
+.df{background:#fff;border:2px solid;border-radius:var(--r);overflow:hidden;padding-bottom:.6rem;}
+.dft{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.9rem;text-align:center;padding:.2rem .5rem;}
+.dfp{font-size:.8rem;color:#666;text-align:center;padding:0 .6rem;margin:0;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin:.7rem 0;}
+.fall{background:var(--light);border-left:4px solid var(--ink);border-radius:0 var(--r) var(--r) 0;padding:.8rem 1.05rem;font-size:.9rem;line-height:1.68;margin-bottom:.5rem;}
+.schritte{display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem;}
+.schritt{display:flex;gap:.7rem;align-items:flex-start;background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;font-size:.89rem;}
+.sn{background:var(--teal);color:#fff;width:1.55rem;height:1.55rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.8rem;flex-shrink:0;}
+
+
+
+
+
+
+
+
+
+
+
+
+@media(max-width:640px){.dreifeld,.grid3,.grid2{grid-template-columns:1fr;}}
+
+.rechen-block{background:var(--light);border:1.5px solid var(--teal);border-radius:var(--r);padding:.95rem 1.1rem;margin-bottom:.85rem;}
+.rechen-title{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;font-weight:700;color:var(--teal);margin-bottom:.3rem;}
+.rechen-kontext{font-size:.88rem;line-height:1.62;margin-bottom:.6rem;color:#333;overflow-wrap:break-word;}
+.rechen-row{margin-bottom:.6rem;}
+.rechen-frage{font-size:.88rem;font-weight:600;margin-bottom:.3rem;overflow-wrap:break-word;}
+.rechen-inline{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.rechen-inp{border:1.5px solid var(--border);border-radius:4px;padding:.3rem .5rem;font-size:.88rem;width:125px;font-family:Georgia,serif;text-align:right;}
+.rechen-inp.ok{border-color:var(--green);background:var(--green-l);}
+.rechen-inp.nok{border-color:var(--red);background:var(--red-l);}
+.rechen-unit{font-size:.83rem;color:#666;min-width:1.2rem;}
+.rechen-check{font-family:'Trebuchet MS',sans-serif;font-size:.78rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.32rem .78rem;cursor:pointer;}
+.rechen-check:hover{background:#235a68;}
+.rechen-fb{font-size:.83rem;margin-top:.3rem;padding:.38rem .65rem;border-radius:4px;line-height:1.5;display:none;overflow-wrap:break-word;}
+.rechen-fb.show{display:block;}
+.rechen-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.rechen-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.tablewrap{overflow-x:auto;margin:.6rem 0;}
+table.bab{width:100%;min-width:520px;border-collapse:collapse;font-size:.84rem;}
+table.bab th{background:var(--ink);color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:.76rem;padding:.42rem .55rem;text-align:left;white-space:nowrap;}
+table.bab td{padding:.42rem .55rem;border-bottom:1px solid var(--border);vertical-align:top;}
+table.bab tr:nth-child(even) td{background:var(--light);}
+table.bab td.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.bab tr.sum td{background:var(--teal-l);border-top:2px solid var(--teal);}
+</style>
+</head>
+<body>
+<header>
+<div class="bc">Einzelhandel &rsaquo; 3. Ausbildungsjahr &rsaquo; Kosten- und Leistungsrechnung</div>
+<h1>Die Kostenartenrechnung</h1>
+<p class="desc">Einzel- und Gemeinkosten &bull; fixe und variable Kosten &bull; der Betriebsabrechnungsbogen</p>
+</header>
+<div class="ps"><span class="lbl">Quiz-Fortschritt:</span>
+<div class="pb"><div class="pb-fill" id="pb-fill"></div></div>
+<span class="pb-pct" id="pb-pct">0 / 15</span></div>
+<nav class="tabs">
+<button class="active" data-tab="grundlagen">1 &ndash; Grundlagen</button>
+<button data-tab="einteilung">2 &ndash; Einzel- und Gemeinkosten</button>
+<button data-tab="fixvar">3 &ndash; Fixe und variable Kosten</button>
+<button data-tab="verteilung">4 &ndash; Gemeinkosten verteilen</button>
+<button data-tab="wiederholung">5 &ndash; Fachbegriffe</button>
+<button data-tab="quiz">6 &ndash; Quiz</button>
+</nav>
+<main>
+
+<section class="tab-panel active" id="tab-grundlagen">
+<div class="card">
+<h2>Der erste Schritt der KLR</h2>
+<div class="def-box">Die <span class="gl" data-gl="kostenartenrechnung">Kostenartenrechnung</span> beantwortet die Frage: <strong>Welche Kosten sind in welcher H&ouml;he angefallen?</strong> Sie ist der Ausgangspunkt der gesamten Kosten- und Leistungsrechnung.</div>
+<p>Grundlage sind die Zahlen aus der Abgrenzungsrechnung &ndash; die bereits von neutralem Aufwand bereinigten und um kalkulatorische Kosten erg&auml;nzten Betr&auml;ge.</p>
+</div>
+
+<div class="card">
+<h2>Die drei Teilbereiche im Zusammenhang</h2>
+<div class="dreifeld">
+<div class="df" style="border-color:#1565c0;">
+<div class="dft" style="color:#1565c0;padding-top:.8rem;">1. <span class="gl" data-gl="kostenartenrechnung">Kostenartenrechnung</span></div>
+<p class="dfp"><strong>Welche</strong> Kosten sind angefallen?</p></div>
+<div class="df" style="border-color:#2e7d32;">
+<div class="dft" style="color:#2e7d32;padding-top:.8rem;">2. <span class="gl" data-gl="kostenstellenrechnung">Kostenstellenrechnung</span></div>
+<p class="dfp"><strong>Wo</strong> sind sie angefallen?</p></div>
+<div class="df" style="border-color:#b8860b;">
+<div class="dft" style="color:#b8860b;padding-top:.8rem;">3. <span class="gl" data-gl="kostentraegerrechnung">Kostentr&auml;gerrechnung</span></div>
+<p class="dfp"><strong>Wof&uuml;r</strong> sind sie angefallen?</p></div>
+</div>
+<div class="info-teal">Diese Seite behandelt Schritt 1 &ndash; ausgehend von den <span class="gl" data-gl="kalkulatorischekosten">kalkulatorischen Kosten</span> der Abgrenzungsrechnung &ndash; und liefert mit dem <span class="gl" data-gl="bab">Betriebsabrechnungsbogen</span> bereits die Br&uuml;cke zu Schritt 2.</div>
+</div>
+
+<div class="card">
+<h2>Wie werden Kostenarten gegliedert?</h2>
+<p>Am h&auml;ufigsten orientiert sich die Gliederung an den verbrauchten Produktionsfaktoren:</p>
+<table class="t">
+<thead><tr><th>Kostenart</th><th>Beispiel im Einzelhandel</th></tr></thead>
+<tbody>
+<tr><td><strong><span class="gl" data-gl="materialkosten">Materialkosten</span></strong></td><td>Wareneinsatz, Verpackungsmaterial</td></tr>
+<tr><td><strong>Personalkosten</strong></td><td>Gehalt der Verk&auml;uferinnen, Sozialabgaben</td></tr>
+<tr><td><strong>Kosten f&uuml;r Betriebsmittel</strong></td><td>Abschreibungen auf Ladeneinrichtung</td></tr>
+<tr><td><strong><span class="gl" data-gl="fremdleistungskosten">Kosten f&uuml;r Fremdleistungen</span></strong></td><td>Externe Reinigung, Wartung der Kassensysteme</td></tr>
+<tr><td><strong>Abgaben</strong></td><td>Gewerbesteuer, sonstige Betriebssteuern</td></tr>
+</tbody></table>
+<div class="info-gold"><strong>Wichtig:</strong> Jede Kostenart muss eindeutig und &uuml;berschneidungsfrei erfasst werden &ndash; sonst pflanzen sich Fehler in Kostenstellen- und Kostentr&auml;gerrechnung fort.</div>
+</div>
+
+<div class="card">
+<h2>Die Ergebnistabelle der Abgrenzungsrechnung: von der GuV zur KLR</h2>
+<p style="font-size:.89rem;">Bevor die Kostenartenrechnung beginnt, zeigt diese Tabelle, wie aus dem handelsrechtlichen Aufwand der Gewinn- und Verlustrechnung die betriebswirtschaftlichen Kosten werden &ndash; das Ergebnis der Abgrenzungsrechnung, mit dem die Kostenartenrechnung arbeitet.</p>
+<div class="tablewrap">
+<table class="bab">
+<thead><tr><th>Position</th><th>Aufwand lt. GuV (EUR)</th><th>Typ</th><th>Kosten lt. KLR (EUR)</th><th>Kostenart</th></tr></thead>
+<tbody>
+<tr><td>Wareneinsatz</td><td class="num">480.000</td><td>Zweckaufwand</td><td class="num">480.000</td><td>Grundkosten</td></tr>
+<tr><td>Personalkosten Verkauf</td><td class="num">165.000</td><td>Zweckaufwand</td><td class="num">165.000</td><td>Grundkosten</td></tr>
+<tr><td>Bilanzielle Abschreibung</td><td class="num">22.000</td><td>Zweckaufwand</td><td class="num">26.000</td><td>Anderskosten</td></tr>
+<tr><td>Spende an Sportverein</td><td class="num">1.500</td><td>Neutraler Aufwand</td><td class="num">0</td><td>&ndash;</td></tr>
+<tr><td>Verlust Wertpapierverkauf</td><td class="num">3.200</td><td>Neutraler Aufwand</td><td class="num">0</td><td>&ndash;</td></tr>
+<tr><td>Kalk. Unternehmerlohn</td><td class="num">0</td><td>kein Aufwand</td><td class="num">42.000</td><td>Zusatzkosten</td></tr>
+<tr><td>Kalk. Miete</td><td class="num">0</td><td>kein Aufwand</td><td class="num">18.000</td><td>Zusatzkosten</td></tr>
+<tr><td>Kalk. Zinsen</td><td class="num">0</td><td>kein Aufwand</td><td class="num">9.600</td><td>Zusatzkosten</td></tr>
+<tr class="sum"><td><strong>Summe</strong></td><td class="num"><strong>671.700</strong></td><td></td><td class="num"><strong>740.600</strong></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<div id="rechen-grundlagen"></div>
+<div class="info-red"><strong>Warum die Summen auseinanderfallen:</strong> 671.700 EUR Aufwand laut GuV werden zu 740.600 EUR Kosten in der KLR. Der Unterschied (68.900 EUR) erkl&auml;rt sich aus zwei Effekten: Die 4.700 EUR neutraler Aufwand (Spende und Wertpapierverlust) entfallen komplett, dafuer kommen 69.600 EUR <span class="gl" data-gl="kalkulatorischekosten">Zusatzkosten</span> hinzu, denen kein Aufwand gegen&uuml;bersteht, und die Abschreibung steigt kalkulatorisch um 4.000 EUR.</div>
+<div class="info-teal"><strong>Diese Tabelle ist der Ausgangspunkt der Kostenartenrechnung:</strong> Die rechte Spalte &ndash; die Kosten laut KLR &ndash; ist genau die Datenbasis, die im n&auml;chsten Schritt nach Kostenarten gegliedert und sp&auml;ter zur <span class="gl" data-gl="ergebnistabelle">Ergebnistabelle</span> zusammengefasst wird.</div>
+</div>
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Grundlagen</h2>
+<div id="aufg-grundlagen"></div></div>
+<div class="tab-nav"><span></span><button class="btn-nav primary" data-goto="einteilung">Weiter: Einzel- und Gemeinkosten &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-einteilung">
+<div class="card">
+<h2>Direkt zuordenbar oder nicht?</h2>
+<div class="grid2">
+<div class="gbox" style="border-color:#1565c0;background:#e3f2fd;">
+<div class="gt" style="color:#1565c0;"><span class="gl" data-gl="einzelkosten">Einzelkosten</span></div>
+<p style="font-size:.87rem;">Lassen sich <strong>direkt</strong> einem Kostentr&auml;ger zurechnen &ndash; ohne Umweg &uuml;ber einen Schl&uuml;ssel.</p>
+<p style="font-size:.8rem;color:#666;">Wareneinsatz eines bestimmten Artikels</p></div>
+<div class="gbox" style="border-color:#c84b31;background:#fdecea;">
+<div class="gt" style="color:#c84b31;"><span class="gl" data-gl="gemeinkosten">Gemeinkosten</span></div>
+<p style="font-size:.87rem;">Betreffen <strong>mehrere</strong> Kostentr&auml;ger gemeinsam &ndash; m&uuml;ssen &uuml;ber einen <span class="gl" data-gl="verteilungsschluessel">Verteilungsschl&uuml;ssel</span> aufgeteilt werden.</p>
+<p style="font-size:.8rem;color:#666;">Ladenmiete, Gehalt der Gesch&auml;ftsleitung</p></div>
+</div>
+<div class="info-red"><strong>Die Faustregel:</strong> Kann ich diesen Kostenposten ohne Nachdenken einem bestimmten Artikel zuordnen? Ja &rarr; Einzelkosten. Muss ich erst &uuml;berlegen, wie ich ihn aufteile? &rarr; Gemeinkosten.</div>
+</div>
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Einzel- und Gemeinkosten</h2>
+<div id="aufg-einteilung"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="grundlagen">&larr; Grundlagen</button>
+<button class="btn-nav primary" data-goto="fixvar">Weiter: Fixe und variable Kosten &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-fixvar">
+<div class="card">
+<h2>Wie reagieren Kosten auf die Besch&auml;ftigung?</h2>
+<div class="grid2">
+<div class="gbox" style="border-color:#7b1fa2;background:#f3e5f5;">
+<div class="gt" style="color:#7b1fa2;"><span class="gl" data-gl="fixkosten">Fixkosten</span></div>
+<p style="font-size:.87rem;">Bleiben in ihrer <strong>Gesamth&ouml;he konstant</strong>, unabh&auml;ngig vom <span class="gl" data-gl="beschaeftigungsgrad">Besch&auml;ftigungsgrad</span>.</p>
+<p style="font-size:.8rem;color:#666;">Ladenmiete, Versicherungsbeitr&auml;ge</p></div>
+<div class="gbox" style="border-color:#2e7d32;background:#e8f5e9;">
+<div class="gt" style="color:#2e7d32;"><span class="gl" data-gl="variablekosten">Variable Kosten</span></div>
+<p style="font-size:.87rem;">&Auml;ndern sich <strong>mit der Menge</strong> &ndash; steigen mit steigendem Absatz.</p>
+<p style="font-size:.8rem;color:#666;">Wareneinsatz, Verpackungsmaterial</p></div>
+</div>
+<div class="info-gold"><strong><span class="gl" data-gl="fixkostendegression">Fixkostendegression</span>:</strong> Die fixen St&uuml;ckkosten sinken mit steigender Menge, weil sich dieselben Fixkosten auf mehr Einheiten verteilen. Bei 1.000 Stueck Miete je Stueck: 20 EUR. Bei 2.000 Stueck: nur noch 10 EUR.</div>
+<div class="info-teal">Zwei Sonderf&auml;lle: <span class="gl" data-gl="sprungfix">sprungfixe Kosten</span> springen bei einer Kapazit&auml;tsgrenze auf ein neues Niveau. <span class="gl" data-gl="semivariabel">Gemischte (semivariable) Kosten</span> enthalten beide Anteile gleichzeitig.</div>
+</div>
+
+<div class="card">
+<h2>Die <span class="gl" data-gl="kostenfunktion">Kostenfunktion</span></h2>
+<div class="formel"><div class="ft">Gesamtkosten</div>
+K = Fixkosten + (variable St&uuml;ckkosten &times; Menge)</div>
+<p style="font-size:.89rem;">Mit der <span class="gl" data-gl="hochtief">Hoch-Tief-Methode</span> lassen sich Fixkosten und variable St&uuml;ckkosten aus zwei bekannten Punkten n&auml;herungsweise ermitteln.</p>
+<div class="formel"><div class="ft">Variable St&uuml;ckkosten</div>
+(Kosten bei h&ouml;chster Menge &minus; Kosten bei niedrigster Menge) &divide; (h&ouml;chste Menge &minus; niedrigste Menge)</div>
+<div class="formel"><div class="ft">Fixkosten</div>
+Gesamtkosten bei h&ouml;chster Menge &minus; (variable St&uuml;ckkosten &times; h&ouml;chste Menge)</div>
+</div>
+
+<div class="card">
+<h2>Fallbeispiel: Modehaus Winter GmbH</h2>
+<p style="font-size:.9rem;">Die Modehaus Winter GmbH hat &uuml;ber sechs Monate Absatzmenge und Gesamtkosten erfasst:</p>
+<table class="t">
+<thead><tr><th>Monat</th><th class="z">Menge (St&uuml;ck)</th><th class="z">Gesamtkosten (EUR)</th></tr></thead>
+<tbody>
+<tr><td>Januar</td><td class="num">3.200</td><td class="num">58.400</td></tr>
+<tr><td>Februar</td><td class="num">2.600</td><td class="num">51.200</td></tr>
+<tr><td>M&auml;rz</td><td class="num">4.100</td><td class="num">69.800</td></tr>
+<tr><td>April</td><td class="num">3.800</td><td class="num">65.600</td></tr>
+<tr class="sum"><td><strong>Mai (Tiefpunkt)</strong></td><td class="num"><strong>2.100</strong></td><td class="num"><strong>44.900</strong></td></tr>
+<tr class="sum"><td><strong>Juni (Hochpunkt)</strong></td><td class="num"><strong>4.600</strong></td><td class="num"><strong>76.400</strong></td></tr>
+</tbody></table>
+<div id="rechen-fixvar"></div></div>
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Fixe und variable Kosten</h2>
+<div id="aufg-fixvar"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="einteilung">&larr; Einzel- und Gemeinkosten</button>
+<button class="btn-nav primary" data-goto="verteilung">Weiter: Gemeinkosten verteilen &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-verteilung">
+<div class="card">
+<h2>Die Ergebnistabelle &ndash; das Instrument der Kostenartenrechnung</h2>
+<div class="def-box">Die <span class="gl" data-gl="ergebnistabelle">Ergebnistabelle</span> ist das eigentliche Arbeitsergebnis der <span class="gl" data-gl="kostenartenrechnung">Kostenartenrechnung</span>: Jede erfasste Kostenart erscheint mit ihrem Betrag in einer Zeile, am Ende steht die Summenzeile mit den Gesamtkosten der Periode.</div>
+<p>Sie ist der direkte Nachfolger der Abgrenzungsrechnung: Aus <span class="gl" data-gl="gemeinkosten">Grundkosten</span>, Anderskosten und Zusatzkosten wird eine vollst&auml;ndige, nach Kostenarten gegliederte &Uuml;bersicht.</p>
+</div>
+
+<div class="card">
+<h2>Fallbeispiel: Ergebnistabelle der Modehaus Winter GmbH</h2>
+<p style="font-size:.9rem;">Aus der Abgrenzungsrechnung ergeben sich acht Kostenarten, gegliedert nach Produktionsfaktoren und kalkulatorischen Zusatzkosten:</p>
+<div class="tablewrap">
+<table class="bab">
+<thead><tr><th>Kostenart</th><th>Betrag (EUR)</th><th>Anteil</th></tr></thead>
+<tbody>
+<tr><td><span class="gl" data-gl="materialkosten">Materialkosten</span> (Wareneinsatz)</td><td class="num">460.000</td><td class="num">62,11 %</td></tr>
+<tr><td>Personalkosten</td><td class="num">165.000</td><td class="num">22,28 %</td></tr>
+<tr><td>Kosten f&uuml;r Betriebsmittel (Abschreibungen)</td><td class="num">26.000</td><td class="num">3,51 %</td></tr>
+<tr><td><span class="gl" data-gl="fremdleistungskosten">Kosten f&uuml;r Fremdleistungen</span></td><td class="num">12.000</td><td class="num">1,62 %</td></tr>
+<tr><td>Abgaben</td><td class="num">8.000</td><td class="num">1,08 %</td></tr>
+<tr><td><span class="gl" data-gl="kalkulatorischekosten">Kalkulatorischer</span> Unternehmerlohn</td><td class="num">42.000</td><td class="num">5,67 %</td></tr>
+<tr><td>Kalkulatorische Miete</td><td class="num">18.000</td><td class="num">2,43 %</td></tr>
+<tr><td>Kalkulatorische Zinsen</td><td class="num">9.600</td><td class="num">1,30 %</td></tr>
+<tr class="sum"><td><strong>Kosten insgesamt</strong></td><td class="num"><strong>740.600</strong></td><td class="num"><strong>100,00 %</strong></td></tr>
+</tbody>
+</table>
+</div>
+<div id="rechen-verteilung"></div>
+<div class="info-teal"><strong>Wiedererkennen:</strong> Die Gesamtsumme von 740.600 EUR entspricht genau dem Ergebnis der Abgrenzungsrechnung &ndash; die Ergebnistabelle ordnet dieselben Kosten nur nach Kostenarten statt nach Grund-, Anders- und Zusatzkosten.</div>
+<div class="info-gold"><strong>Strukturanalyse:</strong> Die Prozentspalte zeigt sofort, welche Kostenart das Ergebnis pr&auml;gt &ndash; hier tragen Material- und Personalkosten zusammen &uuml;ber 84&nbsp;% der Gesamtkosten. Das lenkt die Aufmerksamkeit auf die wichtigsten Stellschrauben.</div>
+</div>
+
+<div class="card">
+<h2>Die Ergebnistabelle als Vorbereitung f&uuml;r die Kostenstellenrechnung</h2>
+<p style="font-size:.89rem;">F&uuml;r die Verteilung auf <span class="gl" data-gl="kostenstelle">Kostenstellen</span> reicht die reine Betragsspalte nicht aus. Entscheidend ist: Welcher Teil jeder Kostenart ist bereits direkt zuordenbar (<span class="gl" data-gl="einzelkosten">Einzelkosten</span>), und welcher Teil muss noch verteilt werden (<span class="gl" data-gl="gemeinkosten">Gemeinkosten</span>)?</p>
+<div class="tablewrap">
+<table class="bab">
+<thead><tr><th>Kostenart</th><th>Gesamt (EUR)</th><th>Einzelkosten (EUR)</th><th>Gemeinkosten (EUR)</th></tr></thead>
+<tbody>
+<tr><td>Materialkosten (Wareneinsatz)</td><td class="num">460.000</td><td class="num">460.000</td><td class="num">0</td></tr>
+<tr><td>Personalkosten</td><td class="num">165.000</td><td class="num">95.000</td><td class="num">70.000</td></tr>
+<tr><td>Kosten f&uuml;r Betriebsmittel (Abschreibungen)</td><td class="num">26.000</td><td class="num">0</td><td class="num">26.000</td></tr>
+<tr><td>Kosten f&uuml;r Fremdleistungen</td><td class="num">12.000</td><td class="num">0</td><td class="num">12.000</td></tr>
+<tr><td>Abgaben</td><td class="num">8.000</td><td class="num">0</td><td class="num">8.000</td></tr>
+<tr><td>Kalkulatorischer Unternehmerlohn</td><td class="num">42.000</td><td class="num">0</td><td class="num">42.000</td></tr>
+<tr><td>Kalkulatorische Miete</td><td class="num">18.000</td><td class="num">0</td><td class="num">18.000</td></tr>
+<tr><td>Kalkulatorische Zinsen</td><td class="num">9.600</td><td class="num">0</td><td class="num">9.600</td></tr>
+<tr class="sum"><td><strong>Kosten insgesamt</strong></td><td class="num"><strong>740.600</strong></td><td class="num"><strong>555.000</strong></td><td class="num"><strong>185.600</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="info-red"><strong>Der entscheidende Schritt:</strong> Nur die <span class="gl" data-gl="gemeinkosten">Gemeinkosten</span>-Spalte &ndash; hier 185.600 EUR &ndash; wandert weiter in die <span class="gl" data-gl="kostenstellenrechnung">Kostenstellenrechnung</span>. Die 555.000 EUR Einzelkosten sind bereits fertig zugeordnet und brauchen keinen Verteilungsschritt mehr.</div>
+<div class="info-teal"><strong>So liest man die Zeilen:</strong> Materialkosten sind zu 100&nbsp;% Einzelkosten &ndash; der Wareneinsatz eines Artikels ist direkt zuordenbar. Personalkosten sind gemischt: Verk&auml;uferinnen sind einer Abteilung zuordenbar, die Gesch&#228;ftsleitung dagegen nicht. Alle kalkulatorischen Kosten sind reine Gemeinkosten, da sie sich nie auf ein einzelnes Produkt beziehen lassen.</div>
+</div>
+
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Die Ergebnistabelle</h2>
+<div id="aufg-verteilung"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="fixvar">&larr; Fixe und variable Kosten</button>
+<button class="btn-nav primary" data-goto="wiederholung">Weiter: Fachbegriffe &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-wiederholung">
+<div class="card">
+<h2>Fachbegriffe wiederholen &ndash; 20 Fragen</h2>
+<p style="font-size:.88rem;color:#555;">Hier kommen alle Begriffe noch einmal dran, die auf dieser Seite als antippbare Erkl&auml;rung hinterlegt sind.</p>
+<div class="bgbar"><span class="bgl">Bearbeitet:</span>
+<div class="bgtrack"><div class="bgfill" id="bg-fill"></div></div>
+<span class="bgpct" id="bg-pct">0 / 20</span></div>
+<div id="bg-container"></div></div>
+<div class="card" id="bg-result" style="display:none;">
+<h2 style="text-align:center;">Ergebnis Fachbegriffe</h2>
+<div class="result-card"><div class="result-score" id="bg-score">&ndash;</div>
+<p id="bg-txt" style="font-size:.94rem;color:#444;margin-top:.4rem;"></p></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="verteilung">&larr; Gemeinkosten verteilen</button>
+<button class="btn-nav primary" data-goto="quiz">Weiter: Quiz &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-quiz">
+<div class="card"><h2>Abschlussquiz &ndash; 15 Fragen</h2><div id="quiz-container"></div></div>
+<div class="card" id="result-card" style="display:none;">
+<h2 style="text-align:center;">Dein Ergebnis</h2>
+<div class="result-card"><div class="result-score" id="res-score">&ndash;</div>
+<div class="result-note" id="res-note">&ndash;</div>
+<p id="res-txt" style="font-size:.94rem;color:#444;"></p></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="wiederholung">&larr; Fachbegriffe</button><span></span></div>
+</section>
+
+</main>
+<script>
+(function(){
+"use strict";
+var AUFG={"grundlagen": [{"q": "Welche Aufgabe hat die Kostenartenrechnung innerhalb der KLR?", "opts": ["Sie erfasst systematisch, welche Kostenarten in welcher Hoehe angefallen sind", "Sie ordnet Kosten einzelnen Produkten zu", "Sie ordnet Kosten einzelnen Abteilungen zu was bei genauer Pruefung nicht stimmt", "Sie ermittelt ausschliesslich den Gewinn"], "ok": 0, "ex": "Die Kostenartenrechnung ist der erste Schritt der KLR: Welche Kosten sind ueberhaupt entstanden - Material, Personal, Abschreibungen und so weiter?"}, {"q": "In welcher Reihenfolge stehen die drei Teilbereiche der KLR zueinander?", "opts": ["Kostentraeger, Kostenstelle, Kostenart", "Kostenart, Kostenstelle, Kostentraeger", "Kostenstelle, Kostentraeger, Kostenart", "Die Reihenfolge ist beliebig"], "ok": 1, "ex": "Zuerst wird erfasst, welche Kosten entstanden sind (Kostenart), dann wo sie angefallen sind (Kostenstelle), zuletzt wofuer (Kostentraeger)."}, {"q": "Woher stammen die Ausgangsdaten der Kostenartenrechnung?", "opts": ["Aus dem Sortimentskatalog", "Ausschliesslich aus Schaetzungen der Geschaeftsleitung - was hier nicht zutrifft", "Aus der Abgrenzungsrechnung, die Aufwand in Kosten ueberfuehrt hat", "Aus der Umsatzsteuervoranmeldung"], "ok": 2, "ex": "Die Abgrenzungsrechnung liefert die bereinigten Kosten - Grundkosten, Anderskosten, Zusatzkosten. Diese werden in der Kostenartenrechnung systematisch gegliedert."}, {"q": "Warum muss jede Kostenart eindeutig und ueberschneidungsfrei erfasst werden?", "opts": ["Weil dies gesetzlich fuer alle Betriebe vorgeschrieben ist was in dieser Form nicht gilt", "Weil das Finanzamt dies verlangt", "Weil sonst keine Umsatzsteuer berechnet werden kann", "Damit keine Kosten doppelt oder gar nicht erfasst werden und das Ergebnis stimmt"], "ok": 3, "ex": "Eine saubere, ueberschneidungsfreie Gliederung ist Grundvoraussetzung fuer eine korrekte Kostenrechnung - sonst summieren sich Fehler in den folgenden Teilbereichen fort."}, {"q": "Welches Kriterium wird bei der Gliederung nach Kostenarten meist zuerst angewendet?", "opts": ["Die Art der eingesetzten Produktionsfaktoren", "Die Postleitzahl der Kunden", "Die Reihenfolge im Alphabet", "Das Geburtsdatum der Mitarbeiter - was hier nicht zutrifft"], "ok": 0, "ex": "Kostenarten werden meist danach gegliedert, welcher Produktionsfaktor verbraucht wurde: Material, Arbeit, Betriebsmittel, Dienstleistungen Dritter, Abgaben."}], "einteilung": [{"q": "Wie unterscheidet man Kosten nach der Art der verbrauchten Produktionsfaktoren?", "opts": ["Nur in fixe und variable Kosten", "Materialkosten, Personalkosten, Kosten fuer Betriebsmittel, Fremdleistungen, Abgaben", "Nur in Einzelkosten und Gemeinkosten", "Nur in kalkulatorische und tatsaechliche Kosten was bei genauer Pruefung nicht stimmt"], "ok": 1, "ex": "Diese Gliederung orientiert sich am Faktor, der verbraucht wurde: Was wurde eingesetzt, um die Leistung zu erstellen?"}, {"q": "Was sind Einzelkosten?", "opts": ["Kosten, die nur einmal im Jahr anfallen", "Kosten unter einem bestimmten Mindestbetrag was bei genauer Pruefung nicht stimmt", "Kosten, die einem einzelnen Kostentraeger direkt zugerechnet werden koennen", "Kosten, die nur die Verwaltung betreffen"], "ok": 2, "ex": "Einzelkosten lassen sich ohne Umweg genau einem Produkt zuordnen - zum Beispiel der Stoff fuer ein bestimmtes Kleidungsstueck."}, {"q": "Was sind Gemeinkosten?", "opts": ["Kosten, die ausschliesslich den Einkauf betreffen", "Kosten, die nur bei Gemeinschaftsunternehmen entstehen was bei genauer Pruefung nicht stimmt obwohl das in der betrieblichen Praxis ni", "Kosten, die niemals anfallen", "Kosten, die mehreren Kostentraegern gemeinsam zuzurechnen sind und daher verteilt werden muessen"], "ok": 3, "ex": "Die Ladenmiete etwa laesst sich nicht direkt einem einzelnen Kleidungsstueck zuordnen - sie muss ueber einen Schluessel auf die Produkte verteilt werden."}, {"q": "Welches Beispiel ist typischerweise eine Einzelkostenart im Einzelhandel?", "opts": ["Der Einkaufspreis der verkauften Ware", "Die Ladenmiete", "Die Gehaltskosten der Geschaeftsleitung", "Die Kosten fuer die Alarmanlage"], "ok": 0, "ex": "Der Wareneinsatz laesst sich direkt dem verkauften Artikel zuordnen - eine klassische Einzelkostenart im Handel."}, {"q": "Wie unterscheiden sich fixe und variable Kosten?", "opts": ["Fixe Kosten aendern sich mit der Beschaeftigung, variable Kosten nicht was bei genauer Pruefung nicht stimmt", "Fixe Kosten bleiben unabhaengig von der Beschaeftigung konstant, variable Kosten aendern sich mit ihr", "Beide Kostenarten sind stets identisch hoch", "Fixe Kosten entstehen nur einmalig"], "ok": 1, "ex": "Die Ladenmiete faellt unabhaengig vom Umsatz in gleicher Hoehe an (fix), waehrend der Wareneinsatz mit der verkauften Menge steigt (variabel)."}], "fixvar": [{"q": "Welche Kostenart bleibt bei steigendem Umsatz in ihrer Gesamthoehe konstant?", "opts": ["Variable Kosten", "Einzelkosten", "Fixkosten", "Materialkosten"], "ok": 2, "ex": "Fixkosten wie Miete oder Versicherungsbeitraege fallen unabhaengig von der Ausbringungsmenge in gleicher Hoehe an."}, {"q": "Wie verhalten sich die fixen Stueckkosten bei steigender Menge?", "opts": ["Sie steigen proportional an", "Sie verdoppeln sich automatisch obwohl das in der Praxis anders ist", "Sie bleiben immer gleich", "Sie sinken, weil sich die Fixkosten auf mehr Stueck verteilen"], "ok": 3, "ex": "Je mehr Stueck produziert oder verkauft werden, desto geringer der Fixkostenanteil je Stueck - dieser Effekt heisst Fixkostendegression."}, {"q": "Was versteht man unter sprungfixen Kosten?", "opts": ["Kosten, die stufenweise ansteigen, wenn eine Kapazitaetsgrenze ueberschritten wird", "Kosten, die taeglich schwanken", "Kosten, die nur im Sommer anfallen was bei genauer Pruefung nicht stimmt obwohl das in der betrieblichen Praxis ni", "Kosten, die immer sinken"], "ok": 0, "ex": "Wird zum Beispiel eine zweite Verkaufsflaeche noetig, weil die erste nicht mehr ausreicht, springt die Miete auf ein neues Niveau - sie bleibt dann wieder eine Zeit lang konstant."}, {"q": "Wie nennt man Kosten, die einen fixen und einen variablen Bestandteil enthalten?", "opts": ["Sprungfixe Kosten", "Gemischte (semivariable) Kosten", "Kalkulatorische Kosten - was hier nicht zutrifft", "Neutrale Kosten"], "ok": 1, "ex": "Ein Stromvertrag mit Grundgebuehr plus Verbrauchspreis ist ein typisches Beispiel: Ein Teil ist fix, ein Teil variiert mit dem Verbrauch."}, {"q": "Wozu dient die Kostenaufloesung mit der Hoch-Tief-Methode?", "opts": ["Um den Gewinn des Vorjahres zu ermitteln", "Um die Umsatzsteuer zu berechnen", "Um aus zwei Beobachtungspunkten naeherungsweise fixe und variable Kostenanteile zu trennen", "Um Personalkosten vollstaendig zu eliminieren was bei genauer Pruefung nicht stimmt obwohl das in der betrieblichen Praxis ni"], "ok": 2, "ex": "Aus dem hoechsten und dem niedrigsten Beschaeftigungsgrad einer Periode werden die variablen Stueckkosten und die Fixkosten naeherungsweise berechnet."}], "verteilung": [{"q": "Was ist die Ergebnistabelle der Kostenartenrechnung?", "opts": ["Eine Aufstellung aller Kostenarten mit ihren jeweiligen Betraegen fuer eine Abrechnungsperiode", "Eine reine Liste der Kunden eines Betriebs", "Ein Formular fuer die Umsatzsteuervoranmeldung obwohl das in der betrieblichen Praxis nicht zu beobach", "Eine Uebersicht der Ladenoeffnungszeiten"], "ok": 0, "ex": "Die Ergebnistabelle bringt alle in der Kostenartenrechnung erfassten Kostenarten in eine uebersichtliche, addierbare Form - das zentrale Endergebnis dieses Teilbereichs."}, {"q": "Wozu dient die Gesamtsumme am Ende der Ergebnistabelle?", "opts": ["Sie wird nur fuer die Steuererklaerung benoetigt obwohl das in der betrieblichen Praxis nicht zu beobachten ist obwohl das in der betrieblichen Praxis so nicht zu ", "Sie zeigt die gesamten Kosten der Abrechnungsperiode und ist Ausgangspunkt fuer die weiteren Teilbereiche der KLR", "Sie ersetzt den Jahresabschluss vollstaendig", "Sie hat keinerlei weitere Verwendung"], "ok": 1, "ex": "Die Gesamtsumme der Ergebnistabelle ist die Kontrollgroesse: Sie muss sich in der anschliessenden Kostenstellen- und Kostentraegerrechnung vollstaendig wiederfinden."}, {"q": "Welche Struktur hat eine typische Ergebnistabelle?", "opts": ["Eine Liste der Mitarbeiter mit ihren Gehaeltern obwohl das in der betrieblichen Praxis ni", "Eine einzige Zahl ohne weitere Gliederung", "Eine Zeile je Kostenart mit dem zugehoerigen Betrag, am Ende eine Summenzeile", "Ein Diagramm ohne Zahlenwerte"], "ok": 2, "ex": "So wie in einer Bilanz jede Position einzeln aufgefuehrt wird, listet die Ergebnistabelle jede Kostenart einzeln, bevor am Ende summiert wird."}, {"q": "Warum ist eine Strukturanalyse (Anteile in Prozent) an der Ergebnistabelle sinnvoll?", "opts": ["Sie wird nur fuer die Werbung des Unternehmens verwendet", "Sie ist gesetzlich vorgeschrieben und hat sonst keinen Nutzen obwohl das in der betrieblichen Praxis nicht zu beobachten ist", "Sie ersetzt die absoluten Betraege vollstaendig", "Sie zeigt, welche Kostenarten das Kostengefuege am staerksten praegen, und hilft bei Kostenkontrolle und Entscheidungen"], "ok": 3, "ex": "Macht eine Kostenart 60 Prozent der Gesamtkosten aus, lohnt sich dort besonders genaues Hinsehen - die Prozentanteile lenken den Blick auf das Wesentliche."}, {"q": "Was passiert mit den Zahlen der Ergebnistabelle im weiteren Verlauf der KLR?", "opts": ["Sie werden unveraendert in die Kostenstellenrechnung uebernommen und dort weiterverteilt", "Sie werden verworfen und komplett neu erhoben", "Sie gelten nur fuer die Kostenartenrechnung und werden danach ignoriert obwohl das in der betrieblichen Praxis ni", "Sie muessen jedes Mal neu geschaetzt werden"], "ok": 0, "ex": "Die Ergebnistabelle bildet die Datenbasis, auf der die Kostenstellenrechnung aufbaut - ohne sie gaebe es nichts zu verteilen."}]};var QUIZ=[{"id": "q1", "frage": "Was leistet die Kostenartenrechnung?", "opts": ["Sie erfasst systematisch, welche Kosten in welcher Hoehe angefallen sind", "Sie ordnet Kosten Produkten zu", "Sie ordnet Kosten Abteilungen zu was bei genauer Pruefung nicht stimmt obwohl das in der betrieblichen Praxis ni", "Sie ermittelt den Umsatz"], "correct": 0, "loes": "Sie ist der erste Schritt der KLR: Welche Kostenarten sind entstanden?"}, {"id": "q2", "frage": "Was sind Einzelkosten?", "opts": ["Kosten unter einem Mindestbetrag was bei genauer Pruefung nicht stimmt", "Kosten, die direkt einem Kostentraeger zugerechnet werden koennen", "Kosten der Verwaltung", "Kosten, die nie anfallen"], "correct": 1, "loes": "Einzelkosten lassen sich ohne Verteilungsschluessel einem Produkt zuordnen."}, {"id": "q3", "frage": "Was sind Gemeinkosten?", "opts": ["Kosten, die niemals verteilt werden", "Kosten nur fuer Gemeinschaftsunternehmen was in dieser Form nicht gilt", "Kosten, die mehreren Kostentraegern gemeinsam zuzurechnen sind", "Kosten ausschliesslich fuer Personal"], "correct": 2, "loes": "Gemeinkosten muessen ueber einen Schluessel auf mehrere Kostentraeger verteilt werden."}, {"id": "q4", "frage": "Wie verhalten sich Fixkosten bei steigender Menge?", "opts": ["Sie steigen proportional", "Sie verdoppeln sich", "Sie sinken in der Gesamthoehe - was hier nicht zutrifft", "Sie bleiben in der Gesamthoehe konstant"], "correct": 3, "loes": "Fixkosten sind unabhaengig von der Beschaeftigung - ihre Gesamthoehe aendert sich nicht."}, {"id": "q5", "frage": "Was geschieht mit den fixen Stueckkosten bei steigender Menge?", "opts": ["Sie sinken", "Sie steigen", "Sie bleiben gleich", "Sie werden negativ"], "correct": 0, "loes": "Die Fixkostendegression: Bei mehr Stueck verteilen sich dieselben Fixkosten auf mehr Einheiten."}, {"id": "q6", "frage": "Was sind sprungfixe Kosten?", "opts": ["Kosten, die taeglich schwanken", "Kosten, die stufenweise ansteigen, wenn eine Kapazitaetsgrenze ueberschritten wird", "Kosten ohne jeden Bezug zur Menge was bei genauer Pruefung nicht stimmt obwohl das in der betrieblichen Praxis ni", "Kosten nur im Winter"], "correct": 1, "loes": "Beispiel: eine zusaetzliche Verkaufsflaeche laesst die Miete auf ein neues Niveau springen."}, {"id": "q7", "frage": "Warum werden Gemeinkosten trotz fehlender direkter Zuordenbarkeit in die Kalkulation einbezogen?", "opts": ["Weil Gemeinkosten immer vernachlaessigbar klein sind obwohl das in der Praxis nicht zu beobach", "Weil das Finanzamt dies separat verlangt", "Weil sie real entstehen und sonst der Verkaufspreis zu niedrig waere", "Weil sie nur bei Verlust auftreten"], "correct": 2, "loes": "Auch nicht direkt zuordenbare Kosten sind real und muessen in einer vollstaendigen Kalkulation beruecksichtigt werden."}, {"id": "q8", "frage": "Was zeichnet einen guten Verteilungsschluessel aus?", "opts": ["Er ist moeglichst kompliziert", "Er verwendet immer dieselbe Kennzahl fuer alle Kostenarten obwohl das in der Praxis nicht zu beobach", "Er wird jedes Jahr zufaellig neu gewaehlt", "Er hat einen engen sachlichen Zusammenhang zur jeweiligen Kostenart"], "correct": 3, "loes": "Je enger der Zusammenhang zwischen Schluessel und tatsaechlicher Kostenverursachung, desto verursachungsgerechter die Verteilung."}, {"id": "q9", "frage": "Ein Modehaus verkauft in einem Monat mehr Ware. Was geschieht mit dem Wareneinsatz insgesamt?", "opts": ["Er steigt, weil es sich um eine variable Kostenart handelt", "Er bleibt konstant", "Er sinkt automatisch", "Er wird zu Fixkosten was bei genauer Pruefung nicht stimmt"], "correct": 0, "loes": "Der Wareneinsatz ist eine klassische variable Kostenart - er steigt mit der verkauften Menge."}, {"id": "q10", "frage": "Warum braucht man ueberhaupt Verteilungsschluessel?", "opts": ["Weil das Finanzamt das verlangt", "Weil Gemeinkosten nicht direkt einem Kostentraeger zugeordnet werden koennen", "Weil sonst keine Umsatzsteuer berechnet wird", "Weil Einzelkosten sonst verschwinden wuerden was bei genauer Pruefung nicht stimmt"], "correct": 1, "loes": "Gemeinkosten entstehen fuer mehrere Kostentraeger gemeinsam - ein Schluessel macht die Verteilung nachvollziehbar."}, {"id": "q11", "frage": "Was ist eine sinnvolle Eigenschaft eines guten Verteilungsschluessels?", "opts": ["Er ist moeglichst kompliziert", "Er wird jedes Jahr zufaellig gewaehlt was in dieser Form nicht gilt", "Er hat einen engen ursaechlichen Zusammenhang zur Kostenart", "Er verwendet immer die Kopfzahl"], "correct": 2, "loes": "Je enger der Zusammenhang, desto verursachungsgerechter die Verteilung."}, {"id": "q12", "frage": "Welche Bezugsgroesse passt sachlich zu Raumkosten?", "opts": ["Die Anzahl der Kunden", "Die Postleitzahl der Filiale obwohl das in der Praxis nicht zu beobach", "Der Jahresumsatz", "Die genutzte Flaeche in Quadratmetern"], "correct": 3, "loes": "Raumkosten wie Miete haengen unmittelbar mit der genutzten Flaeche zusammen."}, {"id": "q13", "frage": "Ein Stromvertrag mit Grundgebuehr und Verbrauchspreis ist ein Beispiel fuer ...", "opts": ["Gemischte (semivariable) Kosten", "Reine variable Kosten - was hier nicht zutrifft", "Reine Fixkosten", "Neutrale Kosten"], "correct": 0, "loes": "Ein Teil (Grundgebuehr) ist fix, ein Teil (Verbrauch) variiert mit der Nutzung."}, {"id": "q14", "frage": "Wozu dient die Hoch-Tief-Methode?", "opts": ["Zur Berechnung der Umsatzsteuer", "Zur naeherungsweisen Trennung von fixen und variablen Kostenanteilen", "Zur Ermittlung des Vorjahresgewinns", "Zur vollstaendigen Eliminierung von Personalkosten - was hier nicht zutrifft"], "correct": 1, "loes": "Aus dem hoechsten und niedrigsten Beschaeftigungsgrad werden variable Stueckkosten und Fixkosten geschaetzt."}, {"id": "q15", "frage": "Woher stammen die Ausgangsdaten der Kostenartenrechnung?", "opts": ["Aus dem Sortimentskatalog", "Aus reinen Schaetzungen ohne Grundlage", "Aus der Abgrenzungsrechnung", "Aus der Umsatzsteuervoranmeldung"], "correct": 2, "loes": "Die Abgrenzungsrechnung liefert die bereinigten Kosten, die in der Kostenartenrechnung gegliedert werden."}];var ZU_DATA=[];var ZU_OPTS=[];
+var RECHEN=[{"id": "r0", "tab": "grundlagen", "titel": "Die Differenz zwischen Aufwand und Kosten erkl\u00e4ren", "kontext": "Aufwand laut GuV insgesamt: 671.700 EUR. Kosten laut KLR insgesamt: 740.600 EUR. Neutraler Aufwand (Spende und Wertpapierverlust): 4.700 EUR. Zusatzkosten (Unternehmerlohn, Miete, Zinsen): 69.600 EUR. Die Abschreibung steigt kalkulatorisch von 22.000 auf 26.000 EUR.", "aufgaben": [{"frage": "Differenz zwischen Kosten und Aufwand insgesamt (EUR)", "loesung": "740.600 - 671.700 = 68.900 EUR", "wert": 68900, "tol": 50, "einheit": "EUR"}, {"frage": "Anderskosten-Differenz bei der Abschreibung (EUR)", "loesung": "26.000 - 22.000 = 4.000 EUR", "wert": 4000, "tol": 20, "einheit": "EUR"}, {"frage": "Kontrollrechnung: Zusatzkosten minus neutraler Aufwand plus Anderskosten-Differenz (EUR)", "loesung": "69.600 - 4.700 + 4.000 = 68.900 EUR", "wert": 68900, "tol": 50, "einheit": "EUR"}]}, {"id": "r1", "tab": "fixvar", "titel": "Kostenaufloesung mit der Hoch-Tief-Methode", "kontext": "Die Modehaus Winter GmbH hat fuer sechs Monate die Absatzmenge (in Stueck) und die Gesamtkosten (in EUR) erfasst. H\u00f6chster Wert: Juni mit 4.600 St\u00fcck und 76.400 EUR. Niedrigster Wert: Mai mit 2.100 St\u00fcck und 44.900 EUR.", "aufgaben": [{"frage": "Differenz der Menge (St\u00fcck)", "loesung": "4.600 - 2.100 = 2.500 St\u00fcck", "wert": 2500, "tol": 0, "einheit": "St\u00fcck"}, {"frage": "Differenz der Kosten (EUR)", "loesung": "76.400 - 44.900 = 31.500 EUR", "wert": 31500, "tol": 10, "einheit": "EUR"}, {"frage": "Variable St\u00fcckkosten kv (EUR je St\u00fcck)", "loesung": "31.500 / 2.500 = 12,60 EUR", "wert": 12.6, "tol": 0.05, "einheit": "EUR"}, {"frage": "Fixkosten (EUR)", "loesung": "76.400 - 12,60 x 4.600 = 18.440 EUR", "wert": 18440, "tol": 20, "einheit": "EUR"}]}, {"id": "r2", "tab": "fixvar", "titel": "Probe und Prognose mit der Kostenfunktion", "kontext": "Mit kv = 12,60 EUR und Fixkosten von 18.440 EUR aus dem vorigen Fall lautet die Kostenfunktion: K = 18.440 + 12,60 x x.", "aufgaben": [{"frage": "Gesamtkosten bei 3.800 St\u00fcck (Februar-Wert; EUR)", "loesung": "18.440 + 12,60 x 3.800 = 66.320 EUR", "wert": 66320, "tol": 20, "einheit": "EUR"}, {"frage": "Gesamtkosten bei 5.000 St\u00fcck (Prognose; EUR)", "loesung": "18.440 + 12,60 x 5.000 = 81.440 EUR", "wert": 81440, "tol": 20, "einheit": "EUR"}, {"frage": "Stueckkosten bei 5.000 St\u00fcck (EUR je St\u00fcck, 2 Nachkommastellen)", "loesung": "81.440 / 5.000 = 16,29 EUR", "wert": 16.29, "tol": 0.05, "einheit": "EUR"}]}, {"id": "r1", "tab": "verteilung", "titel": "Die Ergebnistabelle vervollst\u00e4ndigen", "kontext": "Die Ergebnistabelle der Kostenartenrechnung zeigt f\u00fcr die Modehaus Winter GmbH acht Positionen. Materialkosten 460.000 EUR, Personalkosten 165.000 EUR, Kosten f\u00fcr Betriebsmittel 26.000 EUR, Kosten f\u00fcr Fremdleistungen 12.000 EUR, Abgaben 8.000 EUR, kalkulatorischer Unternehmerlohn 42.000 EUR, kalkulatorische Miete 18.000 EUR, kalkulatorische Zinsen 9.600 EUR.", "aufgaben": [{"frage": "Summe der Einzelkostenarten ohne Zusatzkosten (Material bis Abgaben, EUR)", "loesung": "460.000 + 165.000 + 26.000 + 12.000 + 8.000 = 671.000 EUR", "wert": 671000, "tol": 50, "einheit": "EUR"}, {"frage": "Summe der Zusatzkosten (Unternehmerlohn, Miete, Zinsen, EUR)", "loesung": "42.000 + 18.000 + 9.600 = 69.600 EUR", "wert": 69600, "tol": 20, "einheit": "EUR"}, {"frage": "Kosten insgesamt laut Ergebnistabelle (EUR)", "loesung": "671.000 + 69.600 = 740.600 EUR", "wert": 740600, "tol": 50, "einheit": "EUR"}, {"frage": "Anteil der Materialkosten an den Gesamtkosten (in %, 2 Nachkommastellen)", "loesung": "460.000 / 740.600 x 100 = 62,11 %", "wert": 62.11, "tol": 0.2, "einheit": "%"}]}, {"id": "r2", "tab": "verteilung", "titel": "Ergebnistabelle nach Einzel- und Gemeinkosten trennen", "kontext": "Personalkosten insgesamt 165.000 EUR. Davon sind 95.000 EUR direkt einem Verkaufsbereich zuordenbar (Einzelkosten), der Rest entf\u00e4llt auf die Gesch\u00e4ftsleitung (Gemeinkosten). Die \u00fcbrigen sieben Kostenarten der Ergebnistabelle sind bereits eindeutig zugeordnet.", "aufgaben": [{"frage": "Gemeinkostenanteil der Personalkosten (EUR)", "loesung": "165.000 - 95.000 = 70.000 EUR", "wert": 70000, "tol": 20, "einheit": "EUR"}, {"frage": "Summe aller Einzelkosten in der Ergebnistabelle (EUR)", "loesung": "460.000 + 95.000 = 555.000 EUR", "wert": 555000, "tol": 50, "einheit": "EUR"}, {"frage": "Summe aller Gemeinkosten in der Ergebnistabelle (EUR)", "loesung": "740.600 - 555.000 = 185.600 EUR", "wert": 185600, "tol": 50, "einheit": "EUR"}, {"frage": "Anteil der Gemeinkosten an den Gesamtkosten (in %, 2 Nachkommastellen)", "loesung": "185.600 / 740.600 x 100 = 25,06 %", "wert": 25.06, "tol": 0.2, "einheit": "%"}]}];var GLOSSAR={"kostenartenrechnung": {"t": "Kostenartenrechnung", "d": "Der erste Teilbereich der KLR: Sie erfasst systematisch, welche Kostenarten in welcher H\u00f6he angefallen sind - etwa Material-, Personal- oder Abschreibungskosten."}, "kostenstellenrechnung": {"t": "Kostenstellenrechnung", "d": "Der zweite Teilbereich der KLR: Sie ordnet die Kosten einzelnen betrieblichen Bereichen zu, etwa Einkauf, Verkauf oder Verwaltung."}, "kostentraegerrechnung": {"t": "Kostentr\u00e4gerrechnung", "d": "Der dritte Teilbereich der KLR: Sie ordnet die Kosten einzelnen Produkten oder Leistungen zu - Grundlage der Preiskalkulation."}, "einzelkosten": {"t": "Einzelkosten", "d": "Kosten, die sich ohne Verteilungsschl\u00fcssel direkt einem einzelnen Kosten\u00adtr\u00e4ger zurechnen lassen. Beispiel: der Wareneinsatz eines konkreten Artikels."}, "gemeinkosten": {"t": "Gemeinkosten", "d": "Kosten, die mehreren Kostentr\u00e4gern gemeinsam zuzurechnen sind und deshalb \u00fcber einen Verteilungsschl\u00fcssel aufgeteilt werden m\u00fcssen. Beispiel: die Ladenmiete."}, "fixkosten": {"t": "Fixkosten", "d": "Kosten, die unabh\u00e4ngig von der Besch\u00e4ftigung (Ausbringungsmenge) in konstanter H\u00f6he anfallen. Beispiel: Mietkosten, Versicherungsbeitr\u00e4ge."}, "variablekosten": {"t": "Variable Kosten", "d": "Kosten, die sich mit der Besch\u00e4ftigung (Ausbringungsmenge) \u00e4ndern. Beispiel: der Wareneinsatz, der mit der verkauften Menge steigt."}, "fixkostendegression": {"t": "Fixkostendegression", "d": "Der Effekt, dass die fixen St\u00fcckkosten sinken, je mehr Einheiten produziert oder verkauft werden - dieselben Fixkosten verteilen sich auf mehr St\u00fcck."}, "sprungfix": {"t": "Sprungfixe Kosten", "d": "Kosten, die stufenweise ansteigen, sobald eine Kapazit\u00e4tsgrenze \u00fcberschritten wird - etwa wenn eine zus\u00e4tzliche Verkaufsfl\u00e4che angemietet werden muss."}, "semivariabel": {"t": "Gemischte (semivariable) Kosten", "d": "Kosten, die sowohl einen fixen als auch einen variablen Bestandteil enthalten. Beispiel: ein Stromvertrag mit Grundgeb\u00fchr plus Verbrauchspreis."}, "hochtief": {"t": "Hoch-Tief-Methode", "d": "Ein Verfahren zur n\u00e4herungsweisen Trennung von fixen und variablen Kostenanteilen anhand des h\u00f6chsten und niedrigsten Besch\u00e4ftigungsgrads einer Periode."}, "kostenfunktion": {"t": "Kostenfunktion", "d": "Eine Formel, die die Gesamtkosten in Abh\u00e4ngigkeit von der Menge beschreibt: K = Fixkosten + variable St\u00fcckkosten \u00d7 Menge."}, "bab": {"t": "Betriebsabrechnungsbogen", "d": "Das zentrale Arbeitsmittel der Kostenstellenrechnung. Er verteilt die Gemeinkosten mithilfe von Schl\u00fcsseln auf die einzelnen Kostenstellen. Abk\u00fcrzung: BAB."}, "verteilungsschluessel": {"t": "Verteilungsschl\u00fcssel", "d": "Eine Bezugsgr\u00f6\u00dfe, nach der Gemeinkosten auf mehrere Kostenstellen aufgeteilt werden - etwa Fl\u00e4che, Anlagewert oder Kopfzahl."}, "kostenstelle": {"t": "Kostenstelle", "d": "Ein abgegrenzter betrieblicher Teilbereich, dem Kosten zugeordnet werden - etwa Einkauf, Verkauf oder Verwaltung."}, "beschaeftigungsgrad": {"t": "Besch\u00e4ftigungsgrad", "d": "Das Verh\u00e4ltnis der tats\u00e4chlichen Ausbringung zur maximal m\u00f6glichen Kapazit\u00e4t - zeigt, wie stark ein Betrieb ausgelastet ist."}, "materialkosten": {"t": "Materialkosten", "d": "Kosten f\u00fcr den Verbrauch an Roh-, Hilfs- und Betriebsstoffen oder Handelswaren - eine der klassischen Kostenarten nach Produktionsfaktoren."}, "fremdleistungskosten": {"t": "Kosten f\u00fcr Fremdleistungen", "d": "Kosten f\u00fcr Leistungen, die von Dritten au\u00dferhalb des eigenen Betriebs bezogen werden, etwa Reinigungsdienste oder externe Beratung."}, "kalkulatorischekosten": {"t": "Kalkulatorische Kosten", "d": "Kosten, die entweder in anderer H\u00f6he (Anderskosten) oder ganz ohne zugeh\u00f6rigen Aufwand (Zusatzkosten) in der Kostenrechnung angesetzt werden."}, "ergebnistabelle": {"t": "Ergebnistabelle", "d": "Die zusammenfassende \u00dcbersicht der Kostenartenrechnung: eine Zeile je Kostenart mit dem zugeh\u00f6rigen Betrag, am Ende eine Summenzeile mit den Gesamtkosten der Periode. Sie bildet die Datenbasis f\u00fcr die anschlie\u00dfende Kostenstellenrechnung."}};
+var TOTAL=QUIZ.length;var gAns=0;
+
+function showTab(id){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.remove('active');});
+  var p=document.getElementById('tab-'+id);if(p)p.classList.add('active');
+  var b=document.querySelector('[data-tab="'+id+'"]');if(b)b.classList.add('active');
+  setTimeout(function(){window.scrollTo({top:0,behavior:'instant'});},0);
+  buildAufgaben(id);buildRechen(id);
+  if(id==='wiederholung')buildBegriffe();
+}
+function addScore(){
+  gAns=Math.min(gAns+1,TOTAL);
+  var f=document.getElementById('pb-fill'),l=document.getElementById('pb-pct');
+  if(f)f.style.width=Math.round(gAns/TOTAL*100)+'%';
+  if(l)l.textContent=gAns+' / '+TOTAL;
+}
+document.querySelectorAll('nav.tabs button').forEach(function(b){
+  b.addEventListener('click',function(){showTab(this.getAttribute('data-tab'));});});
+document.querySelectorAll('[data-goto]').forEach(function(b){
+  b.addEventListener('click',function(){showTab(this.getAttribute('data-goto'));});});
+
+
+/* ============ FACHBEGRIFFE-QUIZ ============ */
+var BEGRIFFE=[{"k": "kostenartenrechnung", "f": "Was zeigt die Kostenartenrechnung?", "o": ["Welche Kosten in welcher Hoehe angefallen sind", "Wo die Kosten angefallen sind", "Wofuer die Kosten angefallen sind was hier nicht zutrifft", "Wer die Kosten verursacht hat"], "c": 0, "l": "Sie erfasst systematisch alle Kostenarten wie Material und Personal."}, {"k": "kostenstellenrechnung", "f": "Was zeigt die Kostenstellenrechnung?", "o": ["Welche Kostenarten es gibt", "In welchem betrieblichen Bereich die Kosten angefallen sind", "Wofuer die Kosten angefallen sind was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Die Hoehe des Gesamtumsatzes"], "c": 1, "l": "Sie ordnet Kosten Bereichen wie Einkauf, Verkauf oder Verwaltung zu."}, {"k": "kostentraegerrechnung", "f": "Was zeigt die Kostentraegerrechnung?", "o": ["Wo im Betrieb Kosten anfallen was hier nicht zutrifft", "Nur die Personalkosten", "Welche Kosten auf welches Produkt entfallen", "Die Hoehe der Steuerlast"], "c": 2, "l": "Sie ist Grundlage der Preiskalkulation - sie zeigt, was ein einzelnes Produkt kostet."}, {"k": "einzelkosten", "f": "Was sind Einzelkosten?", "o": ["Kosten unter einem Mindestbetrag", "Kosten, die nur einmal jaehrlich anfallen was hier nicht zutrifft", "Kosten der Verwaltung", "Kosten, die direkt einem Kostentraeger zugerechnet werden koennen"], "c": 3, "l": "Einzelkosten lassen sich ohne Verteilungsschluessel einem Produkt zuordnen."}, {"k": "gemeinkosten", "f": "Was sind Gemeinkosten?", "o": ["Kosten nur fuer Gemeinschaftsunternehmen was hier nicht zutrifft", "Kosten, die mehreren Kostentraegern gemeinsam zuzurechnen sind", "Kosten, die niemals verteilt werden", "Kosten ausschliesslich fuer Personal"], "c": 1, "l": "Gemeinkosten muessen ueber einen Schluessel auf mehrere Kostentraeger verteilt werden."}, {"k": "fixkosten", "f": "Was kennzeichnet Fixkosten?", "o": ["Sie steigen proportional zur Menge", "Sie sinken automatisch mit der Zeit was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Sie fallen unabhaengig von der Beschaeftigung in konstanter Hoehe an", "Sie entstehen nur einmalig"], "c": 2, "l": "Beispiel: Mietkosten fallen unabhaengig vom Umsatz in gleicher Hoehe an."}, {"k": "variablekosten", "f": "Was kennzeichnet variable Kosten?", "o": ["Sie bleiben immer konstant", "Sie werden nie in der Kostenrechnung erfasst was hier nicht zutrifft", "Sie fallen nur bei Verlust an", "Sie aendern sich mit der Beschaeftigung (Ausbringungsmenge)"], "c": 3, "l": "Der Wareneinsatz ist das klassische Beispiel - er steigt mit der verkauften Menge."}, {"k": "fixkostendegression", "f": "Was ist Fixkostendegression?", "o": ["Das Sinken der fixen Stueckkosten bei mehr Menge", "Der Anstieg der fixen Stueckkosten bei mehr Menge", "Der Anstieg der Fixkosten insgesamt", "Das voellige Verschwinden von Fixkosten"], "c": 0, "l": "Dieselben Fixkosten verteilen sich auf mehr Stueck - die Stueckkosten sinken."}, {"k": "sprungfix", "f": "Was sind sprungfixe Kosten?", "o": ["Kosten, die taeglich schwanken", "Kosten, die nur im Winter anfallen was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Kosten, die stufenweise bei Ueberschreiten einer Kapazitaetsgrenze ansteigen", "Kosten ohne jeden Bezug zur Menge"], "c": 2, "l": "Beispiel: eine zusaetzliche Verkaufsflaeche laesst die Miete auf ein neues Niveau springen."}, {"k": "semivariabel", "f": "Was sind gemischte (semivariable) Kosten?", "o": ["Kosten nur fuer gemischte Warengruppen", "Kosten, die stets Null sind", "Kosten ausschliesslich fuer Mischbetriebe was hier nicht zutrifft", "Kosten mit fixem und variablem Bestandteil"], "c": 3, "l": "Ein Stromvertrag mit Grundgebuehr plus Verbrauchspreis ist ein typisches Beispiel."}, {"k": "hochtief", "f": "Wozu dient die Hoch-Tief-Methode?", "o": ["Zur naeherungsweisen Trennung von fixen und variablen Kostenanteilen", "Zur Berechnung der Umsatzsteuer", "Zur Ermittlung des Vorjahresgewinns", "Zur vollstaendigen Eliminierung von Personalkosten was hier nicht zutrifft"], "c": 0, "l": "Aus dem hoechsten und niedrigsten Beschaeftigungsgrad werden kv und Kfix berechnet."}, {"k": "kostenfunktion", "f": "Was beschreibt eine Kostenfunktion?", "o": ["Nur die fixen Kosten eines Betriebs", "Die Gesamtkosten in Abhaengigkeit von der Menge", "Nur die variablen Kosten eines Betriebs was hier nicht zutrifft", "Den Gewinn eines Unternehmens"], "c": 1, "l": "K = Fixkosten + variable Stueckkosten mal Menge."}, {"k": "bab", "f": "Wofuer steht BAB?", "o": ["Bilanzabgrenzungsbogen was hier nicht zutrifft", "Betriebsausgabenbeleg", "Bundesabgabenbescheid", "Betriebsabrechnungsbogen"], "c": 3, "l": "Der Betriebsabrechnungsbogen verteilt Gemeinkosten auf die Kostenstellen."}, {"k": "verteilungsschluessel", "f": "Was ist ein Verteilungsschluessel?", "o": ["Eine Bezugsgroesse zur Aufteilung von Gemeinkosten auf Kostenstellen", "Ein Passwort fuer die Buchhaltungssoftware was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Ein Schluessel zum Ladeneingang", "Eine gesetzliche Formvorschrift"], "c": 0, "l": "Beispiele sind Flaeche, Anlagewert oder Kopfzahl."}, {"k": "kostenstelle", "f": "Was ist eine Kostenstelle?", "o": ["Ein einzelnes verkauftes Produkt was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Ein abgegrenzter betrieblicher Teilbereich, dem Kosten zugeordnet werden", "Eine Kasse im Verkaufsraum", "Ein Lieferant des Unternehmens"], "c": 1, "l": "Beispiele: Einkauf, Verkauf, Verwaltung."}, {"k": "beschaeftigungsgrad", "f": "Was zeigt der Beschaeftigungsgrad?", "o": ["Die Zahl der Beschaeftigten im Betrieb was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Die Hoehe der Loehne", "Das Verhaeltnis der tatsaechlichen Ausbringung zur maximalen Kapazitaet", "Die Oeffnungszeiten des Geschaefts"], "c": 2, "l": "Er zeigt, wie stark ein Betrieb ausgelastet ist."}, {"k": "materialkosten", "f": "Was zaehlt zu den Materialkosten?", "o": ["Kosten fuer Roh-, Hilfs- und Betriebsstoffe oder Handelswaren", "Nur Personalkosten", "Nur Mietkosten", "Nur Abschreibungen was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b"], "c": 0, "l": "Eine der klassischen Kostenarten, gegliedert nach Produktionsfaktoren."}, {"k": "fremdleistungskosten", "f": "Was sind Kosten fuer Fremdleistungen?", "o": ["Kosten fuer eigene Mitarbeiter was hier nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Kosten fuer Leistungen, die von Dritten ausserhalb des Betriebs bezogen werden", "Kosten fuer Wareneinkauf", "Kosten fuer Abschreibungen"], "c": 1, "l": "Beispiele: externe Reinigung, externe Beratung."}, {"k": "kalkulatorischekosten", "f": "Was sind kalkulatorische Kosten?", "o": ["Kosten, die exakt dem Aufwand in der GuV entsprechen was hier nicht zutrifft", "Kosten, die nie in der Kostenrechnung vorkommen", "Kosten in anderer Hoehe oder ganz ohne Aufwand angesetzt", "Kosten nur fuer Grossunternehmen"], "c": 2, "l": "Sie umfassen Anderskosten und Zusatzkosten."}, {"k": "ergebnistabelle", "f": "Was ist die Ergebnistabelle der Kostenartenrechnung?", "o": ["Eine Auflistung aller Kunden mit ihren Bestellungen obwohl das in der betrieblichen Praxis nicht", "Eine \u00dcbersicht aller Kostenarten mit Betr\u00e4gen und einer Summenzeile", "Ein Formular des Finanzamts", "Ein Diagramm ohne Zahlenwerte"], "c": 1, "l": "Sie listet jede Kostenart einzeln auf und summiert am Ende - das zentrale Endergebnis der Kostenartenrechnung."}];
+var bgA=0,bgC=0;
+function buildBegriffe(){
+  var c=document.getElementById('bg-container');
+  if(!c||c.children.length>0)return;
+  BEGRIFFE.forEach(function(q,idx){
+    var g=GLOSSAR[q.k]||{t:''};
+    var bl=document.createElement('div');bl.className='quiz-block';
+    var nr=document.createElement('div');nr.className='quiz-nr';
+    nr.textContent='Begriff '+(idx+1)+' von '+BEGRIFFE.length+'  \u00b7  '+g.t;
+    var fr=document.createElement('div');fr.className='quiz-frage';fr.textContent=q.f;
+    var od=document.createElement('div');od.className='mc-opts';
+    var fb=document.createElement('div');fb.className='fb-box';
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(od);bl.appendChild(fb);
+    c.appendChild(bl);
+    q.o.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='mc-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        bl.querySelectorAll('.mc-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.c);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)od.querySelectorAll('.mc-btn')[q.c].classList.add('correct');
+        fb.textContent=ok?q.l:('Nicht ganz. '+q.l);
+        fb.className='fb-box show '+(ok?'correct':'wrong');
+        bgA++;if(ok)bgC++;bgFort();
+        if(bgA===BEGRIFFE.length)setTimeout(bgErgebnis,700);
+      });
+      od.appendChild(b);});
+  });
+}
+function bgFort(){
+  var f=document.getElementById('bg-fill'),l=document.getElementById('bg-pct');
+  if(f)f.style.width=Math.round(bgA/BEGRIFFE.length*100)+'%';
+  if(l)l.textContent=bgA+' / '+BEGRIFFE.length;
+}
+function bgErgebnis(){
+  var card=document.getElementById('bg-result');if(!card)return;
+  card.style.display='block';
+  var pct=Math.round(bgC/BEGRIFFE.length*100);
+  var txt;
+  if(pct>=92)txt='Sehr gut \u2013 die Fachbegriffe sitzen.';
+  else if(pct>=81)txt='Gut. Sieh dir die wenigen Fehler noch einmal an.';
+  else if(pct>=67)txt='Befriedigend. Tippe die unterstrichenen Begriffe im Text noch einmal an.';
+  else if(pct>=50)txt='Ausreichend. Geh die Begriffe in den Kapiteln noch einmal durch.';
+  else txt='Arbeite die Kapitel noch einmal durch und tippe dabei jeden unterstrichenen Begriff an.';
+  var s=document.getElementById('bg-score');
+  if(s)s.textContent=bgC+' von '+BEGRIFFE.length+' richtig ('+pct+' %)';
+  var t=document.getElementById('bg-txt');if(t)t.textContent=txt;
+  var bt=document.querySelector('[data-tab="begriffe"]');if(bt)bt.classList.add('done');
+  var nv=document.querySelector('nav.tabs');var nh=nv?nv.offsetHeight:40;
+  var r=card.getBoundingClientRect();
+  window.scrollTo({top:window.pageYOffset+r.top-nh-8,behavior:'smooth'});
+}
+
+/* ============ GLOSSAR ============ */
+function initGlossar(){
+  var tip=document.createElement('div');tip.className='gl-tip';
+  document.body.appendChild(tip);
+  var aktiv=null;
+  function schliesse(){tip.style.display='none';if(aktiv)aktiv.classList.remove('aktiv');aktiv=null;}
+  function zeige(el){
+    var g=GLOSSAR[el.getAttribute('data-gl')];if(!g)return;
+    tip.innerHTML='<strong>'+g.t+'</strong><span class="gl-x">\u2715</span><p>'+g.d+'</p>';
+    tip.style.display='block';
+    var tw=Math.min(310,window.innerWidth-24);
+    tip.style.width=tw+'px';
+    var r=el.getBoundingClientRect();
+    var left=r.left+r.width/2-tw/2;
+    if(left<12)left=12;
+    if(left+tw>window.innerWidth-12)left=window.innerWidth-tw-12;
+    tip.style.left=(left+window.pageXOffset)+'px';
+    var th=tip.offsetHeight;
+    tip.style.top=((r.top-th-12>8)?(r.top+window.pageYOffset-th-10):(r.bottom+window.pageYOffset+10))+'px';
+    el.classList.add('aktiv');aktiv=el;
+    var xb=tip.querySelector('.gl-x');
+    if(xb)xb.addEventListener('click',function(e){e.stopPropagation();schliesse();});
+  }
+  document.querySelectorAll('.gl').forEach(function(el){
+    el.setAttribute('role','button');el.setAttribute('tabindex','0');
+    el.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(aktiv===el){schliesse();return;}
+      schliesse();zeige(el);});
+    el.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();
+        if(aktiv===el){schliesse();}else{schliesse();zeige(el);}}});
+  });
+  tip.addEventListener('click',function(e){e.stopPropagation();});
+  document.addEventListener('click',schliesse);
+  window.addEventListener('resize',schliesse);
+  document.querySelectorAll('nav.tabs button').forEach(function(b){
+    b.addEventListener('click',schliesse);});
+}
+/* ============ AUFGABEN ============ */
+function buildAufgaben(tabId){
+  var c=document.getElementById('aufg-'+tabId);
+  if(!c||c.children.length>0)return;
+  var qs=AUFG[tabId];if(!qs)return;
+  qs.forEach(function(q,qi){
+    var bl=document.createElement('div');bl.className='aufg-block';
+    var nr=document.createElement('div');nr.className='aufg-nr';
+    nr.textContent='Aufgabe '+(qi+1)+' von '+qs.length;
+    var fr=document.createElement('div');fr.className='aufg-frage';fr.textContent=q.q;
+    var op=document.createElement('div');op.className='aufg-opts';
+    var fb=document.createElement('div');fb.className='aufg-fb';
+    q.opts.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='aufg-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        op.querySelectorAll('.aufg-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.ok);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)op.querySelectorAll('.aufg-btn')[q.ok].classList.add('correct');
+        fb.textContent=(ok?'\u2713 Richtig! ':'\u2717 Nicht ganz. ')+q.ex;
+        fb.className='aufg-fb show '+(ok?'correct':'wrong');});
+      op.appendChild(b);});
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(op);bl.appendChild(fb);
+    c.appendChild(bl);});
+}
+function buildRechen(tabId){
+  var c=document.getElementById('rechen-'+tabId);
+  if(!c||c.children.length>0)return;
+  RECHEN.filter(function(f){return f.tab===tabId;}).forEach(function(f){
+    var bl=document.createElement('div');bl.className='rechen-block';
+    var ti=document.createElement('div');ti.className='rechen-title';ti.textContent=f.titel;
+    var kx=document.createElement('p');kx.className='rechen-kontext';kx.textContent=f.kontext;
+    bl.appendChild(ti);bl.appendChild(kx);
+    f.aufgaben.forEach(function(a,i){
+      var row=document.createElement('div');row.className='rechen-row';
+      var fr=document.createElement('div');fr.className='rechen-frage';
+      fr.textContent=(i+1)+'. '+a.frage;
+      var wr=document.createElement('div');wr.className='rechen-inline';
+      var inp=document.createElement('input');
+      inp.type='text';inp.className='rechen-inp';inp.placeholder='Ergebnis';
+      inp.setAttribute('inputmode','decimal');
+      var un=document.createElement('span');un.className='rechen-unit';un.textContent=a.einheit;
+      var bt=document.createElement('button');bt.className='rechen-check';bt.textContent='Pr\u00fcfen';
+      var fb=document.createElement('div');fb.className='rechen-fb';
+      bt.addEventListener('click',function(){
+        var v=inp.value.replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,'');
+        var n=parseFloat(v);
+        var ok=!isNaN(n)&&Math.abs(n-a.wert)<=a.tol;
+        inp.className='rechen-inp '+(ok?'ok':'nok');
+        fb.textContent=(ok?'\u2713 Richtig! ':'\u2717 L\u00f6sung: ')+a.loesung;
+        fb.className='rechen-fb show '+(ok?'ok':'nok');});
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')bt.click();});
+      wr.appendChild(inp);wr.appendChild(un);wr.appendChild(bt);
+      row.appendChild(fr);row.appendChild(wr);row.appendChild(fb);
+      bl.appendChild(row);});
+    c.appendChild(bl);});
+}
+function buildZuordnung(){
+  var c=document.getElementById('zu-container');
+  if(!c||c.children.length>0)return;
+  ZU_DATA.forEach(function(it){
+    var bl=document.createElement('div');bl.className='zu-block';
+    var nr=document.createElement('div');nr.className='zu-nr';
+    nr.textContent='Beschreibung '+it.nr+' von '+ZU_DATA.length;
+    var tx=document.createElement('div');tx.className='zu-text';tx.textContent=it.text;
+    var se=document.createElement('select');se.className='zu-sel';
+    var o0=document.createElement('option');o0.value='';o0.textContent='-- Begriff w\u00e4hlen --';
+    se.appendChild(o0);
+    ZU_OPTS.forEach(function(o){
+      var op=document.createElement('option');op.value=o;op.textContent=o;se.appendChild(op);});
+    var fb=document.createElement('div');fb.className='zu-fb';
+    se.addEventListener('change',function(){
+      if(!se.value)return;
+      var ok=(se.value===it.loesung);
+      se.className='zu-sel '+(ok?'ok':'nok');
+      fb.textContent=ok?('\u2713 Richtig! '+it.ex):('\u2717 Richtig w\u00e4re: '+it.loesung+'. '+it.ex);
+      fb.className='zu-fb show '+(ok?'ok':'nok');});
+    bl.appendChild(nr);bl.appendChild(tx);bl.appendChild(se);bl.appendChild(fb);
+    c.appendChild(bl);});
+}
+var qA=0,qC=0;
+function buildQuiz(){
+  var c=document.getElementById('quiz-container');if(!c)return;
+  QUIZ.forEach(function(q,idx){
+    var bl=document.createElement('div');bl.className='quiz-block';
+    var nr=document.createElement('div');nr.className='quiz-nr';
+    nr.textContent='Frage '+(idx+1)+' von '+QUIZ.length;
+    var fr=document.createElement('div');fr.className='quiz-frage';fr.textContent=q.frage;
+    var od=document.createElement('div');od.className='mc-opts';
+    var fb=document.createElement('div');fb.className='fb-box';
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(od);bl.appendChild(fb);
+    c.appendChild(bl);
+    q.opts.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='mc-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        bl.querySelectorAll('.mc-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.correct);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)od.querySelectorAll('.mc-btn')[q.correct].classList.add('correct');
+        fb.textContent=ok?q.loes:('Nicht ganz. '+q.loes);
+        fb.className='fb-box show '+(ok?'correct':'wrong');
+        qA++;if(ok)qC++;addScore();
+        if(qA===QUIZ.length)setTimeout(showResult,700);});
+      od.appendChild(b);});});
+}
+function showResult(){
+  var card=document.getElementById('result-card');if(card)card.style.display='block';
+  var pct=Math.round(qC/QUIZ.length*100);
+  var mss;
+  if(pct>=95)mss=15;else if(pct>=90)mss=14;else if(pct>=85)mss=13;else if(pct>=80)mss=12;
+  else if(pct>=75)mss=11;else if(pct>=70)mss=10;else if(pct>=65)mss=9;else if(pct>=60)mss=8;
+  else if(pct>=55)mss=7;else if(pct>=50)mss=6;else if(pct>=45)mss=5;else if(pct>=40)mss=4;
+  else if(pct>=34)mss=3;else if(pct>=27)mss=2;else if(pct>=20)mss=1;else mss=0;
+  var note=mss+' MSS-Punkte',txt;
+  if(pct>=80)txt='Sehr gut! Du beherrschst die Kostenartenrechnung sicher.';
+  else if(pct>=65)txt='Gut. Sieh dir die Aufgaben mit Fehlern noch einmal an.';
+  else if(pct>=50)txt='Rechne die Hoch-Tief-Methode noch einmal durch.';
+  else if(pct>=34)txt='Arbeite besonders Fixkosten und variable Kosten noch einmal durch.';
+  else txt='Geh die Kapitel noch einmal von vorn durch und nutze die Simulation.';
+  var s=document.getElementById('res-score');
+  if(s)s.textContent=qC+' von '+QUIZ.length+' richtig ('+pct+' %)';
+  var n=document.getElementById('res-note');if(n)n.textContent=note;
+  var t=document.getElementById('res-txt');if(t)t.textContent=txt;
+  var qt=document.querySelector('[data-tab="quiz"]');if(qt)qt.classList.add('done');
+  var nv=document.querySelector('nav.tabs');var nh=nv?nv.offsetHeight:40;
+  var r=card.getBoundingClientRect();
+  window.scrollTo({top:window.pageYOffset+r.top-nh-8,behavior:'smooth'});
+}
+document.addEventListener('DOMContentLoaded',function(){
+  buildQuiz();buildAufgaben('grundlagen');initGlossar();});
+})();
+</script>
+</body>
+</html>

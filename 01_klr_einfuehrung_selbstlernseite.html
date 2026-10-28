@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kosten- und Leistungsrechnung &ndash; Selbstlernseite</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#1a1a2e;--bg:#f5f0e8;--light:#faf7f2;--teal:#2d6e7e;--teal-l:#e4f0f3;
+--gold:#b8860b;--gold-l:#fdf6dc;--red:#c84b31;--red-l:#fdecea;--green:#2e7d32;--green-l:#e8f5e9;
+--border:#d4c8a8;--shadow:0 2px 8px rgba(26,26,46,.1);--r:6px;}
+body{font-family:Georgia,serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+header{background:var(--ink);color:#fff;padding:1.7rem 1.5rem 1.4rem;text-align:center;}
+header .bc{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;margin-bottom:.4rem;}
+header h1{font-size:1.7rem;font-weight:normal;margin-bottom:.3rem;}
+header .desc{font-family:'Trebuchet MS',sans-serif;font-size:.83rem;color:#b0c0d8;max-width:640px;margin:0 auto;}
+.ps{background:#0d1124;padding:.5rem 1.5rem;display:flex;align-items:center;gap:.8rem;}
+.ps .lbl{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;white-space:nowrap;}
+.pb{flex:1;background:#2a3050;border-radius:99px;height:5px;}
+.pb-fill{height:100%;background:var(--teal);border-radius:99px;width:0;transition:width .4s;}
+.pb-pct{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;min-width:3.4rem;text-align:right;}
+nav.tabs{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:50;}
+nav.tabs::-webkit-scrollbar{display:none;}
+nav.tabs button{flex:0 0 auto;background:none;border:none;padding:.62rem .85rem;font-family:'Trebuchet MS',sans-serif;font-size:.76rem;font-weight:600;color:#666;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+nav.tabs button.active,nav.tabs button:hover{color:var(--teal);border-bottom-color:var(--teal);}
+nav.tabs button.done::after{content:' \2713';color:var(--green);font-size:.7rem;}
+main{max-width:900px;margin:0 auto;padding:1.4rem 1rem 3rem;}
+.tab-panel{display:none;scroll-margin-top:50px;}.tab-panel.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.4rem;margin-bottom:1rem;box-shadow:var(--shadow);scroll-margin-top:50px;}
+.card h2{font-size:1.02rem;color:var(--teal);margin-bottom:.6rem;}
+.card p,.card li{font-size:.92rem;line-height:1.72;margin-bottom:.3rem;}
+.card ul{padding-left:1.2rem;margin:.3rem 0;}
+.def-box{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:0 var(--r) var(--r) 0;padding:.75rem 1rem;margin:.6rem 0;font-size:.92rem;}
+.info-gold{background:var(--gold-l);border-left:4px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.info-teal{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.info-green{background:var(--green-l);border-left:4px solid var(--green);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:.7rem 0;}
+.gbox{border-radius:var(--r);padding:.85rem 1rem;border:2px solid;}
+.gbox .gt{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.3rem;}
+.gbox p{font-size:.86rem;margin:0;}
+table.t{width:100%;border-collapse:collapse;font-size:.86rem;margin:.6rem 0;}
+table.t th{background:var(--ink);color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:.78rem;padding:.45rem .6rem;text-align:left;}
+table.t td{padding:.45rem .6rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55;overflow-wrap:break-word;}
+table.t tr:nth-child(even) td{background:var(--light);}
+.formel{background:var(--ink);color:#e8f0fe;border-radius:var(--r);padding:.75rem 1rem;margin:.6rem 0;text-align:center;font-size:.92rem;}
+.formel .ft{font-family:'Trebuchet MS',sans-serif;font-size:.7rem;color:#8ca0be;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;}
+.formelbox{background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.7rem 1rem;margin-bottom:.8rem;font-family:'Trebuchet MS',sans-serif;font-size:.87rem;line-height:1.8;}
+.schritte{display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem;}
+.schritt{display:flex;gap:.7rem;align-items:flex-start;background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;font-size:.89rem;}
+.sn{background:var(--teal);color:#fff;width:1.55rem;height:1.55rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.8rem;flex-shrink:0;}
+/* Simulation */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.check-btn{font-family:'Trebuchet MS',sans-serif;font-size:.8rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.35rem .8rem;cursor:pointer;}
+.check-btn.grau{background:#777;}.check-btn.grau:hover{background:#5f5f5f;}
+
+
+/* Glossar */
+.gl{border-bottom:1.5px dotted var(--teal);cursor:help;color:inherit;}
+.gl::after{content:'?';font-family:'Trebuchet MS',sans-serif;font-size:.62em;font-weight:700;color:#fff;background:var(--teal);border-radius:50%;width:1.05em;height:1.05em;display:inline-flex;align-items:center;justify-content:center;vertical-align:super;margin-left:.15em;line-height:1;}
+.gl.aktiv{background:var(--gold-l);border-bottom-color:var(--gold);}
+.gl.aktiv::after{background:var(--gold);}
+.gl-tip{position:absolute;display:none;z-index:200;background:#fff;border:2px solid var(--teal);border-radius:var(--r);padding:.7rem .85rem .75rem;box-shadow:0 4px 16px rgba(26,26,46,.22);font-family:Georgia,serif;}
+.gl-tip strong{display:block;font-family:'Trebuchet MS',sans-serif;font-size:.85rem;color:var(--teal);margin-bottom:.3rem;padding-right:1.2rem;}
+.gl-tip p{font-size:.85rem;line-height:1.6;margin:0;color:var(--ink);}
+.gl-tip .gl-x{position:absolute;top:.35rem;right:.45rem;width:1.15rem;height:1.15rem;border:1px solid var(--teal);border-radius:3px;color:var(--teal);font-family:'Trebuchet MS',sans-serif;font-size:.72rem;line-height:1.05rem;text-align:center;cursor:pointer;}
+/* Aufgaben */
+.rechen-block{background:var(--light);border:1.5px solid var(--teal);border-radius:var(--r);padding:.95rem 1.1rem;margin-bottom:.85rem;}
+.rechen-title{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;font-weight:700;color:var(--teal);margin-bottom:.3rem;}
+.rechen-kontext{font-size:.88rem;line-height:1.62;margin-bottom:.6rem;color:#333;overflow-wrap:break-word;}
+.rechen-row{margin-bottom:.6rem;}
+.rechen-frage{font-size:.88rem;font-weight:600;margin-bottom:.3rem;overflow-wrap:break-word;}
+.rechen-inline{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.rechen-inp{border:1.5px solid var(--border);border-radius:4px;padding:.3rem .5rem;font-size:.88rem;width:125px;font-family:Georgia,serif;text-align:right;}
+.rechen-inp.ok{border-color:var(--green);background:var(--green-l);}
+.rechen-inp.nok{border-color:var(--red);background:var(--red-l);}
+.rechen-unit{font-size:.83rem;color:#666;min-width:1.2rem;}
+.rechen-check{font-family:'Trebuchet MS',sans-serif;font-size:.78rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.32rem .78rem;cursor:pointer;}
+.rechen-check:hover{background:#235a68;}
+.rechen-fb{font-size:.83rem;margin-top:.3rem;padding:.38rem .65rem;border-radius:4px;line-height:1.5;display:none;overflow-wrap:break-word;}
+.rechen-fb.show{display:block;}
+.rechen-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.rechen-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.zu-block,.aufg-block{background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.75rem .95rem;margin-bottom:.5rem;scroll-margin-top:50px;}
+.zu-nr,.aufg-nr{font-family:'Trebuchet MS',sans-serif;font-size:.72rem;font-weight:700;color:var(--teal);margin-bottom:.22rem;}
+.zu-text{font-size:.91rem;margin-bottom:.45rem;line-height:1.6;overflow-wrap:break-word;}
+.zu-sel{background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:.32rem .55rem;font-size:.87rem;width:100%;max-width:300px;}
+.zu-sel.ok{border-color:var(--green);background:var(--green-l);}
+.zu-sel.nok{border-color:var(--red);background:var(--red-l);}
+.zu-fb{font-size:.84rem;margin-top:.35rem;line-height:1.55;display:none;padding:.42rem .7rem;border-radius:4px;overflow-wrap:break-word;}
+.zu-fb.show{display:block;}
+.zu-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.zu-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.aufg-frage{font-size:.91rem;margin-bottom:.45rem;line-height:1.6;overflow-wrap:break-word;hyphens:auto;font-weight:600;}
+.aufg-opts{display:flex;flex-direction:column;gap:.28rem;}
+.aufg-btn{width:100%;white-space:normal;overflow-wrap:break-word;hyphens:auto;background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:.5rem .8rem;font-size:.87rem;font-family:Georgia,serif;text-align:left;cursor:pointer;line-height:1.5;}
+.aufg-btn:hover:not(:disabled){background:var(--teal-l);border-color:var(--teal);}
+.aufg-btn.correct{background:var(--green-l);border-color:var(--green);color:var(--green);font-weight:600;}
+.aufg-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.aufg-btn:disabled{cursor:default;opacity:.92;}
+.aufg-fb{margin-top:.45rem;padding:.45rem .75rem;border-radius:4px;font-size:.85rem;line-height:1.6;display:none;overflow-wrap:break-word;}
+.aufg-fb.show{display:block;}
+.aufg-fb.correct{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.aufg-fb.wrong{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.quiz-block{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--shadow);scroll-margin-top:50px;}
+.quiz-nr{font-family:'Trebuchet MS',sans-serif;font-size:.74rem;color:var(--teal);font-weight:700;margin-bottom:.25rem;}
+.quiz-frage{font-size:.94rem;font-weight:600;margin-bottom:.65rem;line-height:1.6;overflow-wrap:break-word;hyphens:auto;}
+.mc-opts{display:flex;flex-direction:column;gap:.3rem;}
+.mc-btn{width:100%;white-space:normal;overflow-wrap:break-word;hyphens:auto;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.5rem .82rem;font-size:.88rem;font-family:Georgia,serif;text-align:left;cursor:pointer;line-height:1.5;}
+.mc-btn:hover:not(:disabled){background:var(--teal-l);border-color:var(--teal);}
+.mc-btn.correct{background:var(--green-l);border-color:var(--green);color:var(--green);font-weight:600;}
+.mc-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.mc-btn:disabled{cursor:default;opacity:.92;}
+.fb-box{margin-top:.5rem;padding:.55rem .82rem;border-radius:var(--r);font-size:.85rem;line-height:1.6;display:none;overflow-wrap:break-word;}
+.fb-box.show{display:block;}
+.fb-box.correct{background:var(--green-l);border-left:4px solid var(--green);color:#1b5e20;}
+.fb-box.wrong{background:var(--red-l);border-left:4px solid var(--red);color:#b71c1c;}
+.result-card{background:#fff;border:2px solid var(--teal);border-radius:var(--r);padding:1.4rem;text-align:center;}
+.result-score{font-size:1.32rem;color:#555;font-family:'Trebuchet MS',sans-serif;}
+.result-note{font-size:2.3rem;font-weight:700;color:var(--teal);margin:.3rem 0;}
+.tab-nav{display:flex;justify-content:space-between;margin-top:1.3rem;border-top:1px solid var(--border);padding-top:.85rem;gap:.5rem;}
+.btn-nav{font-family:'Trebuchet MS',sans-serif;font-size:.79rem;font-weight:700;padding:.42rem .85rem;border-radius:4px;border:1.5px solid var(--teal);color:var(--teal);background:transparent;cursor:pointer;}
+.btn-nav:hover{background:var(--teal);color:#fff;}
+.btn-nav.primary{background:var(--teal);color:#fff;}
+@media print{nav.tabs,.ps,.tab-nav{display:none!important;}.tab-panel{display:block!important;}
+.gl::after{display:none;}.gl-tip{display:none!important;}
+.card{box-shadow:none!important;break-inside:avoid;}body{background:#fff!important;}@page{margin:1.5cm;}}
+@media(max-width:600px){.grid2{grid-template-columns:1fr;}header h1{font-size:1.33rem;}
+main{padding:1rem .7rem 2.5rem;}.aufg-btn,.mc-btn{font-size:.86rem;padding:.5rem .65rem;}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.bgbar{display:flex;align-items:center;gap:.7rem;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.5rem .8rem;margin-bottom:.8rem;}
+.bgbar .bgl{font-family:'Trebuchet MS',sans-serif;font-size:.76rem;color:#666;white-space:nowrap;}
+.bgtrack{flex:1;background:#e8e0cc;border-radius:99px;height:6px;}
+.bgfill{height:100%;background:var(--teal);border-radius:99px;width:0;transition:width .35s;}
+.bgpct{font-family:'Trebuchet MS',sans-serif;font-size:.76rem;font-weight:700;color:var(--teal);min-width:3.4rem;text-align:right;}
+
+
+
+
+
+
+
+.rg label{display:block;font-family:'Trebuchet MS',sans-serif;font-size:.79rem;color:#444;margin-bottom:.15rem;}
+.rv{font-weight:700;color:var(--teal);font-size:.9rem;}
+.rg input[type=range]{width:100%;accent-color:var(--teal);height:1.4rem;}
+
+
+
+
+
+
+
+
+
+
+
+.check-btn{font-family:'Trebuchet MS',sans-serif;font-size:.79rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.33rem .8rem;cursor:pointer;}
+.check-btn.grau{background:#777;}.check-btn.grau:hover{background:#5f5f5f;}
+table.t td.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.t td.sieg-a{background:#e3f2fd!important;color:#1565c0;font-weight:700;}
+table.t td.sieg-b{background:var(--red-l)!important;color:var(--red);font-weight:700;}
+.card h3{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;color:var(--ink);margin:.8rem 0 .4rem;}
+
+
+
+.denk{background:var(--gold-l);border:1.5px dashed var(--gold);border-radius:var(--r);padding:.75rem 1rem;margin-top:.7rem;font-size:.89rem;}
+.denk ul{padding-left:1.2rem;margin-top:.3rem;}
+.denk li{margin-bottom:.22rem;font-size:.88rem;}
+.regler{grid-template-columns:1fr 1fr;}
+sup{font-size:.72em;}sub{font-size:.72em;}
+table.t tr.sum td{background:var(--teal-l);border-top:2px solid var(--teal);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.fazit{border-radius:var(--r);padding:.55rem .9rem;font-size:.89rem;text-align:center;font-family:'Trebuchet MS',sans-serif;}
+.fazit.a{background:var(--green-l);border:1.5px solid var(--green);color:#1b5e20;}
+.fazit.b{background:var(--red-l);border:1.5px solid var(--red);color:#8c2f1c;}
+.fazit.neutral{background:var(--gold-l);border:1.5px solid var(--gold);color:#7a5c08;}
+
+
+
+
+
+
+
+
+
+.prst{font-family:'Trebuchet MS',sans-serif;font-size:.77rem;font-weight:700;background:#fff;border:1.5px solid var(--gold);color:var(--gold);border-radius:4px;padding:.32rem .7rem;cursor:pointer;}
+.prst:hover{background:var(--gold);color:#fff;}
+
+}
+
+
+
+
+
+
+
+
+
+
+@media(max-width:640px){.dreifeld,.grid3,.grid2{grid-template-columns:1fr;}}
+
+.dreifeld{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin:.7rem 0;}
+.df{background:#fff;border:2px solid;border-radius:var(--r);overflow:hidden;padding-bottom:.6rem;}
+.dft{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.9rem;text-align:center;padding:.2rem .5rem;}
+.dfp{font-size:.8rem;color:#666;text-align:center;padding:0 .6rem;margin:0;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin:.7rem 0;}
+.fall{background:var(--light);border-left:4px solid var(--ink);border-radius:0 var(--r) var(--r) 0;padding:.8rem 1.05rem;font-size:.9rem;line-height:1.68;margin-bottom:.5rem;}
+.schritte{display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem;}
+.schritt{display:flex;gap:.7rem;align-items:flex-start;background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;font-size:.89rem;}
+.sn{background:var(--teal);color:#fff;width:1.55rem;height:1.55rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.8rem;flex-shrink:0;}
+.abgr-row{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:.7rem .9rem;margin-bottom:.55rem;}
+.abgr-top{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.4rem;}
+.abgr-nr{background:var(--ink);color:#fff;min-width:1.5rem;height:1.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.78rem;flex-shrink:0;}
+.abgr-txt{font-size:.9rem;line-height:1.55;padding-top:.05rem;}
+.abgr-sel{width:100%;background:var(--light);border:1.5px solid var(--border);border-radius:4px;padding:.35rem .55rem;font-size:.87rem;font-family:Georgia,serif;}
+.abgr-sel.ok{border-color:var(--green);background:var(--green-l);}
+.abgr-sel.nok{border-color:var(--red);background:var(--red-l);}
+.abgr-fb{font-size:.84rem;margin-top:.4rem;line-height:1.6;display:none;padding:.42rem .7rem;border-radius:4px;overflow-wrap:break-word;}
+.abgr-fb.show{display:block;}
+.abgr-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.abgr-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.abgr-summe{background:var(--ink);color:#fff;border-radius:var(--r);padding:.75rem 1rem;text-align:center;font-size:.92rem;margin-top:.6rem;}
+@media(max-width:640px){.dreifeld,.grid3,.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+<div class="bc">Einzelhandel &rsaquo; 3. Ausbildungsjahr &rsaquo; Kosten- und Leistungsrechnung</div>
+<h1>Einf&uuml;hrung in die Kosten- und Leistungsrechnung</h1>
+<p class="desc">Kosten und Leistungen &bull; Abgrenzungsrechnung &bull; mit interaktivem Fallbeispiel</p>
+</header>
+<div class="ps"><span class="lbl">Quiz-Fortschritt:</span>
+<div class="pb"><div class="pb-fill" id="pb-fill"></div></div>
+<span class="pb-pct" id="pb-pct">0 / 15</span></div>
+<nav class="tabs">
+<button class="active" data-tab="grundlagen">1 &ndash; Grundlagen</button>
+<button data-tab="begriffe">2 &ndash; Kosten und Leistung</button>
+<button data-tab="neutral">3 &ndash; Neutraler Bereich</button>
+<button data-tab="kalk">4 &ndash; Kalkulatorische Kosten</button>
+<button data-tab="abgrenzung">5 &ndash; Abgrenzungsrechnung</button>
+<button data-tab="wiederholung">6 &ndash; Fachbegriffe</button>
+<button data-tab="quiz">7 &ndash; Quiz</button>
+</nav>
+<main>
+
+<section class="tab-panel active" id="tab-grundlagen">
+<div class="card">
+<h2>Warum eine eigene Rechnung neben der Buchf&uuml;hrung?</h2>
+<div class="def-box">Die <span class="gl" data-gl="finanzbuchhaltung">Finanzbuchhaltung</span> zeigt das <strong>Gesamtergebnis</strong> des Unternehmens &ndash; gesetzlich vorgeschrieben, fuer Aussenstehende bestimmt. Sie beantwortet aber nicht: Was kostet ein einzelner Artikel wirklich?</p>
+<p>Genau hier setzt die <span class="gl" data-gl="klr">Kosten- und Leistungsrechnung</span> an: ein <strong>internes, freiwilliges</strong> Rechenwerk der Unternehmensleitung selbst.</p></div>
+</div>
+
+<div class="card">
+<h2>Zwei Rechenwerke im Vergleich</h2>
+<table class="t">
+<thead><tr><th></th><th>Finanzbuchhaltung</th><th>Kosten- und Leistungsrechnung</th></tr></thead>
+<tbody>
+<tr><td><strong>Ausrichtung</strong></td><td>extern</td><td>intern</td></tr>
+<tr><td><strong>Verpflichtung</strong></td><td>gesetzlich vorgeschrieben (HGB)</td><td>freiwillig</td></tr>
+<tr><td><strong>Adressaten</strong></td><td>Finanzamt, Banken, Glaeubiger</td><td>Betriebsleitung selbst</td></tr>
+<tr><td><strong>Zeitbezug</strong></td><td>vergangenheitsbezogen, Stichtag</td><td>laufend, oft monatlich</td></tr>
+<tr><td><strong>Zweck</strong></td><td>Rechenschaft, Gewinnermittlung</td><td>Kalkulation, Steuerung, Kontrolle</td></tr>
+</tbody></table>
+<div class="info-gold"><strong>Beide brauchen einander:</strong> Die KLR nutzt die Zahlen der Finanzbuchhaltung als Ausgangspunkt &ndash; muss sie aber erst durch die <span class="gl" data-gl="abgrenzungsrechnung">Abgrenzungsrechnung</span> bereinigen, bevor sie damit arbeiten kann.</div>
+</div>
+
+<div class="card">
+<h2>Die drei Teilbereiche der KLR</h2>
+<div class="dreifeld">
+<div class="df" style="border-color:#1565c0;">
+<div class="dft" style="color:#1565c0;padding-top:.8rem;"><span class="gl" data-gl="kostenart">Kostenartenrechnung</span></div>
+<p class="dfp">Welche Kosten sind in welcher H&ouml;he angefallen?</p></div>
+<div class="df" style="border-color:#2e7d32;">
+<div class="dft" style="color:#2e7d32;padding-top:.8rem;"><span class="gl" data-gl="kostenstelle">Kostenstellenrechnung</span></div>
+<p class="dfp">Wo im Betrieb sind die Kosten angefallen?</p></div>
+<div class="df" style="border-color:#b8860b;">
+<div class="dft" style="color:#b8860b;padding-top:.8rem;"><span class="gl" data-gl="kostentraeger">Kostentr&auml;gerrechnung</span></div>
+<p class="dfp">Wof&uuml;r &ndash; f&uuml;r welches Produkt &ndash; sind die Kosten angefallen?</p></div>
+</div>
+<div class="info-teal">Diese Seite legt das Fundament: die <strong>Abgrenzung</strong> von Kosten und Leistungen, die allen drei Teilbereichen vorausgeht.</div>
+</div>
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Grundlagen</h2>
+<div id="aufg-grundlagen"></div></div>
+<div class="tab-nav"><span></span><button class="btn-nav primary" data-goto="begriffe">Weiter: Kosten und Leistung &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-begriffe">
+<div class="card">
+<h2>Vier Begriffe, zwei Begriffspaare</h2>
+<p>Im Alltag werden Aufwand und Kosten, Ertrag und Leistung oft gleichgesetzt. Fachlich ist das ungenau:</p>
+<div class="grid2">
+<div class="gbox" style="border-color:#c84b31;background:#fdecea;">
+<div class="gt" style="color:#c84b31;"><span class="gl" data-gl="aufwand">Aufwand</span> &rarr; <span class="gl" data-gl="kosten">Kosten</span></div>
+<p style="font-size:.87rem;">Aufwand ist der <strong>weite</strong> Begriff aus der Buchf&uuml;hrung. Kosten sind nur der Teil davon, der dem <strong>Betriebszweck</strong> dient.</p></div>
+<div class="gbox" style="border-color:#2e7d32;background:#e8f5e9;">
+<div class="gt" style="color:#2e7d32;"><span class="gl" data-gl="ertrag">Ertrag</span> &rarr; <span class="gl" data-gl="leistung">Leistung</span></div>
+<p style="font-size:.87rem;">Ertrag ist der <strong>weite</strong> Begriff aus der Buchf&uuml;hrung. Leistung ist nur der Teil davon, der dem <strong>Betriebszweck</strong> dient.</p></div>
+</div>
+<div class="formel"><div class="ft">Die Grundgleichung der Abgrenzung</div>
+Aufwand = Zweckaufwand + neutraler Aufwand<br>
+Kosten = Grundkosten (= <span class="gl" data-gl="zweckaufwand">Zweckaufwand</span>) + Anderskosten + Zusatzkosten</div>
+<div class="info-red"><strong>Der wichtigste Merksatz dieser Seite:</strong> Nicht jeder Aufwand ist Kosten &ndash; und nicht jede Kostenart ist als Aufwand gebucht. Beide Mengen ueberschneiden sich nur teilweise. Das macht die Abgrenzungsrechnung noetig.</div>
+</div>
+
+<div class="card">
+<h2>Woraus setzen sich die Kosten zusammen?</h2>
+<table class="t">
+<thead><tr><th>Kostenart</th><th>Verh&auml;ltnis zum Aufwand</th><th>Beispiel</th></tr></thead>
+<tbody>
+<tr><td><strong><span class="gl" data-gl="grundkosten">Grundkosten</span></strong></td><td>Kosten = Aufwand (gleiche H&ouml;he)</td><td>Wareneinsatz laut GuV</td></tr>
+<tr><td><strong><span class="gl" data-gl="anderskosten">Anderskosten</span></strong></td><td>Kosten &ne; Aufwand (andere H&ouml;he)</td><td>Kalkulatorische statt bilanzielle Abschreibung</td></tr>
+<tr><td><strong><span class="gl" data-gl="zusatzkosten">Zusatzkosten</span></strong></td><td>Kosten ohne jeden Aufwand</td><td>Kalkulatorischer Unternehmerlohn</td></tr>
+</tbody></table>
+</div>
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Kosten und Leistung</h2>
+<div id="aufg-begriffe"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="grundlagen">&larr; Grundlagen</button>
+<button class="btn-nav primary" data-goto="neutral">Weiter: Neutraler Bereich &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-neutral">
+<div class="card">
+<h2>Was aus der Buchf&uuml;hrung herausf&auml;llt</h2>
+<div class="def-box"><span class="gl" data-gl="neutralaufwand">Neutraler Aufwand</span> hat nichts mit dem eigentlichen Betriebszweck zu tun. Er wird in der KLR <strong>nicht</strong> als Kosten angesetzt &ndash; sonst wuerde er das Betriebsergebnis verzerren.</div>
+<table class="t">
+<thead><tr><th>Art</th><th>Kennzeichen</th><th>Beispiel im Einzelhandel</th></tr></thead>
+<tbody>
+<tr><td><strong><span class="gl" data-gl="betriebsfremd">Betriebsfremd</span></strong></td><td>Hat nichts mit dem Warenverkauf zu tun</td><td>Spende an einen Sportverein</td></tr>
+<tr><td><strong><span class="gl" data-gl="periodenfremd">Periodenfremd</span></strong></td><td>Gehoert wirtschaftlich zu einer fr&uuml;heren Periode</td><td>Steuernachzahlung f&uuml;r das Vorjahr</td></tr>
+<tr><td><strong><span class="gl" data-gl="ausserordentlich">Ausserordentlich</span></strong></td><td>Ungew&ouml;hnlich, selten, nicht planbar</td><td>Schaden durch ein aussergew&ouml;hnliches Ereignis</td></tr>
+</tbody></table>
+<div class="info-teal">Spiegelbildlich gibt es auch <strong>neutrale Ertr&auml;ge</strong>: Verkauft ein Modehaus ein nicht mehr benoetigtes Grundst&uuml;ck mit Gewinn, ist das kein Verkaufserl&ouml;s aus dem Kerngesch&auml;ft &ndash; also keine Leistung.</div>
+<div class="info-gold"><strong>Merkregel:</strong> Frage bei jedem Posten: Geh&ouml;rt das zum eigentlichen Gesch&auml;ft dieses Betriebs? Ein Modehaus verkauft Kleidung &ndash; alles andere ist erst einmal verd&auml;chtig, neutral zu sein.</div>
+</div>
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Neutraler Bereich</h2>
+<div id="aufg-neutral"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="begriffe">&larr; Kosten und Leistung</button>
+<button class="btn-nav primary" data-goto="kalk">Weiter: Kalkulatorische Kosten &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-kalk">
+<div class="card">
+<h2>Kosten ohne Aufwand &ndash; die kalkulatorischen Kosten</h2>
+<p>Manche wirtschaftlich sinnvollen Kosten tauchen in der Buchf&uuml;hrung gar nicht auf. Drei Klassiker:</p>
+<div class="grid3">
+<div class="gbox" style="border-color:#1565c0;background:#e3f2fd;">
+<div class="gt" style="color:#1565c0;"><span class="gl" data-gl="unternehmerlohn">Unternehmerlohn</span></div>
+<p style="font-size:.85rem;">Verg&uuml;tung f&uuml;r die Arbeit des mitarbeitenden Inhabers &ndash; ohne dass ein Gehalt gezahlt wird.</p></div>
+<div class="gbox" style="border-color:#2e7d32;background:#e8f5e9;">
+<div class="gt" style="color:#2e7d32;"><span class="gl" data-gl="kalkmiete">Kalk. Miete</span></div>
+<p style="font-size:.85rem;">F&uuml;r die Nutzung <strong>eigener</strong> Gesch&auml;ftsr&auml;ume, obwohl keine Miete gezahlt wird.</p></div>
+<div class="gbox" style="border-color:#b8860b;background:#fdf6dc;">
+<div class="gt" style="color:#b8860b;"><span class="gl" data-gl="kalkzinsen">Kalk. Zinsen</span></div>
+<p style="font-size:.85rem;">F&uuml;r das eingesetzte <strong>Eigenkapital</strong> &ndash; die entgangene Marktverzinsung.</p></div>
+</div>
+<div class="info-red"><strong>Warum das wichtig ist:</strong> Ein Einzelunternehmer, der im eigenen Laden mitarbeitet und in eigenen R&auml;umen wirtschaftet, h&auml;tte ohne diese Kosten einen unfairen Vorteil gegen&uuml;ber einer GmbH mit angestellter Gesch&auml;ftsf&uuml;hrung und Mietvertrag. Erst die kalkulatorischen Kosten machen beide vergleichbar.</div>
+</div>
+
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Kalkulatorische Kosten</h2>
+<div id="aufg-kalk"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="neutral">&larr; Neutraler Bereich</button>
+<button class="btn-nav primary" data-goto="abgrenzung">Weiter: Abgrenzungsrechnung &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-abgrenzung">
+<div class="card">
+<h2>Fallbeispiel: Modehaus Winter GmbH</h2>
+<div class="fall">
+<p>Aus der Gewinn- und Verlustrechnung des Modehauses Winter GmbH liegen acht Positionen vor. Ordne jede Position ihrem Typ zu &ndash; die richtige Zuordnung ist die Grundlage der gesamten Kosten- und Leistungsrechnung.</p>
+</div>
+<div id="abgr-container"></div>
+<div class="abgr-summe" id="abgr-summe" style="display:none;"></div>
+</div>
+
+<div class="card">
+<h2>Die Ergebnistabelle der Abgrenzungsrechnung: von der GuV zur KLR</h2>
+<p style="font-size:.89rem;">Nachdem jede Position zugeordnet ist, lassen sich Aufwand und Kosten in einer gemeinsamen Tabelle gegen&uuml;berstellen. Sie zeigt auf einen Blick, wie aus dem handelsrechtlichen <span class="gl" data-gl="aufwand">Aufwand</span> die betriebswirtschaftlichen <span class="gl" data-gl="kosten">Kosten</span> werden.</p>
+<div class="tablewrap">
+<table class="bab">
+<thead><tr><th>Position</th><th>Aufwand lt. GuV (EUR)</th><th>Typ</th><th>Kosten lt. KLR (EUR)</th><th>Kostenart</th></tr></thead>
+<tbody>
+<tr><td>Wareneinsatz</td><td class="num">480.000</td><td>Zweckaufwand</td><td class="num">480.000</td><td>Grundkosten</td></tr>
+<tr><td>Personalkosten Verkauf</td><td class="num">165.000</td><td>Zweckaufwand</td><td class="num">165.000</td><td>Grundkosten</td></tr>
+<tr><td>Bilanzielle Abschreibung</td><td class="num">22.000</td><td>Zweckaufwand</td><td class="num">26.000</td><td>Anderskosten</td></tr>
+<tr><td>Spende an Sportverein</td><td class="num">1.500</td><td>Neutraler Aufwand</td><td class="num">0</td><td>&ndash;</td></tr>
+<tr><td>Verlust Wertpapierverkauf</td><td class="num">3.200</td><td>Neutraler Aufwand</td><td class="num">0</td><td>&ndash;</td></tr>
+<tr><td>Kalk. Unternehmerlohn</td><td class="num">0</td><td>kein Aufwand</td><td class="num">42.000</td><td>Zusatzkosten</td></tr>
+<tr><td>Kalk. Miete</td><td class="num">0</td><td>kein Aufwand</td><td class="num">18.000</td><td>Zusatzkosten</td></tr>
+<tr><td>Kalk. Zinsen</td><td class="num">0</td><td>kein Aufwand</td><td class="num">9.600</td><td>Zusatzkosten</td></tr>
+<tr class="sum"><td><strong>Summe</strong></td><td class="num"><strong>671.700</strong></td><td></td><td class="num"><strong>740.600</strong></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<div id="rechen-abgrenzung"></div>
+<div class="info-red"><strong>Warum die Summen auseinanderfallen:</strong> 671.700 EUR Aufwand laut GuV werden zu 740.600 EUR Kosten in der KLR. Der Unterschied (68.900 EUR) erkl&auml;rt sich aus zwei Effekten: Die 4.700 EUR neutraler Aufwand (Spende und Wertpapierverlust) entfallen komplett, dafuer kommen 69.600 EUR <span class="gl" data-gl="zusatzkosten">Zusatzkosten</span> hinzu, denen kein Aufwand gegen&uuml;bersteht, und die Abschreibung steigt kalkulatorisch um 4.000 EUR.</div>
+<div class="info-teal"><strong>Diese Tabelle ist der Kern der Abgrenzungsrechnung:</strong> Sie macht sichtbar, dass GuV-Ergebnis und KLR-Ergebnis grunds&auml;tzlich verschiedene Zahlen liefern &ndash; beide sind richtig, beantworten aber unterschiedliche Fragen.</div>
+</div>
+
+<div class="card">
+<h2>So gehst du vor</h2>
+<div class="schritte">
+<div class="schritt"><span class="sn">1</span><div><strong>Betriebszweckbezug pr&uuml;fen</strong><br>Geh&ouml;rt der Posten zum eigentlichen Gesch&auml;ft? Wenn nein &rarr; neutraler Aufwand, keine Kosten.</div></div>
+<div class="schritt"><span class="sn">2</span><div><strong>H&ouml;hen vergleichen</strong><br>Stimmt die kalkulatorische H&ouml;he mit der bilanziellen &uuml;berein? Wenn nein &rarr; Anderskosten.</div></div>
+<div class="schritt"><span class="sn">3</span><div><strong>Fehlenden Aufwand suchen</strong><br>Gibt es wirtschaftlich sinnvolle Kosten ohne jeden Aufwand in der GuV? &rarr; Zusatzkosten.</div></div>
+<div class="schritt"><span class="sn">4</span><div><strong>Summieren</strong><br>Grundkosten + Anderskosten + Zusatzkosten = Kosten insgesamt.</div></div>
+</div>
+</div>
+<div class="tab-nav"><button class="btn-nav" data-goto="kalk">&larr; Kalkulatorische Kosten</button>
+<button class="btn-nav primary" data-goto="wiederholung">Weiter: Fachbegriffe &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-wiederholung">
+<div class="card">
+<h2>Fachbegriffe wiederholen &ndash; 21 Fragen</h2>
+<p style="font-size:.88rem;color:#555;">Hier kommen alle Begriffe noch einmal dran, die auf dieser Seite als antippbare Erkl&auml;rung hinterlegt sind.</p>
+<div class="bgbar"><span class="bgl">Bearbeitet:</span>
+<div class="bgtrack"><div class="bgfill" id="bg-fill"></div></div>
+<span class="bgpct" id="bg-pct">0 / 21</span></div>
+<div id="bg-container"></div></div>
+<div class="card" id="bg-result" style="display:none;">
+<h2 style="text-align:center;">Ergebnis Fachbegriffe</h2>
+<div class="result-card"><div class="result-score" id="bg-score">&ndash;</div>
+<p id="bg-txt" style="font-size:.94rem;color:#444;margin-top:.4rem;"></p></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="abgrenzung">&larr; Abgrenzungsrechnung</button>
+<button class="btn-nav primary" data-goto="quiz">Weiter: Quiz &rarr;</button></div>
+</section>
+
+<section class="tab-panel" id="tab-quiz">
+<div class="card"><h2>Abschlussquiz &ndash; 15 Fragen</h2><div id="quiz-container"></div></div>
+<div class="card" id="result-card" style="display:none;">
+<h2 style="text-align:center;">Dein Ergebnis</h2>
+<div class="result-card"><div class="result-score" id="res-score">&ndash;</div>
+<div class="result-note" id="res-note">&ndash;</div>
+<p id="res-txt" style="font-size:.94rem;color:#444;"></p></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="wiederholung">&larr; Fachbegriffe</button><span></span></div>
+</section>
+
+</main>
+<script>
+(function(){
+"use strict";
+var AUFG={"grundlagen": [{"q": "Welche Aufgabe hat die Kosten- und Leistungsrechnung?", "opts": ["Sie liefert dem Betrieb Informationen fuer Preiskalkulation und Wirtschaftlichkeitskontrolle", "Sie ermittelt die Steuerlast eines Unternehmens", "Sie informiert ausschliesslich externe Glaeubiger", "Sie ersetzt die Buchfuehrungspflicht vollstaendig obwohl das in der Praxis anders ist was bei genauer Pruefung nicht "], "ok": 0, "ex": "Die KLR ist ein internes Rechenwerk. Sie zeigt, was ein Produkt oder eine Leistung tatsaechlich kostet - Grundlage fuer Preise, Kalkulation und Entscheidungen."}, {"q": "Wie unterscheiden sich Finanzbuchhaltung und Kosten- und Leistungsrechnung in ihrer Ausrichtung?", "opts": ["Beide verfolgen exakt dasselbe Ziel", "Die Finanzbuchhaltung ist extern und gesetzlich vorgeschrieben, die KLR ist intern und freiwillig", "Die KLR ist gesetzlich vorgeschrieben, die Finanzbuchhaltung freiwillig - diese Aussage ist unzutreffend", "Beide betreffen nur den Einzelhandel"], "ok": 1, "ex": "Die Finanzbuchhaltung informiert Aussenstehende wie Finanzamt und Banken nach HGB-Vorgaben. Die KLR liefert der Betriebsleitung selbst entscheidungsrelevante Zahlen - ohne gesetzliche Formvorschrift."}, {"q": "Wer benoetigt die Ergebnisse der Kosten- und Leistungsrechnung vor allem?", "opts": ["Ausschliesslich das Finanzamt", "Nur die Hausbank des Unternehmens - was hier nicht zutrifft", "Die Betriebsleitung fuer interne Entscheidungen", "Nur externe Wirtschaftspruefer"], "ok": 2, "ex": "Waehrend die Finanzbuchhaltung fuer Aussenstehende bestimmt ist, dient die KLR der eigenen Unternehmensleitung als Steuerungsinstrument."}, {"q": "Welche drei Teilbereiche umfasst die Kosten- und Leistungsrechnung klassischerweise?", "opts": ["Umsatz, Gewinn, Verlust obwohl das in der Praxis anders ist was bei genauer Pruefung nicht ", "Bilanz, GuV, Anhang", "Soll, Haben, Saldo", "Kostenartenrechnung, Kostenstellenrechnung, Kostentraegerrechnung"], "ok": 3, "ex": "Die Kostenartenrechnung fragt: Welche Kosten sind angefallen? Die Kostenstellenrechnung: Wo sind sie angefallen? Die Kostentraegerrechnung: Wofuer sind sie angefallen?"}, {"q": "Warum reicht die Finanzbuchhaltung allein nicht aus, um den Verkaufspreis eines Artikels zu kalkulieren?", "opts": ["Weil sie nur Gesamtergebnisse zeigt, aber nicht, was ein einzelner Artikel tatsaechlich kostet", "Weil die Finanzbuchhaltung keine Zahlen zur Verfuegung stellt", "Weil Kalkulation gesetzlich verboten ist", "Weil die Finanzbuchhaltung nur einmal jaehrlich erstellt wird obwohl das in der Praxis anders ist"], "ok": 0, "ex": "Die GuV zeigt das Gesamtergebnis des Unternehmens. Fuer die Frage, was ein einzelnes Produkt kostet, braucht es die feinere Aufteilung der KLR."}], "begriffe": [{"q": "Wie ist der Begriff Aufwand definiert?", "opts": ["Nur der Werteverzehr, der unmittelbar mit dem Betriebszweck zusammenhaengt", "Jeder Werteverzehr, der in der Finanzbuchhaltung erfasst wird", "Ausschliesslich Barzahlungen des Unternehmens", "Nur Abschreibungen auf Anlagevermoegen"], "ok": 1, "ex": "Aufwand ist der handelsrechtliche Oberbegriff: jeder in Geld bewertete Werteverzehr einer Periode, wie er in der Gewinn- und Verlustrechnung erscheint."}, {"q": "Was unterscheidet Kosten von Aufwand?", "opts": ["Kosten und Aufwand sind vollkommen identisch", "Kosten entstehen nur bei Bargeschaeften", "Kosten sind der Teil des Werteverzehrs, der dem eigentlichen Betriebszweck dient", "Kosten werden nie in der Buchfuehrung erfasst obwohl das in der Praxis anders ist"], "ok": 2, "ex": "Kosten sind betriebszweckbezogener, bewerteter Verzehr von Guetern und Leistungen. Nicht jeder Aufwand ist Kosten, und nicht jede Kostenart ist als Aufwand verbucht."}, {"q": "Wie ist der Begriff Ertrag definiert?", "opts": ["Nur der am Jahresende verbleibende Gewinn obwohl das in der Praxis anders ist was bei genauer Pruefung nicht ", "Nur der Umsatz aus dem Verkauf von Waren", "Ausschliesslich Zinsertraege", "Jeder in Geld bewertete Wertezuwachs einer Periode laut Gewinn- und Verlustrechnung"], "ok": 3, "ex": "Ertrag ist der handelsrechtliche Oberbegriff fuer jeden Wertezuwachs, wie er in der GuV ausgewiesen wird - unabhaengig davon, ob er zum Betriebszweck gehoert."}, {"q": "Was unterscheidet Leistung von Ertrag?", "opts": ["Leistung ist der Teil des Wertezuwachses, der aus der eigentlichen betrieblichen Taetigkeit stammt", "Leistung und Ertrag sind exakt dasselbe", "Leistung entsteht nur bei Dienstleistungsbetrieben obwohl das in der Praxis anders ist was bei genauer Pruefung nicht ", "Leistung wird nie in Geld bewertet"], "ok": 0, "ex": "Leistung ist das Pendant zu den Kosten auf der Ertragsseite: der betriebszweckbezogene Wertezuwachs, der der Kosten- und Leistungsrechnung zugrunde liegt."}, {"q": "In welche vier Bereiche lassen sich Aufwendungen und Ertraege fuer die Abgrenzung einteilen?", "opts": ["Umsatz, Gewinn, Verlust, Steuer", "Zweckaufwand, neutraler Aufwand, Zweckertrag, neutraler Ertrag", "Soll, Haben, Aktiv, Passiv", "Anlagevermoegen, Umlaufvermoegen, Eigenkapital, Fremdkapital - was hier nicht zutrifft"], "ok": 1, "ex": "Diese Einteilung ist die Grundlage der gesamten Abgrenzungsrechnung: Sie trennt, was zum Betriebszweck gehoert (Zweck) von dem, was nicht dazugehoert (neutral)."}], "neutral": [{"q": "Was ist betriebsfremder Aufwand?", "opts": ["Aufwand fuer Waren, die verkauft wurden", "Aufwand, der jedes Jahr in gleicher Hoehe anfaellt - was hier nicht zutrifft", "Aufwand, der mit dem eigentlichen Betriebszweck nichts zu tun hat", "Aufwand fuer Personalkosten"], "ok": 2, "ex": "Beispiel: Eine Spende eines Einzelhandelsgeschaefts an einen Sportverein hat nichts mit dem Warenverkauf zu tun - sie ist betriebsfremd."}, {"q": "Was kennzeichnet periodenfremden Aufwand?", "opts": ["Er betrifft ausschliesslich die laufende Periode obwohl das in der Praxis anders ist was bei genauer Pruefung nicht ", "Er wird nie in der GuV erfasst", "Er entsteht nur bei Grossunternehmen", "Er wird zwar in der laufenden Periode gebucht, wirtschaftlich gehoert er aber zu einer frueheren Periode"], "ok": 3, "ex": "Beispiel: Eine Steuernachzahlung fuer das Vorjahr wird zwar heute gebucht, betrifft aber wirtschaftlich das vergangene Geschaeftsjahr."}, {"q": "Was versteht man unter ausserordentlichem Aufwand?", "opts": ["Ungewoehnlicher, selten auftretender Aufwand, etwa durch einen Brandschaden", "Regelmaessig wiederkehrender Aufwand wie die Miete was in dieser Form nicht gilt", "Aufwand fuer die normale Warenbeschaffung", "Aufwand, der immer in gleicher Hoehe anfaellt"], "ok": 0, "ex": "Ausserordentliche Aufwendungen entstehen durch seltene, untypische Ereignisse - sie verzerren das laufende Betriebsergebnis, wenn man sie nicht herausrechnet."}, {"q": "Warum werden neutrale Aufwendungen aus der Kosten- und Leistungsrechnung herausgerechnet?", "opts": ["Weil sie steuerlich nicht abzugsfaehig sind obwohl das in der Praxis anders ist was bei genauer Pruefung nicht zutrifft", "Weil sie nicht mit der eigentlichen Betriebstaetigkeit zusammenhaengen und das Betriebsergebnis verfaelschen wuerden", "Weil sie gesetzlich verboten sind", "Weil sie stets zu niedrig sind"], "ok": 1, "ex": "Das Ziel der KLR ist ein realistisches Bild der eigentlichen Geschaeftstaetigkeit. Betriebsfremde, periodenfremde und ausserordentliche Posten wuerden dieses Bild verzerren."}, {"q": "Welches Beispiel ist ein neutraler Ertrag?", "opts": ["Erloese aus dem Verkauf von Waren", "Personalkosten der Verkaeuferinnen obwohl das in der Praxis anders ist", "Ein Gewinn aus dem Verkauf einer nicht mehr benoetigten Fabrikhalle", "Wareneinkauf beim Grosshaendler"], "ok": 2, "ex": "Der Verkauf einer Immobilie gehoert nicht zum eigentlichen Betriebszweck eines Handelsunternehmens - der daraus entstehende Gewinn ist ein neutraler (betriebsfremder) Ertrag."}], "kalk": [{"q": "Was sind Anderskosten?", "opts": ["Kosten, die in exakt gleicher Hoehe wie der zugehoerige Aufwand angesetzt werden - was hier nicht zutrifft", "Kosten, die nur bei Verlust entstehen", "Kosten ohne jeden Bezug zur Buchfuehrung", "Kosten, die in anderer Hoehe als der zugehoerige Aufwand in der Buchfuehrung angesetzt werden"], "ok": 3, "ex": "Beispiel: Die bilanzielle Abschreibung betraegt 22.000 EUR, kalkulatorisch werden aber 26.000 EUR angesetzt, weil die tatsaechliche Nutzungsdauer kuerzer eingeschaetzt wird."}, {"q": "Was sind Zusatzkosten?", "opts": ["Kosten, denen in der Finanzbuchhaltung ueberhaupt kein Aufwand gegenuebersteht", "Kosten, die genau dem verbuchten Aufwand entsprechen - diese Aussage ist unzutreffend", "Kosten, die nur einmalig anfallen", "Kosten fuer zusaetzliche Werbemassnahmen"], "ok": 0, "ex": "Der kalkulatorische Unternehmerlohn ist das klassische Beispiel: Arbeitet der Inhaber im eigenen Betrieb mit, entsteht ihm kein Gehaltsaufwand in der Buchfuehrung - trotzdem ist seine Arbeitsleistung ein Kostenfaktor."}, {"q": "Warum wird ein kalkulatorischer Unternehmerlohn angesetzt?", "opts": ["Weil der Inhaber gesetzlich ein Gehalt beziehen muss", "Um die Arbeitsleistung des Inhabers als Kostenfaktor sichtbar zu machen und mit Konkurrenzbetrieben vergleichbar zu bleiben", "Weil dadurch die Steuerlast automatisch sinkt", "Weil sonst kein Jahresabschluss erstellt werden darf obwohl das in der Praxis anders ist was bei genauer Pruefung nicht zutrifft"], "ok": 1, "ex": "Ein Einzelunternehmer bezieht kein Gehalt, arbeitet aber im Betrieb mit. Ohne kalkulatorischen Unternehmerlohn waere sein Betrieb im Vergleich zu einer GmbH mit angestellter Geschaeftsfuehrung nicht fair vergleichbar."}, {"q": "Wozu dienen kalkulatorische Zinsen?", "opts": ["Sie erfassen die Bankzinsen fuer aufgenommene Kredite", "Sie sind identisch mit den Zinsaufwendungen der Buchfuehrung - was hier nicht zutrifft", "Sie erfassen die entgangene Verzinsung des im Betrieb eingesetzten Eigenkapitals", "Sie betreffen nur Fremdkapitalzinsen"], "ok": 2, "ex": "Wer Eigenkapital in den Betrieb steckt, verzichtet auf die Zinsen, die er am Kapitalmarkt erzielen koennte - dieser entgangene Ertrag wird als kalkulatorische Zinsen angesetzt."}, {"q": "Warum wird oft eine kalkulatorische Miete angesetzt, obwohl kein Mietaufwand gebucht wurde?", "opts": ["Weil das Finanzamt dies verlangt", "Weil kalkulatorische Miete steuerfrei ist", "Weil Miete grundsaetzlich hoeher ist als andere Kosten obwohl das in der Praxis anders ist was bei genauer Pruefung nicht ", "Weil dem Betrieb sonst ein Kostenvorteil gegenueber Betrieben in gemieteten Raeumen entstehen wuerde"], "ok": 3, "ex": "Ein Betrieb in eigenen Raeumen zahlt keine Miete - trotzdem verursacht die Nutzung dieser Raeume wirtschaftlich gesehen Kosten, die mit vergleichbaren Betrieben in Mietobjekten vergleichbar gemacht werden."}]};var QUIZ=[{"id": "q1", "frage": "Was ist die Hauptaufgabe der Kosten- und Leistungsrechnung?", "opts": ["Interne Informationsgewinnung fuer Kalkulation und Kontrolle", "Externe Rechnungslegung nach HGB", "Ermittlung der Steuerschuld", "Erstellung des Jahresabschlusses - diese Aussage ist unzutreffend"], "correct": 0, "loes": "Die KLR ist ein internes, freiwilliges Rechenwerk zur Unterstuetzung betrieblicher Entscheidungen."}, {"id": "q2", "frage": "Welche Aussage zum Verhaeltnis von Kosten und Aufwand ist richtig?", "opts": ["Kosten und Aufwand sind stets identisch", "Nicht jeder Aufwand ist Kosten, und nicht jede Kostenart ist als Aufwand gebucht", "Kosten sind immer hoeher als Aufwand", "Aufwand kommt nur in der Kosten- und Leistungsrechnung vor was in dieser Form nicht gilt"], "correct": 1, "loes": "Beide Begriffe ueberschneiden sich nur teilweise - genau das macht die Abgrenzungsrechnung noetig."}, {"id": "q3", "frage": "Wie werden Kosten definiert, denen kein Aufwand in der Buchfuehrung entspricht?", "opts": ["Grundkosten", "Anderskosten", "Zusatzkosten", "Zweckaufwand"], "correct": 2, "loes": "Zusatzkosten wie der kalkulatorische Unternehmerlohn tauchen nirgends in der Gewinn- und Verlustrechnung auf."}, {"id": "q4", "frage": "Wie werden Kosten bezeichnet, die in anderer Hoehe als der zugehoerige Aufwand angesetzt werden?", "opts": ["Zusatzkosten", "Grundkosten", "Neutrale Kosten", "Anderskosten"], "correct": 3, "loes": "Die kalkulatorische Abschreibung, die von der bilanziellen abweicht, ist das klassische Beispiel fuer Anderskosten."}, {"id": "q5", "frage": "Was sind Grundkosten?", "opts": ["Kosten in Hoehe des entsprechenden Zweckaufwands", "Kosten ohne jeden Aufwand was in dieser Form nicht gilt", "Nur Personalkosten", "Nur Materialkosten"], "correct": 0, "loes": "Grundkosten entsprechen exakt dem Zweckaufwand - Aufwand und Kosten stimmen hier in der Hoehe ueberein."}, {"id": "q6", "frage": "Eine Spende an einen Sportverein ist fuer ein Einzelhandelsgeschaeft ...", "opts": ["Zweckaufwand", "betriebsfremder (neutraler) Aufwand", "Zusatzkosten", "Anderskosten was in dieser Form nicht gilt"], "correct": 1, "loes": "Die Spende hat nichts mit dem eigentlichen Betriebszweck - dem Warenverkauf - zu tun und zaehlt daher nicht zu den Kosten."}, {"id": "q7", "frage": "Wofuer steht der kalkulatorische Unternehmerlohn?", "opts": ["Das tatsaechlich gezahlte Geschaeftsfuehrergehalt obwohl das in der Praxis anders ist was bei genauer Pruefung nicht ", "Die Lohnsteuer der Mitarbeiter", "Die kalkulatorisch angesetzte Verguetung fuer die Arbeitsleistung des mitarbeitenden Inhabers", "Den Gewinn des Unternehmens"], "correct": 2, "loes": "Er macht die Arbeitsleistung des Inhabers sichtbar, obwohl dafuer kein Aufwand gebucht wird."}, {"id": "q8", "frage": "Wozu dient die Abgrenzungsrechnung?", "opts": ["Sie ersetzt die Kostenartenrechnung vollstaendig obwohl das in der Praxis anders ist was bei genauer Pruefung nicht ", "Sie berechnet die Umsatzsteuer", "Sie erstellt die Bilanz", "Sie ermittelt aus Aufwand und Ertrag der Buchfuehrung die betriebszweckbezogenen Kosten und Leistungen"], "correct": 3, "loes": "Sie ist die Bruecke zwischen Finanzbuchhaltung und Kosten- und Leistungsrechnung."}, {"id": "q9", "frage": "Was zeigt die Kostenartenrechnung?", "opts": ["Welche Kosten in welcher Hoehe angefallen sind", "Wofuer die Kosten angefallen sind - was hier nicht zutrifft", "Wo die Kosten angefallen sind", "Wer die Kosten verursacht hat"], "correct": 0, "loes": "Die Kostenartenrechnung erfasst systematisch alle Kostenarten - Material, Personal, Abschreibungen und so weiter."}, {"id": "q10", "frage": "Was zeigt die Kostenstellenrechnung?", "opts": ["Wofuer Kosten angefallen sind", "In welchem betrieblichen Bereich die Kosten angefallen sind", "Welche Kostenarten es gibt", "Den Gesamtumsatz des Unternehmens - diese Aussage ist unzutreffend"], "correct": 1, "loes": "Die Kostenstellenrechnung ordnet Kosten einzelnen Bereichen wie Einkauf, Verkauf oder Verwaltung zu."}, {"id": "q11", "frage": "Was zeigt die Kostentraegerrechnung?", "opts": ["Nur die Personalkosten", "Wo im Betrieb Kosten anfallen obwohl das in der Praxis anders ist", "Welche Kosten auf welches Produkt oder welche Leistung entfallen", "Die Hoehe der Umsatzsteuer"], "correct": 2, "loes": "Die Kostentraegerrechnung ist Grundlage der Preiskalkulation - sie zeigt, was ein einzelnes Produkt kostet."}, {"id": "q12", "frage": "Welches Beispiel zeigt periodenfremden Aufwand?", "opts": ["Die laufende Miete des aktuellen Monats", "Die Loehne des laufenden Monats", "Der Wareneinkauf dieser Woche", "Eine Steuernachzahlung fuer das Vorjahr"], "correct": 3, "loes": "Die Nachzahlung wird zwar heute gebucht, betrifft wirtschaftlich aber ein vergangenes Geschaeftsjahr."}, {"id": "q13", "frage": "Was unterscheidet Leistung von Ertrag?", "opts": ["Leistung ist der betriebszweckbezogene Teil des Ertrags", "Beide sind identisch", "Leistung existiert nur bei Dienstleistern - was hier nicht zutrifft", "Leistung wird nie bewertet"], "correct": 0, "loes": "Wie bei Kosten und Aufwand ist Leistung der engere, betriebszweckbezogene Begriff im Vergleich zum Ertrag."}, {"id": "q14", "frage": "Warum ist die KLR fuer Einzelhandelsunternehmen wichtig, auch wenn sie nicht gesetzlich vorgeschrieben ist?", "opts": ["Weil sie die einzige Moeglichkeit zur Umsatzermittlung ist obwohl das in der Praxis anders ist was bei genauer Pruefung nicht zutrifft obwohl das in der Praxis nicht zu beobach", "Weil sie zeigt, was einzelne Artikel oder Abteilungen tatsaechlich kosten, und damit fundierte Preis- und Sortimentsentscheidungen ermoeglicht", "Weil das Finanzamt sie verlangt", "Weil sie die Buchfuehrung ersetzt"], "correct": 1, "loes": "Ohne KLR wuesste ein Einzelhaendler nicht, welche Artikel oder Abteilungen wirklich rentabel sind."}, {"id": "q15", "frage": "Kalkulatorische Miete fuer eigene Geschaeftsraeume ist ein Beispiel fuer ...", "opts": ["Grundkosten", "Neutralen Aufwand", "Zusatzkosten", "Anderskosten"], "correct": 2, "loes": "Da kein Mietaufwand gebucht wird, aber wirtschaftlich Kosten entstehen, handelt es sich um Zusatzkosten."}];var ZU_DATA=[];var ZU_OPTS=[];
+var RECHEN=[{"id": "r1", "tab": "abgrenzung", "titel": "Die Differenz zwischen Aufwand und Kosten erkl\u00e4ren", "kontext": "Aufwand laut GuV insgesamt: 671.700 EUR. Kosten laut KLR insgesamt: 740.600 EUR. Neutraler Aufwand (Spende und Wertpapierverlust): 4.700 EUR. Zusatzkosten (Unternehmerlohn, Miete, Zinsen): 69.600 EUR. Die Abschreibung steigt kalkulatorisch von 22.000 auf 26.000 EUR.", "aufgaben": [{"frage": "Differenz zwischen Kosten und Aufwand insgesamt (EUR)", "loesung": "740.600 - 671.700 = 68.900 EUR", "wert": 68900, "tol": 50, "einheit": "EUR"}, {"frage": "Anderskosten-Differenz bei der Abschreibung (EUR)", "loesung": "26.000 - 22.000 = 4.000 EUR", "wert": 4000, "tol": 20, "einheit": "EUR"}, {"frage": "Kontrollrechnung: Zusatzkosten minus neutraler Aufwand minus Anderskosten-Differenz (EUR)", "loesung": "69.600 - 4.700 + 4.000 = 68.900 EUR", "wert": 68900, "tol": 50, "einheit": "EUR"}]}];var GLOSSAR={"klr": {"t": "Kosten- und Leistungsrechnung", "d": "Ein internes, freiwilliges Rechenwerk, das zeigt, was einzelne Produkte, Abteilungen oder Auftraege tatsaechlich kosten. Grundlage fuer Preiskalkulation, Kostenkontrolle und unternehmerische Entscheidungen. Abkuerzung: KLR."}, "finanzbuchhaltung": {"t": "Finanzbuchhaltung", "d": "Das gesetzlich vorgeschriebene externe Rechnungswesen. Sie informiert Aussenstehende wie Finanzamt, Banken und Glaeubiger nach den Vorgaben des Handelsgesetzbuchs."}, "aufwand": {"t": "Aufwand", "d": "Der handelsrechtliche Oberbegriff: jeder in Geld bewertete Werteverzehr einer Periode, wie er in der Gewinn- und Verlustrechnung erscheint. Nicht jeder Aufwand ist zugleich Kosten."}, "kosten": {"t": "Kosten", "d": "Der betriebszweckbezogene, bewertete Verzehr von Guetern und Leistungen. Kosten sind der engere Begriff im Vergleich zum Aufwand - nur was dem eigentlichen Betriebszweck dient, zaehlt dazu."}, "ertrag": {"t": "Ertrag", "d": "Der handelsrechtliche Oberbegriff: jeder in Geld bewertete Wertezuwachs einer Periode laut Gewinn- und Verlustrechnung. Nicht jeder Ertrag ist zugleich Leistung."}, "leistung": {"t": "Leistung", "d": "Der betriebszweckbezogene Teil des Ertrags. Das Gegenstueck zu den Kosten auf der Ertragsseite - Grundlage der Kosten- und Leistungsrechnung."}, "zweckaufwand": {"t": "Zweckaufwand", "d": "Aufwand, der unmittelbar dem eigentlichen Betriebszweck dient und deshalb in gleicher Hoehe als Grundkosten uebernommen wird. Beispiel: der Wareneinsatz eines Handelsbetriebs."}, "neutralaufwand": {"t": "Neutraler Aufwand", "d": "Aufwand, der nicht zum eigentlichen Betriebszweck gehoert und deshalb nicht als Kosten angesetzt wird. Umfasst betriebsfremden, periodenfremden und ausserordentlichen Aufwand."}, "betriebsfremd": {"t": "Betriebsfremder Aufwand", "d": "Aufwand, der mit der eigentlichen Geschaeftstaetigkeit nichts zu tun hat. Beispiel: eine Spende eines Einzelhandelsgeschaefts an einen Sportverein."}, "periodenfremd": {"t": "Periodenfremder Aufwand", "d": "Aufwand, der zwar in der laufenden Periode gebucht wird, wirtschaftlich aber zu einer frueheren Periode gehoert. Beispiel: eine Steuernachzahlung fuer das Vorjahr."}, "ausserordentlich": {"t": "Ausserordentlicher Aufwand", "d": "Ungewoehnlicher, selten auftretender Aufwand, der das laufende Ergebnis verzerren wuerde. Beispiel: ein Schaden durch ein aussergewoehnliches Ereignis wie einen Brand."}, "grundkosten": {"t": "Grundkosten", "d": "Kosten, die genau in Hoehe des zugehoerigen Zweckaufwands angesetzt werden. Aufwand und Kosten stimmen hier in der Hoehe exakt ueberein."}, "anderskosten": {"t": "Anderskosten", "d": "Kosten, die in anderer Hoehe als der zugehoerige Aufwand in der Buchfuehrung angesetzt werden. Beispiel: die kalkulatorische Abschreibung weicht von der bilanziellen ab."}, "zusatzkosten": {"t": "Zusatzkosten", "d": "Kosten, denen in der Finanzbuchhaltung ueberhaupt kein Aufwand gegenuebersteht. Beispiele: kalkulatorischer Unternehmerlohn, kalkulatorische Miete, kalkulatorische Zinsen."}, "unternehmerlohn": {"t": "Kalkulatorischer Unternehmerlohn", "d": "Die kalkulatorisch angesetzte Verguetung fuer die Arbeitsleistung eines im Betrieb mitarbeitenden Inhabers, dem kein Gehalt gezahlt wird. Macht seine Arbeitsleistung als Kostenfaktor sichtbar."}, "kalkmiete": {"t": "Kalkulatorische Miete", "d": "Kosten, die fuer die Nutzung eigener Geschaeftsraeume angesetzt werden, obwohl kein Mietaufwand gebucht wurde. Sorgt fuer Vergleichbarkeit mit Betrieben in gemieteten Raeumen."}, "kalkzinsen": {"t": "Kalkulatorische Zinsen", "d": "Kosten fuer die entgangene Verzinsung des im Betrieb eingesetzten Eigenkapitals. Wer Kapital im eigenen Betrieb bindet, verzichtet auf die Zinsen, die er am Kapitalmarkt erzielen koennte."}, "abgrenzungsrechnung": {"t": "Abgrenzungsrechnung", "d": "Die Ueberleitung von Aufwand und Ertrag der Finanzbuchhaltung zu Kosten und Leistungen der Kosten- und Leistungsrechnung. Sie trennt betriebszweckbezogene von neutralen Posten und ergaenzt kalkulatorische Groessen."}, "kostenart": {"t": "Kostenartenrechnung", "d": "Der erste Teilbereich der KLR: Sie erfasst systematisch, welche Kosten in welcher Hoehe angefallen sind - etwa Material-, Personal- oder Abschreibungskosten."}, "kostenstelle": {"t": "Kostenstellenrechnung", "d": "Der zweite Teilbereich der KLR: Sie ordnet die Kosten einzelnen betrieblichen Bereichen zu, etwa Einkauf, Verkauf oder Verwaltung. Beantwortet die Frage: Wo sind die Kosten angefallen?"}, "kostentraeger": {"t": "Kostentraegerrechnung", "d": "Der dritte Teilbereich der KLR: Sie ordnet die Kosten einzelnen Produkten oder Leistungen zu. Beantwortet die Frage: Wofuer sind die Kosten angefallen? Grundlage der Preiskalkulation."}};
+var TOTAL=QUIZ.length;var gAns=0;
+
+function showTab(id){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.remove('active');});
+  var p=document.getElementById('tab-'+id);if(p)p.classList.add('active');
+  var b=document.querySelector('[data-tab="'+id+'"]');if(b)b.classList.add('active');
+  setTimeout(function(){window.scrollTo({top:0,behavior:'instant'});},0);
+  buildAufgaben(id);buildRechen(id);
+  if(id==='abgrenzung')buildAbgr();
+  if(id==='begriffe')buildBegriffe();
+  if(id==='begriffe')buildBegriffe();
+}
+function addScore(){
+  gAns=Math.min(gAns+1,TOTAL);
+  var f=document.getElementById('pb-fill'),l=document.getElementById('pb-pct');
+  if(f)f.style.width=Math.round(gAns/TOTAL*100)+'%';
+  if(l)l.textContent=gAns+' / '+TOTAL;
+}
+document.querySelectorAll('nav.tabs button').forEach(function(b){
+  b.addEventListener('click',function(){showTab(this.getAttribute('data-tab'));});});
+document.querySelectorAll('[data-goto]').forEach(function(b){
+  b.addEventListener('click',function(){showTab(this.getAttribute('data-goto'));});});
+
+
+/* ============ ABGRENZUNGSTABELLE ============ */
+var ABGR=[{"nr": 1, "posten": "Wareneinsatz laut Gewinn- und Verlustrechnung", "betrag": 480000, "typ": "zweck", "erg": "Zweckaufwand = Grundkosten in gleicher Hoehe", "kosten": 480000, "loesung": "Zweckaufwand (= Grundkosten)"}, {"nr": 2, "posten": "Personalkosten im Verkauf", "betrag": 165000, "typ": "zweck", "erg": "Zweckaufwand = Grundkosten in gleicher Hoehe", "kosten": 165000, "loesung": "Zweckaufwand (= Grundkosten)"}, {"nr": 3, "posten": "Bilanzielle Abschreibung auf die Ladeneinrichtung", "betrag": 22000, "typ": "anders", "erg": "Anderskosten: kalkulatorisch werden 26.000 EUR angesetzt (realistische Nutzungsdauer)", "kosten": 26000, "loesung": "Anderskosten"}, {"nr": 4, "posten": "Spende an den ortsansaessigen Sportverein", "betrag": 1500, "typ": "neutral", "erg": "Neutraler (betriebsfremder) Aufwand - keine Kosten", "kosten": 0, "loesung": "Neutraler Aufwand (keine Kosten)"}, {"nr": 5, "posten": "Verlust aus dem Verkauf von Wertpapieren", "betrag": 3200, "typ": "neutral", "erg": "Neutraler (betriebsfremder) Aufwand - keine Kosten", "kosten": 0, "loesung": "Neutraler Aufwand (keine Kosten)"}, {"nr": 6, "posten": "Kalkulatorischer Unternehmerlohn (kein Geschaeftsfuehrergehalt gezahlt)", "betrag": 0, "typ": "zusatz", "erg": "Zusatzkosten: 42.000 EUR ohne zugehoerigen Aufwand in der GuV", "kosten": 42000, "loesung": "Zusatzkosten (kein Aufwand)"}, {"nr": 7, "posten": "Kalkulatorische Miete fuer die eigene Verkaufsflaeche", "betrag": 0, "typ": "zusatz", "erg": "Zusatzkosten: 18.000 EUR ohne zugehoerigen Aufwand in der GuV", "kosten": 18000, "loesung": "Zusatzkosten (kein Aufwand)"}, {"nr": 8, "posten": "Kalkulatorische Zinsen auf das eingesetzte Eigenkapital", "betrag": 0, "typ": "zusatz", "erg": "Zusatzkosten: 9.600 EUR ohne zugehoerigen Aufwand in der GuV", "kosten": 9600, "loesung": "Zusatzkosten (kein Aufwand)"}];
+var TYP_OPTS=["Zweckaufwand (= Grundkosten)", "Anderskosten", "Neutraler Aufwand (keine Kosten)", "Zusatzkosten (kein Aufwand)"];
+function nf(v){return Math.round(v).toLocaleString('de-DE');}
+function buildAbgr(){
+  var c=document.getElementById('abgr-container');
+  if(!c||c.children.length>0)return;
+  ABGR.forEach(function(it){
+    var row=document.createElement('div');row.className='abgr-row';
+    var top=document.createElement('div');top.className='abgr-top';
+    var nr=document.createElement('span');nr.className='abgr-nr';nr.textContent=it.nr;
+    var txt=document.createElement('span');txt.className='abgr-txt';
+    txt.textContent=it.posten+(it.betrag?' ('+nf(it.betrag)+' EUR)':'');
+    top.appendChild(nr);top.appendChild(txt);
+    var se=document.createElement('select');se.className='abgr-sel';
+    var o0=document.createElement('option');o0.value='';o0.textContent='-- Zuordnung waehlen --';
+    se.appendChild(o0);
+    TYP_OPTS.forEach(function(o){var op=document.createElement('option');op.value=o;op.textContent=o;se.appendChild(op);});
+    var fb=document.createElement('div');fb.className='abgr-fb';
+    se.addEventListener('change',function(){
+      if(!se.value)return;
+      var ok=(se.value===it.loesung);
+      se.className='abgr-sel '+(ok?'ok':'nok');
+      fb.textContent=(ok?'\u2713 Richtig. ':'\u2717 Richtig w\u00e4re: '+it.loesung+'. ')+it.erg
+        +(it.kosten?' \u2192 Kosten: '+nf(it.kosten)+' EUR':' \u2192 Kosten: 0 EUR');
+      fb.className='abgr-fb show '+(ok?'ok':'nok');
+      pruefeAbgrSumme();
+    });
+    row.appendChild(top);row.appendChild(se);row.appendChild(fb);
+    c.appendChild(row);
+  });
+}
+function pruefeAbgrSumme(){
+  var sels=document.querySelectorAll('.abgr-sel');
+  var alle=true;
+  sels.forEach(function(s){if(!s.value)alle=false;});
+  var box=document.getElementById('abgr-summe');
+  if(!box)return;
+  if(!alle){box.style.display='none';return;}
+  var gk=0,ak=0,zk=0;
+  ABGR.forEach(function(it){
+    if(it.typ==='zweck')gk+=it.kosten;
+    if(it.typ==='anders')ak+=it.kosten;
+    if(it.typ==='zusatz')zk+=it.kosten;
+  });
+  box.style.display='block';
+  box.innerHTML='<strong>Kosten insgesamt:</strong> Grundkosten '+nf(gk)+' EUR + Anderskosten '+nf(ak)
+    +' EUR + Zusatzkosten '+nf(zk)+' EUR = <strong>'+nf(gk+ak+zk)+' EUR</strong>';
+}
+/* ============ FACHBEGRIFFE-QUIZ ============ */
+var BEGRIFFE=[{"k": "klr", "f": "Wofuer steht die Abkuerzung KLR?", "o": ["Kosten- und Leistungsrechnung", "Kapital- und Liquiditaetsrechnung", "Kalkulations- und Lohnrechnung", "Kredit- und Lagerrechnung"], "c": 0, "l": "Die KLR ist das interne Rechenwerk, das zeigt, was Produkte und Leistungen tatsaechlich kosten."}, {"k": "finanzbuchhaltung", "f": "Was kennzeichnet die Finanzbuchhaltung?", "o": ["Sie ist freiwillig und rein intern", "Sie ist gesetzlich vorgeschrieben und informiert Aussenstehende", "Sie ersetzt die Kosten- und Leistungsrechnung was bei genauer Pruefung nicht ", "Sie erfasst nur Kosten, keine Ertraege"], "c": 1, "l": "Die Finanzbuchhaltung folgt den Vorgaben des Handelsgesetzbuchs und richtet sich an Finanzamt, Banken und Glaeubiger."}, {"k": "aufwand", "f": "Was ist Aufwand?", "o": ["Nur Barzahlungen des Unternehmens was bei genauer Pruefung nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Nur Abschreibungen", "Jeder in Geld bewertete Werteverzehr einer Periode laut Gewinn- und Verlustrechnung", "Ausschliesslich Personalkosten"], "c": 2, "l": "Aufwand ist der weite, handelsrechtliche Oberbegriff fuer jeden Werteverzehr."}, {"k": "kosten", "f": "Was sind Kosten im engeren Sinn?", "o": ["Identisch mit dem Begriff Aufwand", "Nur gesetzlich vorgeschriebene Ausgaben was bei genauer Pruefung nicht zutriff", "Nur Materialverbrauch", "Der betriebszweckbezogene, bewertete Verzehr von Guetern und Leistungen"], "c": 3, "l": "Kosten sind der engere Begriff - nur was dem Betriebszweck dient, zaehlt dazu."}, {"k": "ertrag", "f": "Was ist Ertrag?", "o": ["Nur der Gewinn am Jahresende was bei genauer Pruefung nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Jeder in Geld bewertete Wertezuwachs einer Periode laut Gewinn- und Verlustrechnung", "Nur Umsatzerloese", "Nur Zinsertraege"], "c": 1, "l": "Ertrag ist der weite, handelsrechtliche Oberbegriff fuer jeden Wertezuwachs."}, {"k": "leistung", "f": "Was ist Leistung im engeren Sinn?", "o": ["Identisch mit dem Begriff Ertrag", "Nur bei Dienstleistungsbetrieben relevant was bei genauer Pruefung nicht ", "Der betriebszweckbezogene Teil des Ertrags", "Nie in Geld bewertet"], "c": 2, "l": "Leistung ist das Pendant zu den Kosten auf der Ertragsseite."}, {"k": "zweckaufwand", "f": "Was ist Zweckaufwand?", "o": ["Aufwand ohne Bezug zum Betriebszweck was bei genauer Pruefung nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Aufwand ohne jede Buchung", "Aufwand aus einer frueheren Periode", "Aufwand, der unmittelbar dem Betriebszweck dient und als Grundkosten uebernommen wird"], "c": 3, "l": "Der Wareneinsatz eines Handelsbetriebs ist das klassische Beispiel fuer Zweckaufwand."}, {"k": "neutralaufwand", "f": "Was ist neutraler Aufwand?", "o": ["Aufwand, der nicht zum Betriebszweck gehoert und deshalb keine Kosten sind", "Aufwand, der als Grundkosten uebernommen wird was bei genauer Pruefung nicht zutr", "Aufwand fuer den Wareneinkauf", "Aufwand fuer die Verkaeuferinnen"], "c": 0, "l": "Neutraler Aufwand umfasst betriebsfremde, periodenfremde und ausserordentliche Posten."}, {"k": "betriebsfremd", "f": "Was ist betriebsfremder Aufwand?", "o": ["Aufwand fuer den taeglichen Wareneinkauf was bei genauer Pruefung nicht zutriff", "Aufwand fuer Personalkosten im Verkauf", "Aufwand, der mit der eigentlichen Geschaeftstaetigkeit nichts zu tun hat", "Aufwand fuer die Ladenmiete"], "c": 2, "l": "Eine Spende an einen Sportverein ist fuer ein Einzelhandelsgeschaeft betriebsfremd."}, {"k": "periodenfremd", "f": "Was ist periodenfremder Aufwand?", "o": ["Aufwand der laufenden Periode", "Aufwand, der nie gebucht wird", "Aufwand fuer zukuenftige Perioden was bei genauer Pruefung nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b", "Aufwand, der wirtschaftlich zu einer frueheren Periode gehoert, aber jetzt gebucht wird"], "c": 3, "l": "Eine Steuernachzahlung fuer das Vorjahr ist periodenfremder Aufwand."}, {"k": "ausserordentlich", "f": "Was kennzeichnet ausserordentlichen Aufwand?", "o": ["Er ist ungewoehnlich und selten, etwa durch einen Schadensfall", "Er tritt regelmaessig und planbar auf was bei genauer Pruefung nicht ", "Er betrifft nur grosse Unternehmen", "Er wird nie in der GuV erfasst"], "c": 0, "l": "Ausserordentlicher Aufwand wuerde das laufende Ergebnis verzerren, wenn man ihn nicht herausrechnet."}, {"k": "grundkosten", "f": "Was sind Grundkosten?", "o": ["Kosten ohne jeden Aufwand", "Kosten in exakt der Hoehe des zugehoerigen Zweckaufwands", "Nur Materialkosten", "Nur kalkulatorische Kosten was bei genauer Pruefung nicht zutri"], "c": 1, "l": "Bei Grundkosten stimmen Aufwand und Kosten in der Hoehe genau ueberein."}, {"k": "anderskosten", "f": "Was sind Anderskosten?", "o": ["Kosten ohne jeden zugehoerigen Aufwand", "Kosten nur fuer Personal", "Kosten, die identisch mit dem Aufwand sind was bei genauer Pruefung nicht ", "Kosten in anderer Hoehe als der zugehoerige Aufwand"], "c": 3, "l": "Die kalkulatorische Abschreibung weicht typischerweise von der bilanziellen ab."}, {"k": "zusatzkosten", "f": "Was sind Zusatzkosten?", "o": ["Kosten ohne jeden zugehoerigen Aufwand in der Buchfuehrung", "Kosten in Hoehe des Zweckaufwands", "Kosten fuer zusaetzliche Werbung", "Kosten, die nur einmalig anfallen was bei genauer Pruefung nicht "], "c": 0, "l": "Der kalkulatorische Unternehmerlohn ist das klassische Beispiel fuer Zusatzkosten."}, {"k": "unternehmerlohn", "f": "Wofuer steht der kalkulatorische Unternehmerlohn?", "o": ["Das tatsaechlich gezahlte Gehalt eines Geschaeftsfuehrers was bei genauer Pruefung nicht zutrifft", "Die kalkulatorisch angesetzte Verguetung fuer die Arbeitsleistung des mitarbeitenden Inhabers", "Die Lohnsteuer aller Mitarbeiter", "Den erwirtschafteten Jahresgewinn"], "c": 1, "l": "Er macht die Arbeitsleistung des Inhabers als Kostenfaktor sichtbar, obwohl kein Gehalt gezahlt wird."}, {"k": "kalkmiete", "f": "Wozu dient die kalkulatorische Miete?", "o": ["Sie erfasst die tatsaechlich gezahlte Miete was bei genauer Pruefung nicht zutr", "Sie betrifft nur gemietete Immobilien", "Sie macht die Nutzung eigener Raeume mit gemieteten Raeumen vergleichbar", "Sie ersetzt die Grundsteuer"], "c": 2, "l": "Ohne kalkulatorische Miete haette ein Betrieb in eigenen Raeumen einen unfairen Kostenvorteil."}, {"k": "kalkzinsen", "f": "Was erfassen kalkulatorische Zinsen?", "o": ["Die entgangene Verzinsung des im Betrieb eingesetzten Eigenkapitals", "Die tatsaechlich gezahlten Bankzinsen was bei genauer Pruefung nicht zutri", "Nur Fremdkapitalzinsen", "Die Zinsen auf Kundenforderungen"], "c": 0, "l": "Wer Eigenkapital im Betrieb bindet, verzichtet auf die Zinsen, die er anderweitig erzielen koennte."}, {"k": "abgrenzungsrechnung", "f": "Was leistet die Abgrenzungsrechnung?", "o": ["Sie erstellt den Jahresabschluss", "Sie leitet aus Aufwand und Ertrag der Buchfuehrung die Kosten und Leistungen ab", "Sie berechnet die Umsatzsteuer", "Sie ersetzt die Kostenartenrechnung was bei genauer Pruefung nicht zutrifft obwohl das in der betrieblichen Praxis nicht zu b"], "c": 1, "l": "Die Abgrenzungsrechnung ist die Bruecke zwischen Finanzbuchhaltung und Kosten- und Leistungsrechnung."}, {"k": "kostenart", "f": "Was zeigt die Kostenartenrechnung?", "o": ["Wo die Kosten angefallen sind", "Wofuer die Kosten angefallen sind was bei genauer Pruefung nicht ", "Welche Kosten in welcher Hoehe angefallen sind", "Wer die Kosten verursacht hat"], "c": 2, "l": "Die Kostenartenrechnung erfasst systematisch alle Kostenarten wie Material und Personal."}, {"k": "kostenstelle", "f": "Was zeigt die Kostenstellenrechnung?", "o": ["Welche Kostenarten es gibt", "Die Hoehe des Gesamtumsatzes", "Wofuer die Kosten angefallen sind was bei genauer Pruefung nicht z", "In welchem betrieblichen Bereich die Kosten angefallen sind"], "c": 3, "l": "Sie ordnet Kosten Bereichen wie Einkauf, Verkauf oder Verwaltung zu."}, {"k": "kostentraeger", "f": "Was zeigt die Kostentraegerrechnung?", "o": ["Wo im Betrieb Kosten anfallen was bei genauer Pruefung nicht ", "Welche Kosten auf welches Produkt entfallen", "Nur die Personalkosten", "Die Hoehe der Steuerlast"], "c": 1, "l": "Sie ist Grundlage der Preiskalkulation - sie zeigt, was ein einzelnes Produkt kostet."}];
+var bgA=0,bgC=0;
+function buildBegriffe(){
+  var c=document.getElementById('bg-container');
+  if(!c||c.children.length>0)return;
+  BEGRIFFE.forEach(function(q,idx){
+    var g=GLOSSAR[q.k]||{t:''};
+    var bl=document.createElement('div');bl.className='quiz-block';
+    var nr=document.createElement('div');nr.className='quiz-nr';
+    nr.textContent='Begriff '+(idx+1)+' von '+BEGRIFFE.length+'  \u00b7  '+g.t;
+    var fr=document.createElement('div');fr.className='quiz-frage';fr.textContent=q.f;
+    var od=document.createElement('div');od.className='mc-opts';
+    var fb=document.createElement('div');fb.className='fb-box';
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(od);bl.appendChild(fb);
+    c.appendChild(bl);
+    q.o.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='mc-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        bl.querySelectorAll('.mc-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.c);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)od.querySelectorAll('.mc-btn')[q.c].classList.add('correct');
+        fb.textContent=ok?q.l:('Nicht ganz. '+q.l);
+        fb.className='fb-box show '+(ok?'correct':'wrong');
+        bgA++;if(ok)bgC++;bgFort();
+        if(bgA===BEGRIFFE.length)setTimeout(bgErgebnis,700);
+      });
+      od.appendChild(b);});
+  });
+}
+function bgFort(){
+  var f=document.getElementById('bg-fill'),l=document.getElementById('bg-pct');
+  if(f)f.style.width=Math.round(bgA/BEGRIFFE.length*100)+'%';
+  if(l)l.textContent=bgA+' / '+BEGRIFFE.length;
+}
+function bgErgebnis(){
+  var card=document.getElementById('bg-result');if(!card)return;
+  card.style.display='block';
+  var pct=Math.round(bgC/BEGRIFFE.length*100);
+  var txt;
+  if(pct>=92)txt='Sehr gut \u2013 die Fachbegriffe sitzen.';
+  else if(pct>=81)txt='Gut. Sieh dir die wenigen Fehler noch einmal an.';
+  else if(pct>=67)txt='Befriedigend. Tippe die unterstrichenen Begriffe im Text noch einmal an.';
+  else if(pct>=50)txt='Ausreichend. Geh die Begriffe in den Kapiteln noch einmal durch.';
+  else txt='Arbeite die Kapitel noch einmal durch und tippe dabei jeden unterstrichenen Begriff an.';
+  var s=document.getElementById('bg-score');
+  if(s)s.textContent=bgC+' von '+BEGRIFFE.length+' richtig ('+pct+' %)';
+  var t=document.getElementById('bg-txt');if(t)t.textContent=txt;
+  var bt=document.querySelector('[data-tab="begriffe"]');if(bt)bt.classList.add('done');
+  var nv=document.querySelector('nav.tabs');var nh=nv?nv.offsetHeight:40;
+  var r=card.getBoundingClientRect();
+  window.scrollTo({top:window.pageYOffset+r.top-nh-8,behavior:'smooth'});
+}
+
+/* ============ GLOSSAR ============ */
+function initGlossar(){
+  var tip=document.createElement('div');tip.className='gl-tip';
+  document.body.appendChild(tip);
+  var aktiv=null;
+  function schliesse(){tip.style.display='none';if(aktiv)aktiv.classList.remove('aktiv');aktiv=null;}
+  function zeige(el){
+    var g=GLOSSAR[el.getAttribute('data-gl')];if(!g)return;
+    tip.innerHTML='<strong>'+g.t+'</strong><span class="gl-x">\u2715</span><p>'+g.d+'</p>';
+    tip.style.display='block';
+    var tw=Math.min(310,window.innerWidth-24);
+    tip.style.width=tw+'px';
+    var r=el.getBoundingClientRect();
+    var left=r.left+r.width/2-tw/2;
+    if(left<12)left=12;
+    if(left+tw>window.innerWidth-12)left=window.innerWidth-tw-12;
+    tip.style.left=(left+window.pageXOffset)+'px';
+    var th=tip.offsetHeight;
+    tip.style.top=((r.top-th-12>8)?(r.top+window.pageYOffset-th-10):(r.bottom+window.pageYOffset+10))+'px';
+    el.classList.add('aktiv');aktiv=el;
+    var xb=tip.querySelector('.gl-x');
+    if(xb)xb.addEventListener('click',function(e){e.stopPropagation();schliesse();});
+  }
+  document.querySelectorAll('.gl').forEach(function(el){
+    el.setAttribute('role','button');el.setAttribute('tabindex','0');
+    el.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(aktiv===el){schliesse();return;}
+      schliesse();zeige(el);});
+    el.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();
+        if(aktiv===el){schliesse();}else{schliesse();zeige(el);}}});
+  });
+  tip.addEventListener('click',function(e){e.stopPropagation();});
+  document.addEventListener('click',schliesse);
+  window.addEventListener('resize',schliesse);
+  document.querySelectorAll('nav.tabs button').forEach(function(b){
+    b.addEventListener('click',schliesse);});
+}
+/* ============ AUFGABEN ============ */
+function buildAufgaben(tabId){
+  var c=document.getElementById('aufg-'+tabId);
+  if(!c||c.children.length>0)return;
+  var qs=AUFG[tabId];if(!qs)return;
+  qs.forEach(function(q,qi){
+    var bl=document.createElement('div');bl.className='aufg-block';
+    var nr=document.createElement('div');nr.className='aufg-nr';
+    nr.textContent='Aufgabe '+(qi+1)+' von '+qs.length;
+    var fr=document.createElement('div');fr.className='aufg-frage';fr.textContent=q.q;
+    var op=document.createElement('div');op.className='aufg-opts';
+    var fb=document.createElement('div');fb.className='aufg-fb';
+    q.opts.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='aufg-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        op.querySelectorAll('.aufg-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.ok);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)op.querySelectorAll('.aufg-btn')[q.ok].classList.add('correct');
+        fb.textContent=(ok?'\u2713 Richtig! ':'\u2717 Nicht ganz. ')+q.ex;
+        fb.className='aufg-fb show '+(ok?'correct':'wrong');});
+      op.appendChild(b);});
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(op);bl.appendChild(fb);
+    c.appendChild(bl);});
+}
+function buildRechen(tabId){
+  var c=document.getElementById('rechen-'+tabId);
+  if(!c||c.children.length>0)return;
+  RECHEN.filter(function(f){return f.tab===tabId;}).forEach(function(f){
+    var bl=document.createElement('div');bl.className='rechen-block';
+    var ti=document.createElement('div');ti.className='rechen-title';ti.textContent=f.titel;
+    var kx=document.createElement('p');kx.className='rechen-kontext';kx.textContent=f.kontext;
+    bl.appendChild(ti);bl.appendChild(kx);
+    f.aufgaben.forEach(function(a,i){
+      var row=document.createElement('div');row.className='rechen-row';
+      var fr=document.createElement('div');fr.className='rechen-frage';
+      fr.textContent=(i+1)+'. '+a.frage;
+      var wr=document.createElement('div');wr.className='rechen-inline';
+      var inp=document.createElement('input');
+      inp.type='text';inp.className='rechen-inp';inp.placeholder='Ergebnis';
+      inp.setAttribute('inputmode','decimal');
+      var un=document.createElement('span');un.className='rechen-unit';un.textContent=a.einheit;
+      var bt=document.createElement('button');bt.className='rechen-check';bt.textContent='Pr\u00fcfen';
+      var fb=document.createElement('div');fb.className='rechen-fb';
+      bt.addEventListener('click',function(){
+        var v=inp.value.replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,'');
+        var n=parseFloat(v);
+        var ok=!isNaN(n)&&Math.abs(n-a.wert)<=a.tol;
+        inp.className='rechen-inp '+(ok?'ok':'nok');
+        fb.textContent=(ok?'\u2713 Richtig! ':'\u2717 L\u00f6sung: ')+a.loesung;
+        fb.className='rechen-fb show '+(ok?'ok':'nok');});
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')bt.click();});
+      wr.appendChild(inp);wr.appendChild(un);wr.appendChild(bt);
+      row.appendChild(fr);row.appendChild(wr);row.appendChild(fb);
+      bl.appendChild(row);});
+    c.appendChild(bl);});
+}
+function buildZuordnung(){
+  var c=document.getElementById('zu-container');
+  if(!c||c.children.length>0)return;
+  ZU_DATA.forEach(function(it){
+    var bl=document.createElement('div');bl.className='zu-block';
+    var nr=document.createElement('div');nr.className='zu-nr';
+    nr.textContent='Beschreibung '+it.nr+' von '+ZU_DATA.length;
+    var tx=document.createElement('div');tx.className='zu-text';tx.textContent=it.text;
+    var se=document.createElement('select');se.className='zu-sel';
+    var o0=document.createElement('option');o0.value='';o0.textContent='-- Begriff w\u00e4hlen --';
+    se.appendChild(o0);
+    ZU_OPT
