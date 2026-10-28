@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kostenstellenrechnung &ndash; Selbstlernseite</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#1a1a2e;--bg:#f5f0e8;--light:#faf7f2;--teal:#2d6e7e;--teal-l:#e4f0f3;
+--gold:#b8860b;--gold-l:#fdf6dc;--red:#c84b31;--red-l:#fdecea;--green:#2e7d32;--green-l:#e8f5e9;
+--border:#d4c8a8;--shadow:0 2px 8px rgba(26,26,46,.1);--r:6px;}
+body{font-family:Georgia,serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+header{background:var(--ink);color:#fff;padding:1.7rem 1.5rem 1.4rem;text-align:center;}
+header .bc{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;margin-bottom:.4rem;}
+header h1{font-size:1.7rem;font-weight:normal;margin-bottom:.3rem;}
+header .desc{font-family:'Trebuchet MS',sans-serif;font-size:.83rem;color:#b0c0d8;max-width:640px;margin:0 auto;}
+.ps{background:#0d1124;padding:.5rem 1.5rem;display:flex;align-items:center;gap:.8rem;}
+.ps .lbl{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;white-space:nowrap;}
+.pb{flex:1;background:#2a3050;border-radius:99px;height:5px;}
+.pb-fill{height:100%;background:var(--teal);border-radius:99px;width:0;transition:width .4s;}
+.pb-pct{font-family:'Trebuchet MS',sans-serif;font-size:.75rem;color:#8ca0be;min-width:3.4rem;text-align:right;}
+nav.tabs{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:50;}
+nav.tabs::-webkit-scrollbar{display:none;}
+nav.tabs button{flex:0 0 auto;background:none;border:none;padding:.62rem .85rem;font-family:'Trebuchet MS',sans-serif;font-size:.76rem;font-weight:600;color:#666;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+nav.tabs button.active,nav.tabs button:hover{color:var(--teal);border-bottom-color:var(--teal);}
+nav.tabs button.done::after{content:' \2713';color:var(--green);font-size:.7rem;}
+main{max-width:900px;margin:0 auto;padding:1.4rem 1rem 3rem;}
+.tab-panel{display:none;scroll-margin-top:50px;}.tab-panel.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.4rem;margin-bottom:1rem;box-shadow:var(--shadow);scroll-margin-top:50px;}
+.card h2{font-size:1.02rem;color:var(--teal);margin-bottom:.6rem;}
+.card p,.card li{font-size:.92rem;line-height:1.72;margin-bottom:.3rem;}
+.card ul{padding-left:1.2rem;margin:.3rem 0;}
+.def-box{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:0 var(--r) var(--r) 0;padding:.75rem 1rem;margin:.6rem 0;font-size:.92rem;}
+.info-gold{background:var(--gold-l);border-left:4px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.info-teal{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.info-green{background:var(--green-l);border-left:4px solid var(--green);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:.7rem 0;}
+.gbox{border-radius:var(--r);padding:.85rem 1rem;border:2px solid;}
+.gbox .gt{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.3rem;}
+.gbox p{font-size:.86rem;margin:0;}
+table.t{width:100%;border-collapse:collapse;font-size:.86rem;margin:.6rem 0;}
+table.t th{background:var(--ink);color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:.78rem;padding:.45rem .6rem;text-align:left;}
+table.t td{padding:.45rem .6rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55;overflow-wrap:break-word;}
+table.t tr:nth-child(even) td{background:var(--light);}
+.formel{background:var(--ink);color:#e8f0fe;border-radius:var(--r);padding:.75rem 1rem;margin:.6rem 0;text-align:center;font-size:.92rem;}
+.formel .ft{font-family:'Trebuchet MS',sans-serif;font-size:.7rem;color:#8ca0be;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;}
+.formelbox{background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.7rem 1rem;margin-bottom:.8rem;font-family:'Trebuchet MS',sans-serif;font-size:.87rem;line-height:1.8;}
+.schritte{display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem;}
+.schritt{display:flex;gap:.7rem;align-items:flex-start;background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;font-size:.89rem;}
+.sn{background:var(--teal);color:#fff;width:1.55rem;height:1.55rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.8rem;flex-shrink:0;}
+/* Simulation */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.check-btn{font-family:'Trebuchet MS',sans-serif;font-size:.8rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.35rem .8rem;cursor:pointer;}
+.check-btn.grau{background:#777;}.check-btn.grau:hover{background:#5f5f5f;}
+
+
+/* Glossar */
+.gl{border-bottom:1.5px dotted var(--teal);cursor:help;color:inherit;}
+.gl::after{content:'?';font-family:'Trebuchet MS',sans-serif;font-size:.62em;font-weight:700;color:#fff;background:var(--teal);border-radius:50%;width:1.05em;height:1.05em;display:inline-flex;align-items:center;justify-content:center;vertical-align:super;margin-left:.15em;line-height:1;}
+.gl.aktiv{background:var(--gold-l);border-bottom-color:var(--gold);}
+.gl.aktiv::after{background:var(--gold);}
+.gl-tip{position:absolute;display:none;z-index:200;background:#fff;border:2px solid var(--teal);border-radius:var(--r);padding:.7rem .85rem .75rem;box-shadow:0 4px 16px rgba(26,26,46,.22);font-family:Georgia,serif;}
+.gl-tip strong{display:block;font-family:'Trebuchet MS',sans-serif;font-size:.85rem;color:var(--teal);margin-bottom:.3rem;padding-right:1.2rem;}
+.gl-tip p{font-size:.85rem;line-height:1.6;margin:0;color:var(--ink);}
+.gl-tip .gl-x{position:absolute;top:.35rem;right:.45rem;width:1.15rem;height:1.15rem;border:1px solid var(--teal);border-radius:3px;color:var(--teal);font-family:'Trebuchet MS',sans-serif;font-size:.72rem;line-height:1.05rem;text-align:center;cursor:pointer;}
+/* Aufgaben */
+.rechen-block{background:var(--light);border:1.5px solid var(--teal);border-radius:var(--r);padding:.95rem 1.1rem;margin-bottom:.85rem;}
+.rechen-title{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;font-weight:700;color:var(--teal);margin-bottom:.3rem;}
+.rechen-kontext{font-size:.88rem;line-height:1.62;margin-bottom:.6rem;color:#333;overflow-wrap:break-word;}
+.rechen-row{margin-bottom:.6rem;}
+.rechen-frage{font-size:.88rem;font-weight:600;margin-bottom:.3rem;overflow-wrap:break-word;}
+.rechen-inline{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.rechen-inp{border:1.5px solid var(--border);border-radius:4px;padding:.3rem .5rem;font-size:.88rem;width:125px;font-family:Georgia,serif;text-align:right;}
+.rechen-inp.ok{border-color:var(--green);background:var(--green-l);}
+.rechen-inp.nok{border-color:var(--red);background:var(--red-l);}
+.rechen-unit{font-size:.83rem;color:#666;min-width:1.2rem;}
+.rechen-check{font-family:'Trebuchet MS',sans-serif;font-size:.78rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.32rem .78rem;cursor:pointer;}
+.rechen-check:hover{background:#235a68;}
+.rechen-fb{font-size:.83rem;margin-top:.3rem;padding:.38rem .65rem;border-radius:4px;line-height:1.5;display:none;overflow-wrap:break-word;}
+.rechen-fb.show{display:block;}
+.rechen-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.rechen-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.zu-block,.aufg-block{background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.75rem .95rem;margin-bottom:.5rem;scroll-margin-top:50px;}
+.zu-nr,.aufg-nr{font-family:'Trebuchet MS',sans-serif;font-size:.72rem;font-weight:700;color:var(--teal);margin-bottom:.22rem;}
+.zu-text{font-size:.91rem;margin-bottom:.45rem;line-height:1.6;overflow-wrap:break-word;}
+.zu-sel{background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:.32rem .55rem;font-size:.87rem;width:100%;max-width:300px;}
+.zu-sel.ok{border-color:var(--green);background:var(--green-l);}
+.zu-sel.nok{border-color:var(--red);background:var(--red-l);}
+.zu-fb{font-size:.84rem;margin-top:.35rem;line-height:1.55;display:none;padding:.42rem .7rem;border-radius:4px;overflow-wrap:break-word;}
+.zu-fb.show{display:block;}
+.zu-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.zu-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.aufg-frage{font-size:.91rem;margin-bottom:.45rem;line-height:1.6;overflow-wrap:break-word;hyphens:auto;font-weight:600;}
+.aufg-opts{display:flex;flex-direction:column;gap:.28rem;}
+.aufg-btn{width:100%;white-space:normal;overflow-wrap:break-word;hyphens:auto;background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:.5rem .8rem;font-size:.87rem;font-family:Georgia,serif;text-align:left;cursor:pointer;line-height:1.5;}
+.aufg-btn:hover:not(:disabled){background:var(--teal-l);border-color:var(--teal);}
+.aufg-btn.correct{background:var(--green-l);border-color:var(--green);color:var(--green);font-weight:600;}
+.aufg-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.aufg-btn:disabled{cursor:default;opacity:.92;}
+.aufg-fb{margin-top:.45rem;padding:.45rem .75rem;border-radius:4px;font-size:.85rem;line-height:1.6;display:none;overflow-wrap:break-word;}
+.aufg-fb.show{display:block;}
+.aufg-fb.correct{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.aufg-fb.wrong{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.quiz-block{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--shadow);scroll-margin-top:50px;}
+.quiz-nr{font-family:'Trebuchet MS',sans-serif;font-size:.74rem;color:var(--teal);font-weight:700;margin-bottom:.25rem;}
+.quiz-frage{font-size:.94rem;font-weight:600;margin-bottom:.65rem;line-height:1.6;overflow-wrap:break-word;hyphens:auto;}
+.mc-opts{display:flex;flex-direction:column;gap:.3rem;}
+.mc-btn{width:100%;white-space:normal;overflow-wrap:break-word;hyphens:auto;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.5rem .82rem;font-size:.88rem;font-family:Georgia,serif;text-align:left;cursor:pointer;line-height:1.5;}
+.mc-btn:hover:not(:disabled){background:var(--teal-l);border-color:var(--teal);}
+.mc-btn.correct{background:var(--green-l);border-color:var(--green);color:var(--green);font-weight:600;}
+.mc-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.mc-btn:disabled{cursor:default;opacity:.92;}
+.fb-box{margin-top:.5rem;padding:.55rem .82rem;border-radius:var(--r);font-size:.85rem;line-height:1.6;display:none;overflow-wrap:break-word;}
+.fb-box.show{display:block;}
+.fb-box.correct{background:var(--green-l);border-left:4px solid var(--green);color:#1b5e20;}
+.fb-box.wrong{background:var(--red-l);border-left:4px solid var(--red);color:#b71c1c;}
+.result-card{background:#fff;border:2px solid var(--teal);border-radius:var(--r);padding:1.4rem;text-align:center;}
+.result-score{font-size:1.32rem;color:#555;font-family:'Trebuchet MS',sans-serif;}
+.result-note{font-size:2.3rem;font-weight:700;color:var(--teal);margin:.3rem 0;}
+.tab-nav{display:flex;justify-content:space-between;margin-top:1.3rem;border-top:1px solid var(--border);padding-top:.85rem;gap:.5rem;}
+.btn-nav{font-family:'Trebuchet MS',sans-serif;font-size:.79rem;font-weight:700;padding:.42rem .85rem;border-radius:4px;border:1.5px solid var(--teal);color:var(--teal);background:transparent;cursor:pointer;}
+.btn-nav:hover{background:var(--teal);color:#fff;}
+.btn-nav.primary{background:var(--teal);color:#fff;}
+@media print{nav.tabs,.ps,.tab-nav{display:none!important;}.tab-panel{display:block!important;}
+.gl::after{display:none;}.gl-tip{display:none!important;}
+.card{box-shadow:none!important;break-inside:avoid;}body{background:#fff!important;}@page{margin:1.5cm;}}
+@media(max-width:600px){.grid2{grid-template-columns:1fr;}header h1{font-size:1.33rem;}
+main{padding:1rem .7rem 2.5rem;}.aufg-btn,.mc-btn{font-size:.86rem;padding:.5rem .65rem;}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.bgbar{display:flex;align-items:center;gap:.7rem;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r);padding:.5rem .8rem;margin-bottom:.8rem;}
+.bgbar .bgl{font-family:'Trebuchet MS',sans-serif;font-size:.76rem;color:#666;white-space:nowrap;}
+.bgtrack{flex:1;background:#e8e0cc;border-radius:99px;height:6px;}
+.bgfill{height:100%;background:var(--teal);border-radius:99px;width:0;transition:width .35s;}
+.bgpct{font-family:'Trebuchet MS',sans-serif;font-size:.76rem;font-weight:700;color:var(--teal);min-width:3.4rem;text-align:right;}
+
+
+
+
+
+
+
+.rg label{display:block;font-family:'Trebuchet MS',sans-serif;font-size:.79rem;color:#444;margin-bottom:.15rem;}
+.rv{font-weight:700;color:var(--teal);font-size:.9rem;}
+.rg input[type=range]{width:100%;accent-color:var(--teal);height:1.4rem;}
+
+
+
+
+
+
+
+
+
+
+
+.check-btn{font-family:'Trebuchet MS',sans-serif;font-size:.79rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.33rem .8rem;cursor:pointer;}
+.check-btn.grau{background:#777;}.check-btn.grau:hover{background:#5f5f5f;}
+table.t td.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.t td.sieg-a{background:#e3f2fd!important;color:#1565c0;font-weight:700;}
+table.t td.sieg-b{background:var(--red-l)!important;color:var(--red);font-weight:700;}
+.card h3{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;color:var(--ink);margin:.8rem 0 .4rem;}
+
+
+
+.denk{background:var(--gold-l);border:1.5px dashed var(--gold);border-radius:var(--r);padding:.75rem 1rem;margin-top:.7rem;font-size:.89rem;}
+.denk ul{padding-left:1.2rem;margin-top:.3rem;}
+.denk li{margin-bottom:.22rem;font-size:.88rem;}
+.regler{grid-template-columns:1fr 1fr;}
+sup{font-size:.72em;}sub{font-size:.72em;}
+table.t tr.sum td{background:var(--teal-l);border-top:2px solid var(--teal);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.fazit{border-radius:var(--r);padding:.55rem .9rem;font-size:.89rem;text-align:center;font-family:'Trebuchet MS',sans-serif;}
+.fazit.a{background:var(--green-l);border:1.5px solid var(--green);color:#1b5e20;}
+.fazit.b{background:var(--red-l);border:1.5px solid var(--red);color:#8c2f1c;}
+.fazit.neutral{background:var(--gold-l);border:1.5px solid var(--gold);color:#7a5c08;}
+
+
+
+
+
+
+
+
+
+.prst{font-family:'Trebuchet MS',sans-serif;font-size:.77rem;font-weight:700;background:#fff;border:1.5px solid var(--gold);color:var(--gold);border-radius:4px;padding:.32rem .7rem;cursor:pointer;}
+.prst:hover{background:var(--gold);color:#fff;}
+
+}
+
+
+
+
+
+
+
+
+
+
+@media(max-width:640px){.dreifeld,.grid3,.grid2{grid-template-columns:1fr;}}
+
+.dreifeld{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin:.7rem 0;}
+.df{background:#fff;border:2px solid;border-radius:var(--r);overflow:hidden;padding-bottom:.6rem;}
+.dft{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.9rem;text-align:center;padding:.2rem .5rem;}
+.dfp{font-size:.8rem;color:#666;text-align:center;padding:0 .6rem;margin:0;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin:.7rem 0;}
+.fall{background:var(--light);border-left:4px solid var(--ink);border-radius:0 var(--r) var(--r) 0;padding:.8rem 1.05rem;font-size:.9rem;line-height:1.68;margin-bottom:.5rem;}
+.schritte{display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem;}
+.schritt{display:flex;gap:.7rem;align-items:flex-start;background:var(--light);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;font-size:.89rem;}
+.sn{background:var(--teal);color:#fff;width:1.55rem;height:1.55rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:.8rem;flex-shrink:0;}
+
+
+
+
+
+
+
+
+
+
+
+
+@media(max-width:640px){.dreifeld,.grid3,.grid2{grid-template-columns:1fr;}}
+
+.rechen-block{background:var(--light);border:1.5px solid var(--teal);border-radius:var(--r);padding:.95rem 1.1rem;margin-bottom:.85rem;}
+.rechen-title{font-family:'Trebuchet MS',sans-serif;font-size:.9rem;font-weight:700;color:var(--teal);margin-bottom:.3rem;}
+.rechen-kontext{font-size:.88rem;line-height:1.62;margin-bottom:.6rem;color:#333;overflow-wrap:break-word;}
+.rechen-row{margin-bottom:.6rem;}
+.rechen-frage{font-size:.88rem;font-weight:600;margin-bottom:.3rem;overflow-wrap:break-word;}
+.rechen-inline{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.rechen-inp{border:1.5px solid var(--border);border-radius:4px;padding:.3rem .5rem;font-size:.88rem;width:125px;font-family:Georgia,serif;text-align:right;}
+.rechen-inp.ok{border-color:var(--green);background:var(--green-l);}
+.rechen-inp.nok{border-color:var(--red);background:var(--red-l);}
+.rechen-unit{font-size:.83rem;color:#666;min-width:1.2rem;}
+.rechen-check{font-family:'Trebuchet MS',sans-serif;font-size:.78rem;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:4px;padding:.32rem .78rem;cursor:pointer;}
+.rechen-check:hover{background:#235a68;}
+.rechen-fb{font-size:.83rem;margin-top:.3rem;padding:.38rem .65rem;border-radius:4px;line-height:1.5;display:none;overflow-wrap:break-word;}
+.rechen-fb.show{display:block;}
+.rechen-fb.ok{background:var(--green-l);border-left:3px solid var(--green);color:#1b5e20;}
+.rechen-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
+.tablewrap{overflow-x:auto;margin:.6rem 0;}
+table.bab{width:100%;min-width:520px;border-collapse:collapse;font-size:.84rem;}
+table.bab th{background:var(--ink);color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:.76rem;padding:.42rem .55rem;text-align:left;white-space:nowrap;}
+table.bab td{padding:.42rem .55rem;border-bottom:1px solid var(--border);vertical-align:top;}
+table.bab tr:nth-child(even) td{background:var(--light);}
+table.bab td.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.bab tr.sum td{background:var(--teal-l);border-top:2px solid var(--teal);}
+.info-red{background:var(--red-l);border-left:4px solid var(--red);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
+</style>
+</head>
+<body>
+<header>
+<div class="bc">Einzelhandel &rsaquo; 3. Ausbildungsjahr &rsaquo; Kosten- und Leistungsrechnung</div>
+<h1>Die Kostenstellenrechnung</h1>
+<p class="desc">Kostenstellen bilden &bull; Kosten zurechnen &bull; BAB und Zuschlagssatz &bull; Umlage &bull; Kostenkontrolle</p>
+</header>
+<div class="ps"><span class="lbl">Quiz-Fortschritt:</span>
+<div class="pb"><div class="pb-fill" id="pb-fill"></div></div>
+<span class="pb-pct" id="pb-pct">0 / 15</span></div>
+<nav class="tabs">
+<button class="active" data-tab="grundlagen">1 &ndash; Grundlagen</button>
+<button data-tab="zurechnung">2 &ndash; Kosten zurechnen</button>
+<button data-tab="bab">3 &ndash; Der BAB</button>
+<button data-tab="umlage">4 &ndash; Allgemeine Kostenstellen</button>
+<button data-tab="kontrolle">5 &ndash; Kostenkontrolle</button>
+<button data-tab="wiederholung">6 &ndash; Fachbegriffe</button>
+<button data-tab="quiz">7 &ndash; Quiz</button>
+</nav>
+<main>
+<section class="tab-panel active" id="tab-grundlagen">
+<div class="card">
+<h2>Der zweite Schritt der KLR</h2>
+<div class="def-box">Die <span class="gl" data-gl="kostenstellenrechnung">Kostenstellenrechnung</span> beantwortet die Frage: <strong>Wo im Betrieb sind die Kosten angefallen?</strong> Sie ordnet die Kosten aus der <span class="gl" data-gl="kostenartenrechnung">Kostenartenrechnung</span> den Bereichen zu, in denen sie entstanden sind.</div>
+<p>Eine <span class="gl" data-gl="kostenstelle">Kostenstelle</span> ist ein abgegrenzter Bereich des Betriebs, f&#252;r den die Kosten gesondert erfasst werden. Im Einzelhandel sind das meist die Abteilungen oder Warengruppen, bei Filialunternehmen auch die einzelnen Filialen.</p>
+</div>
+<div class="card">
+<h2>Warum eine Kostenstellenrechnung?</h2>
+<div class="schritte">
+<div class="schritt"><div class="sn">1</div><div><strong>Verursachungsgerecht verteilen:</strong> Die <span class="gl" data-gl="gemeinkosten">Gemeinkosten</span> werden den Abteilungen zugeordnet, in denen sie entstanden sind.</div></div>
+<div class="schritt"><div class="sn">2</div><div><strong>Zuschlagss&#228;tze ermitteln:</strong> F&#252;r jede Abteilung entsteht ein eigener <span class="gl" data-gl="hkz">Handlungskostenzuschlagssatz</span>. Er ist die Grundlage der Kalkulation (Schritt 3, <span class="gl" data-gl="kostentraegerrechnung">Kostentr&#228;gerrechnung</span>).</div></div>
+<div class="schritt"><div class="sn">3</div><div><strong>Kosten kontrollieren:</strong> Man sieht, in welcher Abteilung die Kosten steigen, und kann die Wirtschaftlichkeit jeder Abteilung &#252;berwachen.</div></div>
+</div></div>
+<div class="card">
+<h2>Wie bildet man Kostenstellen im Einzelhandel?</h2>
+<table class="t"><thead><tr><th>Gliederung nach</th><th>Beispiel Modehaus Winter GmbH</th></tr></thead><tbody>
+<tr><td><strong>Warengruppen / Abteilungen</strong></td><td>Damenoberbekleidung (DOB), Herrenbekleidung (HAKA), Kinderbekleidung</td></tr>
+<tr><td><strong>Verantwortungsbereichen</strong></td><td>Einkauf, Lager, Verkauf, Verwaltung</td></tr>
+<tr><td><strong>Standorten</strong></td><td>Filiale Altstadt, Filiale Einkaufszentrum</td></tr>
+</tbody></table>
+<div class="grid2">
+<div class="gbox" style="border-color:#2e7d32;background:#e8f5e9;"><div class="gt" style="color:#2e7d32;"><span class="gl" data-gl="hauptkostenstelle">Hauptkostenstellen</span></div>
+<p style="font-size:.87rem;">Abteilungen, die Ware verkaufen und Umsatz bringen, z. B. DOB, HAKA, Kinder. F&#252;r sie wird ein Zuschlagssatz berechnet.</p></div>
+<div class="gbox" style="border-color:#b8860b;background:#fdf6dc;"><div class="gt" style="color:#b8860b;"><span class="gl" data-gl="allgkostenstelle">Allgemeine Kostenstellen</span></div>
+<p style="font-size:.87rem;">Bereiche, die f&#252;r alle Abteilungen arbeiten, z. B. Verwaltung, Gesch&#228;ftsleitung, Zentrale. Ihre Kosten werden sp&#228;ter auf die Hauptkostenstellen umgelegt.</p></div>
+</div></div>
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Grundlagen</h2>
+<div id="aufg-grundlagen"></div></div>
+<div class="tab-nav"><span></span><button class="btn-nav primary" data-goto="zurechnung">Weiter: Kosten zurechnen &rarr;</button></div>
+</section>
+<section class="tab-panel" id="tab-zurechnung">
+<div class="card">
+<h2>Zwei Wege, Kosten einer Kostenstelle zuzuordnen</h2>
+<div class="grid2">
+<div class="gbox" style="border-color:#1565c0;background:#e3f2fd;"><div class="gt" style="color:#1565c0;"><span class="gl" data-gl="kstek">Kostenstellen-Einzelkosten</span></div>
+<p style="font-size:.87rem;">Lassen sich einer Abteilung <strong>direkt per Beleg</strong> zuordnen.</p>
+<p style="font-size:.8rem;color:#666;">Gehalt laut Gehaltsliste der Abteilung, Werbeanzeige nur f&#252;r Kinderbekleidung, Strom laut eigenem Z&#228;hler</p></div>
+<div class="gbox" style="border-color:#c84b31;background:#fdecea;"><div class="gt" style="color:#c84b31;"><span class="gl" data-gl="kstgk">Kostenstellen-Gemeinkosten</span></div>
+<p style="font-size:.87rem;">Entstehen f&#252;r mehrere Abteilungen gemeinsam und werden mit einem <span class="gl" data-gl="verteilungsschluessel">Verteilungsschl&#252;ssel</span> aufgeteilt.</p>
+<p style="font-size:.8rem;color:#666;">Miete f&#252;r das ganze Haus, Heizung, Reinigung, Versicherungen</p></div>
+</div>
+<div class="info-teal"><strong>Regel:</strong> Was sich per Beleg zuordnen l&#228;sst, wird direkt zugeordnet. Nur der Rest wird geschl&#252;sselt. Zwischen Kostenart und Schl&#252;ssel muss ein m&#246;glichst enger Zusammenhang bestehen.</div>
+</div>
+<div class="card">
+<h2>Typische Verteilungsschl&#252;ssel</h2>
+<table class="t"><thead><tr><th>Kostenart</th><th>Schl&#252;ssel</th></tr></thead><tbody>
+<tr><td>Miete, Reinigung</td><td>Fl&#228;che in m&#178;</td></tr>
+<tr><td>Heizkosten</td><td>Raumgr&#246;&#223;e in m&#179; oder Anzahl der Heizk&#246;rper</td></tr>
+<tr><td>Strom</td><td>Z&#228;hlerst&#228;nde (kWh)</td></tr>
+<tr><td>Geh&#228;lter</td><td>Gehaltsliste der Abteilung</td></tr>
+<tr><td>Abschreibungen</td><td>Wert der Ladeneinrichtung je Abteilung</td></tr>
+<tr><td>Allgemeine Kosten</td><td>gleichm&#228;&#223;ig oder nach Umsatz</td></tr>
+</tbody></table>
+<div class="formel"><div class="ft">Verteilung nach Schl&#252;ssel</div>Anteil der Kostenstelle = Gesamtbetrag &divide; Summe der Schl&#252;sselteile &times; Schl&#252;sselteil der Kostenstelle</div>
+<div class="formelbox">Beispiel: 12.000 EUR Miete, Fl&#228;chen 400 : 250 : 150 m&#178; (zusammen 800 m&#178;)<br>12.000 &divide; 800 = 15 EUR je m&#178; &rarr; DOB 400 &times; 15 = 6.000 EUR</div>
+<div id="rechen-zurechnung"></div>
+</div>
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Kosten zurechnen</h2>
+<div id="aufg-zurechnung"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="grundlagen">&larr; Grundlagen</button><button class="btn-nav primary" data-goto="bab">Weiter: Der BAB &rarr;</button></div>
+</section>
+<section class="tab-panel" id="tab-bab">
+<div class="card">
+<h2>Der Betriebsabrechnungsbogen (BAB)</h2>
+<div class="def-box">Der <span class="gl" data-gl="bab">Betriebsabrechnungsbogen</span> ist das Werkzeug der Kostenstellenrechnung: In den Zeilen stehen die Kostenarten, in den Spalten die Kostenstellen, dazwischen die Spalte mit dem Verteilungsschl&#252;ssel.</div>
+<div class="schritte">
+<div class="schritt"><div class="sn">1</div><div>Einzelkosten der Kostenstellen direkt eintragen.</div></div>
+<div class="schritt"><div class="sn">2</div><div>Gemeinkosten mit Schl&#252;sseln verteilen.</div></div>
+<div class="schritt"><div class="sn">3</div><div>Spalten addieren: Handlungskosten je Kostenstelle.</div></div>
+<div class="schritt"><div class="sn">4</div><div>Handlungskosten ins Verh&#228;ltnis zum <span class="gl" data-gl="wareneinsatz">Wareneinsatz</span> setzen: Zuschlagssatz.</div></div>
+</div></div>
+<div class="card">
+<h2>Fallbeispiel: BAB der Modehaus Winter GmbH, M&#228;rz</h2>
+<div class="tablewrap"><table class="bab"><thead><tr><th>Kostenart</th><th>Gesamt EUR</th><th>Verteilung</th><th>DOB</th><th>HAKA</th><th>Kinder</th></tr></thead><tbody><tr><td>Geh&#228;lter</td><td class="num">36.000</td><td>direkt lt. Gehaltsliste</td><td class="num">18.000</td><td class="num">12.000</td><td class="num">6.000</td></tr><tr><td>Miete</td><td class="num">12.000</td><td>Fl&#228;che 400 : 250 : 150 m&#178;</td><td class="num">6.000</td><td class="num">3.750</td><td class="num">2.250</td></tr><tr><td>Energie</td><td class="num">2.400</td><td>Z&#228;hler 9.000 : 5.000 : 2.000 kWh</td><td class="num">1.350</td><td class="num">750</td><td class="num">300</td></tr><tr><td>Werbung</td><td class="num">4.800</td><td>direkt lt. Rechnungen</td><td class="num">2.400</td><td class="num">1.600</td><td class="num">800</td></tr><tr><td>Abschreibungen</td><td class="num">3.000</td><td>Anlagewert 3 : 2 : 1</td><td class="num">1.500</td><td class="num">1.000</td><td class="num">500</td></tr><tr><td>Sonstige Kosten</td><td class="num">1.800</td><td>1 : 1 : 1</td><td class="num">600</td><td class="num">600</td><td class="num">600</td></tr><tr class="sum"><td>Summe Handlungskosten</td><td class="num">60.000</td><td></td><td class="num">29.850</td><td class="num">19.700</td><td class="num">10.450</td></tr><tr><td>Wareneinsatz</td><td></td><td></td><td class="num">99.500</td><td class="num">78.800</td><td class="num">26.125</td></tr><tr class="sum"><td>Handlungskostenzuschlagssatz</td><td></td><td></td><td class="num">30,00 %</td><td class="num">25,00 %</td><td class="num">40,00 %</td></tr></tbody></table></div>
+<div class="formel"><div class="ft">Handlungskostenzuschlagssatz</div>HKZ = Handlungskosten &times; 100 &divide; Wareneinsatz</div>
+<div class="info-gold"><strong>Lesart:</strong> Ein HKZ von 40 % bei Kinderbekleidung hei&#223;t: Auf je 100 EUR Wareneinsatz entfallen 40 EUR Handlungskosten. Kinderbekleidung ist beratungsintensiv, hat aber niedrige Einstandspreise.</div>
+<div id="rechen-bab"></div>
+<div class="info-teal">Mehr &#220;bung mit dem BAB, einem BAB-Rechner und Komplexaufgaben findest du auf der Seite &#8222;BAB im Handel&#8220;.</div>
+</div>
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Der BAB</h2>
+<div id="aufg-bab"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="zurechnung">&larr; Kosten zurechnen</button><button class="btn-nav primary" data-goto="umlage">Weiter: Allgemeine Kostenstellen &rarr;</button></div>
+</section>
+<section class="tab-panel" id="tab-umlage">
+<div class="card">
+<h2>Allgemeine Kostenstellen umlegen</h2>
+<p>Verwaltung, Buchhaltung oder Gesch&#228;ftsleitung verkaufen keine Ware. Ihre Kosten werden zuerst auf einer <span class="gl" data-gl="allgkostenstelle">allgemeinen Kostenstelle</span> gesammelt und dann mit einem Schl&#252;ssel auf die Hauptkostenstellen verteilt. Diese Verteilung hei&#223;t <span class="gl" data-gl="umlage">Umlage</span>.</p>
+<div class="formelbox">Beispiel: Verwaltungskosten 9.000 EUR, Umlage im Verh&#228;ltnis 4 : 3 : 2 (DOB : HAKA : Kinder)<br>9.000 &divide; 9 = 1.000 EUR je Anteil &rarr; DOB 4.000 EUR, HAKA 3.000 EUR, Kinder 2.000 EUR</div>
+<div class="info-red"><strong>Wichtig:</strong> Erst nach der Umlage sind alle Kosten bei den Hauptkostenstellen angekommen. Erst dann darf der Zuschlagssatz berechnet werden, sonst ist er zu niedrig.</div>
+</div>
+<div class="card">
+<h2>Filialen als Kostenstellen</h2>
+<p>Bei Filialunternehmen ist jede Filiale eine Kostenstelle. Die Kosten der Zentrale (Einkauf, Verwaltung, Werbung) werden als <span class="gl" data-gl="umlage">Umlage Zentrale</span> auf die Filialen verteilt. Das Ergebnis wird stufenweise berechnet:</p>
+<table class="t"><thead><tr><th>Stufe</th><th>Rechnung</th></tr></thead><tbody>
+<tr><td>Netto-Umsatzerl&#246;se</td><td>Brutto-Umsatz ohne Umsatzsteuer</td></tr>
+<tr><td>&minus; Wareneinsatz</td><td>direkt zurechenbar</td></tr>
+<tr><td><strong>= Deckungsbeitrag I (Rohertrag)</strong></td><td></td></tr>
+<tr><td>&minus; direkt zurechenbare Handlungskosten</td><td>Personal, Miete, Energie der Filiale</td></tr>
+<tr><td><strong>= Deckungsbeitrag II</strong></td><td>Ergebnis vor Kosten der Zentrale</td></tr>
+<tr><td>&minus; Umlage Zentrale</td><td>Anteil an den Kosten der Zentrale</td></tr>
+<tr><td><strong>= Deckungsbeitrag III</strong></td><td>Reinergebnis der Filiale</td></tr>
+</tbody></table>
+<div id="rechen-umlage"></div>
+</div>
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Allgemeine Kostenstellen</h2>
+<div id="aufg-umlage"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="bab">&larr; Der BAB</button><button class="btn-nav primary" data-goto="kontrolle">Weiter: Kostenkontrolle &rarr;</button></div>
+</section>
+<section class="tab-panel" id="tab-kontrolle">
+<div class="card">
+<h2>Kosten kontrollieren</h2>
+<p>Die Kostenstellenrechnung wird jeden Monat oder jedes Jahr neu aufgestellt. Damit lassen sich die Kosten jeder Abteilung vergleichen:</p>
+<div class="grid2">
+<div class="gbox" style="border-color:#1565c0;background:#e3f2fd;"><div class="gt" style="color:#1565c0;"><span class="gl" data-gl="zeitvergleich">Zeitvergleich</span></div><p style="font-size:.87rem;">Kosten einer Abteilung im Vergleich zum Vorjahr oder Vormonat.</p></div>
+<div class="gbox" style="border-color:#7b1fa2;background:#f3e5f5;"><div class="gt" style="color:#7b1fa2;"><span class="gl" data-gl="sollist">Soll-Ist-Vergleich</span></div><p style="font-size:.87rem;">Geplante Kosten (Soll, <span class="gl" data-gl="plankosten">Plankosten</span>) im Vergleich zu den tats&#228;chlichen Kosten (Ist).</p></div>
+</div>
+<div class="formel"><div class="ft">Abweichung in Prozent</div>(Berichtsjahr &minus; Vorjahr) &times; 100 &divide; Vorjahr</div>
+<div class="info-gold"><strong>Nach dem Vergleich kommt die Analyse:</strong> Warum sind die Personalkosten gestiegen (Tariferh&#246;hung, Neueinstellung, mehr Stunden)? Warum sind die Energiekosten gestiegen (h&#246;herer Preis oder mehr Verbrauch)? Erst dann folgen Ma&#223;nahmen.</div>
+<div class="info-red"><strong>Vorsicht bei K&#252;rzungen:</strong> Wer beim Personal oder bei der Werbung spart, senkt die Kosten, riskiert aber Beratungsqualit&#228;t und Umsatz.</div>
+<div id="rechen-kontrolle"></div>
+</div>
+<div class="card" style="border-color:var(--teal);">
+<h2>Kurzaufgaben &ndash; Kostenkontrolle</h2>
+<div id="aufg-kontrolle"></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="umlage">&larr; Allgemeine Kostenstellen</button><button class="btn-nav primary" data-goto="wiederholung">Weiter: Fachbegriffe &rarr;</button></div>
+</section>
+<section class="tab-panel" id="tab-wiederholung">
+<div class="card">
+<h2>Fachbegriffe wiederholen &ndash; 16 Fragen</h2>
+<p style="font-size:.88rem;color:#555;">Hier kommen alle Begriffe noch einmal dran, die auf dieser Seite als antippbare Erkl&auml;rung hinterlegt sind.</p>
+<div class="bgbar"><span class="bgl">Bearbeitet:</span>
+<div class="bgtrack"><div class="bgfill" id="bg-fill"></div></div>
+<span class="bgpct" id="bg-pct">0 / 16</span></div>
+<div id="bg-container"></div></div>
+<div class="card" id="bg-result" style="display:none;">
+<h2 style="text-align:center;">Ergebnis Fachbegriffe</h2>
+<div class="result-card"><div class="result-score" id="bg-score">&ndash;</div>
+<p id="bg-txt" style="font-size:.94rem;color:#444;margin-top:.4rem;"></p></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="kontrolle">&larr; Kostenkontrolle</button>
+<button class="btn-nav primary" data-goto="quiz">Weiter: Quiz &rarr;</button></div>
+</section>
+<section class="tab-panel" id="tab-quiz">
+<div class="card"><h2>Abschlussquiz &ndash; 15 Fragen</h2><div id="quiz-container"></div></div>
+<div class="card" id="result-card" style="display:none;">
+<h2 style="text-align:center;">Dein Ergebnis</h2>
+<div class="result-card"><div class="result-score" id="res-score">&ndash;</div>
+<div class="result-note" id="res-note">&ndash;</div>
+<p id="res-txt" style="font-size:.94rem;color:#444;"></p></div></div>
+<div class="tab-nav"><button class="btn-nav" data-goto="wiederholung">&larr; Fachbegriffe</button><span></span></div>
+</section>
+
+</main>
+<script>
+(function(){
+"use strict";
+var AUFG={"grundlagen": [{"q": "Welche Frage beantwortet die Kostenstellenrechnung?", "opts": ["Welche Kosten sind angefallen?", "Wof\u00fcr (f\u00fcr welche Ware) sind die Kosten angefallen?", "Wo im Betrieb sind die Kosten angefallen?", "Wie hoch ist die Umsatzsteuer-Zahllast?"], "ok": 2, "ex": "Die Kostenartenrechnung fragt \u201ewelche\u201c, die Kostenstellenrechnung \u201ewo\u201c, die Kostentr\u00e4gerrechnung \u201ewof\u00fcr\u201c."}, {"q": "Was ist im Einzelhandel eine typische Kostenstelle?", "opts": ["Eine Abteilung wie Damenoberbekleidung", "Ein einzelner Kunde", "Ein Lieferant", "Die Umsatzsteuer"], "ok": 0, "ex": "Kostenstellen sind abgegrenzte Bereiche des Betriebs, im Einzelhandel meist Abteilungen, Warengruppen oder Filialen."}, {"q": "Welches Ziel verfolgt die Kostenstellenrechnung nicht?", "opts": ["Gemeinkosten verursachungsgerecht verteilen", "Zuschlagss\u00e4tze f\u00fcr die Kalkulation ermitteln", "Die Kosten der Abteilungen kontrollieren", "Die Inventur ersetzen"], "ok": 3, "ex": "Die Inventur bleibt eine eigene Pflicht. Die Kostenstellenrechnung verteilt, ermittelt Zuschlagss\u00e4tze und dient der Kontrolle."}, {"q": "Was ist eine allgemeine Kostenstelle?", "opts": ["Eine Abteilung, die selbst Ware verkauft", "Ein Bereich, der f\u00fcr alle Abteilungen arbeitet, z. B. die Verwaltung", "Die Kasse im Eingangsbereich", "Der Bereich mit dem h\u00f6chsten Umsatz"], "ok": 1, "ex": "Verwaltung oder Zentrale verkaufen nichts selbst. Ihre Kosten werden auf die Hauptkostenstellen umgelegt."}, {"q": "F\u00fcr welche Kostenstellen wird ein Handlungskostenzuschlagssatz berechnet?", "opts": ["Nur f\u00fcr die Verwaltung", "F\u00fcr die Hauptkostenstellen, also die verkaufenden Abteilungen", "F\u00fcr jede einzelne Ware", "F\u00fcr die Lieferanten"], "ok": 1, "ex": "Nur Hauptkostenstellen haben einen Wareneinsatz, auf den sich der Zuschlag bezieht."}], "zurechnung": [{"q": "Welche Kosten sind Kostenstellen-Einzelkosten?", "opts": ["Miete f\u00fcr das ganze Geb\u00e4ude", "Versicherung f\u00fcr das Haus", "Heizkosten f\u00fcr alle Etagen", "Gehalt laut Gehaltsliste der Abteilung HAKA"], "ok": 3, "ex": "Das Gehalt l\u00e4sst sich per Gehaltsliste direkt der Abteilung zuordnen."}, {"q": "Welcher Schl\u00fcssel passt am besten f\u00fcr die Miete?", "opts": ["Fl\u00e4che in m\u00b2", "Anzahl der Mitarbeiter", "Anzahl der Lieferanten", "Umsatzsteuer"], "ok": 0, "ex": "Miete wird f\u00fcr Fl\u00e4che bezahlt."}, {"q": "Welcher Schl\u00fcssel passt am besten f\u00fcr die Abschreibungen?", "opts": ["Fl\u00e4che in m\u00b2", "Anzahl der Kunden", "Wert der Ladeneinrichtung je Abteilung", "Anzahl der Schaufenster"], "ok": 2, "ex": "Abschreibungen h\u00e4ngen vom Wert der Einrichtung ab."}, {"q": "Was muss f\u00fcr einen guten Verteilungsschl\u00fcssel gelten?", "opts": ["Er muss m\u00f6glichst einfach zu z\u00e4hlen sein, egal wie.", "Er muss f\u00fcr alle Kostenarten gleich sein.", "Er muss vom Finanzamt genehmigt sein.", "Zwischen Kostenart und Schl\u00fcssel muss ein m\u00f6glichst enger Zusammenhang bestehen."], "ok": 3, "ex": "Nur dann werden die Kosten verursachungsgerecht verteilt."}, {"q": "Strom wird \u00fcber eigene Z\u00e4hler je Abteilung erfasst. Wie wird er behandelt?", "opts": ["Gleichm\u00e4\u00dfig verteilt", "Gar nicht verteilt", "Nach Z\u00e4hlerst\u00e4nden, also wie Einzelkosten der Kostenstelle", "Nach dem Umsatz"], "ok": 2, "ex": "Mit eigenen Z\u00e4hlern ist eine genaue, direkte Zuordnung m\u00f6glich."}], "bab": [{"q": "Was steht im BAB in den Zeilen, was in den Spalten?", "opts": ["Zeilen: Kostenstellen; Spalten: Kostenarten", "Zeilen: Kostenarten; Spalten: Kostenstellen", "Zeilen: Kunden; Spalten: Lieferanten", "Zeilen: Monate; Spalten: Waren"], "ok": 1, "ex": "Kostenarten senkrecht, Kostenstellen waagerecht, dazu eine Spalte mit dem Schl\u00fcssel."}, {"q": "Worauf bezieht sich der Handlungskostenzuschlagssatz im Einzelhandel?", "opts": ["Auf den Wareneinsatz", "Auf den Umsatz", "Auf den Gewinn", "Auf die Mitarbeiterzahl"], "ok": 0, "ex": "HKZ = Handlungskosten \u00d7 100 \u00f7 Wareneinsatz."}, {"q": "Wie pr\u00fcft man, ob im BAB richtig verteilt wurde?", "opts": ["Jede Spalte muss gleich gro\u00df sein.", "Der Zuschlagssatz muss 30 % betragen.", "Die Summe aller Spalten muss den Gesamtkosten entsprechen.", "Man muss nichts pr\u00fcfen."], "ok": 2, "ex": "Es darf kein Euro verloren gehen oder doppelt verteilt werden."}, {"q": "Kinderbekleidung hat einen HKZ von 40 %, DOB von 30 %. Was folgt daraus?", "opts": ["Kinderbekleidung muss mit dem h\u00f6heren Zuschlag kalkuliert werden.", "Kinderbekleidung macht automatisch Verlust.", "DOB muss aufgegeben werden.", "Beide Abteilungen sollten 35 % verwenden."], "ok": 0, "ex": "Jede Abteilung braucht ihren eigenen Zuschlag, sonst decken die Preise die Kosten nicht."}, {"q": "Wof\u00fcr wird der Handlungskostenzuschlagssatz anschlie\u00dfend gebraucht?", "opts": ["F\u00fcr die Umsatzsteuer-Voranmeldung", "F\u00fcr die Inventur", "F\u00fcr die Lohnabrechnung", "F\u00fcr die Kalkulation der Verkaufspreise in der Kostentr\u00e4gerrechnung"], "ok": 3, "ex": "Der HKZ wird in der Kalkulation auf den Bezugspreis gerechnet."}], "umlage": [{"q": "Was versteht man unter Umlage?", "opts": ["Die R\u00fcckzahlung der Vorsteuer", "Die Verteilung der Kosten einer allgemeinen Kostenstelle auf die Hauptkostenstellen", "Eine Preissenkung im Schlussverkauf", "Die Verteilung des Gewinns an die Gesellschafter"], "ok": 1, "ex": "Die Kosten der Verwaltung oder Zentrale werden per Schl\u00fcssel auf die verkaufenden Abteilungen verteilt."}, {"q": "Warum muss die Umlage vor der Berechnung der Zuschlagss\u00e4tze erfolgen?", "opts": ["Weil sonst die Umsatzsteuer falsch ist", "Weil sonst ein Teil der Handlungskosten fehlt und die Zuschlagss\u00e4tze zu niedrig sind", "Weil das Gesetz es verlangt", "Weil sonst der Wareneinsatz steigt"], "ok": 1, "ex": "Auch die Verwaltungskosten m\u00fcssen \u00fcber die Preise verdient werden."}, {"q": "Was zeigt der Deckungsbeitrag II einer Filiale?", "opts": ["Den Umsatz der Filiale", "Den Wareneinsatz", "Den Gewinn des ganzen Unternehmens", "Das Ergebnis der Filiale vor Abzug der Kosten der Zentrale"], "ok": 3, "ex": "DB II = DB I \u2212 direkt zurechenbare Handlungskosten."}, {"q": "Welche Kosten geh\u00f6ren zu den direkt zurechenbaren Kosten einer Filiale?", "opts": ["Miete und Personal der Filiale", "Gehalt der Gesch\u00e4ftsf\u00fchrung in der Zentrale", "Kosten der zentralen Buchhaltung", "Werbung f\u00fcr das ganze Unternehmen"], "ok": 0, "ex": "Miete und Personal entstehen genau in dieser Filiale."}, {"q": "Eine Filiale hat einen positiven DB II, aber einen negativen DB III. Was hei\u00dft das?", "opts": ["Die Filiale deckt nicht einmal den Wareneinsatz.", "Die Filiale muss sofort geschlossen werden.", "Die Filiale deckt ihre eigenen Kosten, aber nicht ihren vollen Anteil an der Zentrale.", "Die Zentrale arbeitet ohne Kosten."], "ok": 2, "ex": "Ohne die Filiale fiele die Umlage nicht weg, die Zentrale kostet trotzdem. Der positive DB II hilft also, die Zentrale zu tragen."}], "kontrolle": [{"q": "Was vergleicht man beim Zeitvergleich?", "opts": ["Die Kosten zweier Abteilungen im selben Monat", "Plan und Ist zweier Firmen", "Brutto- und Nettopreise", "Die Kosten einer Abteilung in zwei Zeitr\u00e4umen"], "ok": 3, "ex": "Zeitvergleich: dieselbe Kostenstelle, verschiedene Perioden."}, {"q": "Was ist ein Soll-Ist-Vergleich?", "opts": ["Vergleich von Umsatz und Gewinn", "Vergleich zweier Lieferanten", "Vergleich der geplanten mit den tats\u00e4chlichen Kosten", "Vergleich von Anfangs- und Schlussbestand"], "ok": 2, "ex": "Soll = Plankosten, Ist = tats\u00e4chliche Kosten."}, {"q": "Die Energiekosten sind um 25 % gestiegen, der Verbrauch ist gleich geblieben. Wahrscheinliche Ursache?", "opts": ["Mehr Mitarbeiter", "Der Energieversorger hat die Preise erh\u00f6ht.", "Mehr Werbung", "Weniger Umsatz"], "ok": 1, "ex": "Gleicher Verbrauch bei h\u00f6heren Kosten deutet auf einen h\u00f6heren Preis hin."}, {"q": "Welche Gefahr hat eine starke K\u00fcrzung der Personalkosten im Verkauf?", "opts": ["Weniger Beratung kann zu weniger Umsatz f\u00fchren.", "Es gibt keine Gefahr.", "Die Umsatzsteuer steigt.", "Der Wareneinsatz steigt."], "ok": 0, "ex": "Sparen beim Personal kann Kundenverluste verursachen."}, {"q": "Was folgt auf eine gro\u00dfe Abweichung im Kostenvergleich?", "opts": ["Nichts", "Die Zahlen l\u00f6schen", "Ursachen analysieren und Ma\u00dfnahmen ergreifen", "Den Plan r\u00fcckwirkend \u00e4ndern"], "ok": 2, "ex": "Vergleichen, Ursachen analysieren, steuern."}]};var QUIZ=[{"frage": "Welche Reihenfolge haben die drei Teilbereiche der KLR?", "opts": ["Kostentr\u00e4ger \u2013 Kostenstelle \u2013 Kostenart", "Kostenstelle \u2013 Kostenart \u2013 Kostentr\u00e4ger", "Kostenart \u2013 Kostenstelle \u2013 Kostentr\u00e4ger", "Beliebig"], "correct": 2, "loes": "Erst welche Kosten, dann wo, dann wof\u00fcr."}, {"frage": "Welche Kosten ordnet man einer Abteilung direkt per Beleg zu?", "opts": ["Miete f\u00fcr das Geb\u00e4ude", "Versicherung f\u00fcr das Haus", "Kosten der Zentrale", "Kostenstellen-Einzelkosten wie das Gehalt laut Gehaltsliste"], "correct": 3, "loes": "Kostenstellen-Einzelkosten werden direkt zugeordnet."}, {"frage": "Miete 15.000 EUR, Fl\u00e4chen 300 : 150 : 50 m\u00b2. Wie viel tr\u00e4gt die mittlere Abteilung?", "opts": ["3.000 EUR", "5.000 EUR", "4.500 EUR", "7.500 EUR"], "correct": 2, "loes": "15.000 \u00f7 500 \u00d7 150 = 4.500 EUR."}, {"frage": "Welcher Schl\u00fcssel passt f\u00fcr Heizkosten?", "opts": ["Anzahl der Kunden", "Raumgr\u00f6\u00dfe in m\u00b3 oder Anzahl der Heizk\u00f6rper", "Umsatz", "Anzahl der Lieferanten"], "correct": 1, "loes": "Heizkosten h\u00e4ngen vom beheizten Raum ab."}, {"frage": "Handlungskosten 24.000 EUR, Wareneinsatz 80.000 EUR. Wie hoch ist der HKZ?", "opts": ["30 %", "24 %", "33,33 %", "300 %"], "correct": 0, "loes": "24.000 \u00d7 100 \u00f7 80.000 = 30 %."}, {"frage": "Wozu dient der Handlungskostenzuschlagssatz?", "opts": ["Zur Berechnung der Umsatzsteuer", "Zur Inventur", "Zur Kalkulation der Verkaufspreise", "Zur Lohnabrechnung"], "correct": 2, "loes": "Er wird auf den Bezugspreis gerechnet."}, {"frage": "Was passiert mit den Kosten der Verwaltung?", "opts": ["Sie werden auf die Hauptkostenstellen umgelegt.", "Sie bleiben unber\u00fccksichtigt.", "Sie werden vom Wareneinsatz abgezogen.", "Sie werden als Gewinn gebucht."], "correct": 0, "loes": "Umlage auf die verkaufenden Abteilungen."}, {"frage": "Verwaltungskosten 6.000 EUR, Umlage 3 : 2 : 1. Anteil der ersten Abteilung?", "opts": ["1.000 EUR", "2.000 EUR", "6.000 EUR", "3.000 EUR"], "correct": 3, "loes": "6.000 \u00f7 6 \u00d7 3 = 3.000 EUR."}, {"frage": "Was passiert mit dem Zuschlagssatz einer Abteilung durch die Umlage?", "opts": ["Er sinkt.", "Er steigt, weil zus\u00e4tzliche Handlungskosten dazukommen.", "Er bleibt gleich.", "Er wird null."], "correct": 1, "loes": "Mehr Handlungskosten bei gleichem Wareneinsatz."}, {"frage": "Netto-Umsatz 200.000 EUR, Wareneinsatz 130.000 EUR. Wie hoch ist der DB I einer Filiale?", "opts": ["130.000 EUR", "70.000 EUR", "200.000 EUR", "330.000 EUR"], "correct": 1, "loes": "200.000 \u2212 130.000 = 70.000 EUR."}, {"frage": "DB II \u2212 Umlage Zentrale = ?", "opts": ["DB I", "Wareneinsatz", "Umsatz", "DB III (Reinergebnis der Filiale)"], "correct": 3, "loes": "Nach Abzug der Umlage bleibt das Reinergebnis der Filiale."}, {"frage": "Kosten Vorjahr 4.000 EUR, Berichtsjahr 4.600 EUR. Abweichung in %?", "opts": ["+15 %", "+6 %", "+13,04 %", "+60 %"], "correct": 0, "loes": "600 \u00d7 100 \u00f7 4.000 = 15 %."}, {"frage": "Was ist ein Soll-Ist-Vergleich?", "opts": ["Vergleich zweier Abteilungen", "Vergleich zweier Jahre", "Vergleich der geplanten mit den tats\u00e4chlichen Kosten", "Vergleich von Brutto und Netto"], "correct": 2, "loes": "Soll = Plan, Ist = tats\u00e4chlich."}, {"frage": "Woran erkennt man einen guten Verteilungsschl\u00fcssel?", "opts": ["Er ist f\u00fcr alle Kosten gleich.", "Er ergibt runde Zahlen.", "Er wird vom Finanzamt vorgegeben.", "Er h\u00e4ngt eng mit der Entstehung der Kosten zusammen."], "correct": 3, "loes": "Verursachungsgerechte Verteilung."}, {"frage": "Welche Aussage \u00fcber Kostenkontrolle ist richtig?", "opts": ["Jede Kostensenkung ist gut.", "Abweichungen sind unwichtig.", "Nach einem Vergleich m\u00fcssen die Ursachen analysiert werden, bevor man Ma\u00dfnahmen ergreift.", "Kostenkontrolle ist nur f\u00fcr Industriebetriebe."], "correct": 2, "loes": "Vergleichen, analysieren, steuern."}];var ZU_DATA=[];var ZU_OPTS=[];
+var RECHEN=[{"id": "r0", "tab": "zurechnung", "titel": "Gemeinkosten mit Schl\u00fcsseln verteilen", "kontext": "Modehaus Winter GmbH, M\u00e4rz. Miete 12.000 EUR nach Fl\u00e4che: DOB 400 m\u00b2, HAKA 250 m\u00b2, Kinder 150 m\u00b2. Strom 2.400 EUR nach Z\u00e4hlern: DOB 9.000 kWh, HAKA 5.000 kWh, Kinder 2.000 kWh.", "aufgaben": [{"frage": "Mietanteil HAKA", "wert": 3750, "tol": 1, "einheit": "EUR", "loesung": "12.000 \u00f7 800 m\u00b2 \u00d7 250 m\u00b2 = 3.750 EUR"}, {"frage": "Mietanteil Kinder", "wert": 2250, "tol": 1, "einheit": "EUR", "loesung": "12.000 \u00f7 800 m\u00b2 \u00d7 150 m\u00b2 = 2.250 EUR"}, {"frage": "Stromanteil DOB", "wert": 1350, "tol": 1, "einheit": "EUR", "loesung": "2.400 \u00f7 16.000 kWh \u00d7 9.000 kWh = 1.350 EUR"}]}, {"id": "r1", "tab": "bab", "titel": "Handlungskostenzuschlagss\u00e4tze berechnen", "kontext": "Nutze den BAB der Modehaus Winter GmbH oben. Die Handlungskosten von DOB setzen sich aus allen Betr\u00e4gen der Spalte DOB zusammen.", "aufgaben": [{"frage": "Summe der Handlungskosten DOB", "wert": 29850.0, "tol": 1, "einheit": "EUR", "loesung": "18.000 + 6.000 + 1.350 + 2.400 + 1.500 + 600 = 29.850 EUR"}, {"frage": "HKZ DOB", "wert": 30.0, "tol": 0.01, "einheit": "%", "loesung": "29.850 \u00d7 100 \u00f7 99.500 = 30,00 %"}, {"frage": "HKZ Kinderbekleidung", "wert": 40.0, "tol": 0.01, "einheit": "%", "loesung": "10.450 \u00d7 100 \u00f7 26.125 = 40,00 %"}]}, {"id": "r2", "tab": "umlage", "titel": "Verwaltungskosten umlegen", "kontext": "Die Verwaltung der Modehaus Winter GmbH verursacht im M\u00e4rz 9.000 EUR Kosten. Sie werden im Verh\u00e4ltnis 4 : 3 : 2 auf DOB, HAKA und Kinder umgelegt. HAKA hatte vor der Umlage 19.700 EUR Handlungskosten bei 78.800 EUR Wareneinsatz.", "aufgaben": [{"frage": "Umlage auf HAKA", "wert": 3000.0, "tol": 1, "einheit": "EUR", "loesung": "9.000 \u00f7 9 \u00d7 3 = 3.000 EUR"}, {"frage": "Handlungskosten HAKA nach Umlage", "wert": 22700.0, "tol": 1, "einheit": "EUR", "loesung": "19.700 + 3.000 = 22.700 EUR"}, {"frage": "HKZ HAKA nach Umlage", "wert": 28.8071, "tol": 0.01, "einheit": "%", "loesung": "22.700 \u00d7 100 \u00f7 78.800 = 28,81 % (vorher 25,00 %)"}]}, {"id": "r3", "tab": "umlage", "titel": "Ergebnis der Filiale Altstadt", "kontext": "Filiale Altstadt, 1. Quartal: Netto-Umsatzerl\u00f6se 180.000 EUR, Wareneinsatz 108.000 EUR, direkt zurechenbare Handlungskosten 48.000 EUR, Umlage Zentrale 9.000 EUR.", "aufgaben": [{"frage": "Deckungsbeitrag I", "wert": 72000, "tol": 1, "einheit": "EUR", "loesung": "180.000 \u2212 108.000 = 72.000 EUR"}, {"frage": "Deckungsbeitrag II", "wert": 24000, "tol": 1, "einheit": "EUR", "loesung": "72.000 \u2212 48.000 = 24.000 EUR"}, {"frage": "Deckungsbeitrag III", "wert": 15000, "tol": 1, "einheit": "EUR", "loesung": "24.000 \u2212 9.000 = 15.000 EUR"}]}, {"id": "r4", "tab": "kontrolle", "titel": "Zeitvergleich der Abteilung HAKA", "kontext": "Kosten der Abteilung HAKA im M\u00e4rz, Vorjahr \u2192 Berichtsjahr: Personalkosten 11.500 \u2192 12.000 EUR; Energie 600 \u2192 750 EUR; Werbung 2.000 \u2192 1.600 EUR. Berechne die Abweichung in % vom Vorjahr (Minus bei R\u00fcckgang).", "aufgaben": [{"frage": "Abweichung Personalkosten", "wert": 4.3478, "tol": 0.01, "einheit": "%", "loesung": "(12.000 \u2212 11.500) \u00d7 100 \u00f7 11.500 = 4,35 %"}, {"frage": "Abweichung Energie", "wert": 25.0, "tol": 0.01, "einheit": "%", "loesung": "(750 \u2212 600) \u00d7 100 \u00f7 600 = 25,00 %"}, {"frage": "Abweichung Werbung", "wert": -20.0, "tol": 0.01, "einheit": "%", "loesung": "(1.600 \u2212 2.000) \u00d7 100 \u00f7 2.000 = -20,00 %"}]}];var GLOSSAR={"kostenartenrechnung": {"t": "Kostenartenrechnung", "d": "Erster Schritt der KLR: Welche Kosten sind in welcher H\u00f6he angefallen?"}, "kostenstellenrechnung": {"t": "Kostenstellenrechnung", "d": "Zweiter Schritt der KLR: Wo im Betrieb sind die Kosten angefallen? Werkzeug ist der BAB."}, "kostentraegerrechnung": {"t": "Kostentr\u00e4gerrechnung", "d": "Dritter Schritt der KLR: Wof\u00fcr, also f\u00fcr welche Ware, sind die Kosten angefallen? Im Handel vor allem die Kalkulation."}, "kostenstelle": {"t": "Kostenstelle", "d": "Abgegrenzter Bereich des Betriebs, f\u00fcr den Kosten gesondert erfasst werden, z. B. eine Abteilung oder Filiale."}, "hauptkostenstelle": {"t": "Hauptkostenstelle", "d": "Verkaufende Abteilung mit eigenem Wareneinsatz. F\u00fcr sie wird ein Handlungskostenzuschlagssatz berechnet."}, "allgkostenstelle": {"t": "Allgemeine Kostenstelle", "d": "Bereich, der f\u00fcr alle Abteilungen arbeitet (Verwaltung, Zentrale). Ihre Kosten werden umgelegt."}, "gemeinkosten": {"t": "Gemeinkosten", "d": "Kosten, die f\u00fcr mehrere Kostenstellen oder Waren gemeinsam entstehen und verteilt werden m\u00fcssen."}, "kstek": {"t": "Kostenstellen-Einzelkosten", "d": "Kosten, die einer Kostenstelle direkt per Beleg zugeordnet werden k\u00f6nnen, z. B. Gehalt laut Gehaltsliste."}, "kstgk": {"t": "Kostenstellen-Gemeinkosten", "d": "Kosten, die mehrere Kostenstellen betreffen und mit einem Schl\u00fcssel verteilt werden, z. B. die Miete."}, "verteilungsschluessel": {"t": "Verteilungsschl\u00fcssel", "d": "Bezugsgr\u00f6\u00dfe zur Aufteilung von Gemeinkosten, z. B. m\u00b2, kWh, Anlagewert oder Mitarbeiterzahl."}, "bab": {"t": "Betriebsabrechnungsbogen (BAB)", "d": "Tabelle der Kostenstellenrechnung: Kostenarten in den Zeilen, Kostenstellen in den Spalten."}, "wareneinsatz": {"t": "Wareneinsatz", "d": "Wert der verkauften Ware zu Einstandspreisen: Anfangsbestand + Eink\u00e4ufe \u2212 Schlussbestand."}, "hkz": {"t": "Handlungskostenzuschlagssatz", "d": "Handlungskosten \u00d7 100 \u00f7 Wareneinsatz. Zeigt, wie viel Handlungskosten auf 100 EUR Wareneinsatz entfallen."}, "umlage": {"t": "Umlage", "d": "Verteilung der Kosten einer allgemeinen Kostenstelle (z. B. Zentrale) auf die Hauptkostenstellen oder Filialen."}, "zeitvergleich": {"t": "Zeitvergleich", "d": "Vergleich der Kosten einer Kostenstelle mit dem Vorjahr oder Vormonat."}, "sollist": {"t": "Soll-Ist-Vergleich", "d": "Vergleich der geplanten Kosten (Soll) mit den tats\u00e4chlichen Kosten (Ist)."}, "plankosten": {"t": "Plankosten", "d": "Im Voraus geplante Kosten einer Periode. Grundlage f\u00fcr den Soll-Ist-Vergleich."}};
+var TOTAL=QUIZ.length;var gAns=0;
+
+function showTab(id){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.remove('active');});
+  var p=document.getElementById('tab-'+id);if(p)p.classList.add('active');
+  var b=document.querySelector('[data-tab="'+id+'"]');if(b)b.classList.add('active');
+  setTimeout(function(){window.scrollTo({top:0,behavior:'instant'});},0);
+  buildAufgaben(id);buildRechen(id);
+  if(id==='wiederholung')buildBegriffe();
+}
+function addScore(){
+  gAns=Math.min(gAns+1,TOTAL);
+  var f=document.getElementById('pb-fill'),l=document.getElementById('pb-pct');
+  if(f)f.style.width=Math.round(gAns/TOTAL*100)+'%';
+  if(l)l.textContent=gAns+' / '+TOTAL;
+}
+document.querySelectorAll('nav.tabs button').forEach(function(b){
+  b.addEventListener('click',function(){showTab(this.getAttribute('data-tab'));});});
+document.querySelectorAll('[data-goto]').forEach(function(b){
+  b.addEventListener('click',function(){showTab(this.getAttribute('data-goto'));});});
+
+
+/* ============ FACHBEGRIFFE-QUIZ ============ */
+var BEGRIFFE=[{"k": "kostenstellenrechnung", "f": "Welche Frage beantwortet die Kostenstellenrechnung?", "o": ["Welche Kosten?", "Wo sind die Kosten angefallen?", "Wof\u00fcr sind die Kosten angefallen?", "Wann wird bezahlt?"], "c": 1, "l": "Sie ordnet die Kosten den Bereichen zu, in denen sie entstanden sind."}, {"k": "kostenstelle", "f": "Was ist eine Kostenstelle?", "o": ["Ein einzelner Artikel", "Ein abgegrenzter Bereich des Betriebs mit eigener Kostenerfassung", "Ein Konto in der Buchf\u00fchrung", "Ein Lieferant"], "c": 1, "l": "Zum Beispiel Abteilung DOB oder Filiale Altstadt."}, {"k": "hauptkostenstelle", "f": "Was ist eine Hauptkostenstelle im Einzelhandel?", "o": ["Die Verwaltung", "Das Lager des Lieferanten", "Die Kasse", "Eine verkaufende Abteilung mit eigenem Wareneinsatz"], "c": 3, "l": "F\u00fcr sie wird ein Zuschlagssatz berechnet."}, {"k": "allgkostenstelle", "f": "Was ist eine allgemeine Kostenstelle?", "o": ["Ein Bereich, der f\u00fcr alle Abteilungen arbeitet", "Eine Abteilung mit besonders viel Umsatz", "Eine Kostenart", "Ein Verteilungsschl\u00fcssel"], "c": 0, "l": "Zum Beispiel Verwaltung oder Zentrale."}, {"k": "kstek", "f": "Was sind Kostenstellen-Einzelkosten?", "o": ["Kosten, die geschl\u00fcsselt werden m\u00fcssen", "Kosten ohne Beleg", "Kosten, die per Beleg direkt einer Kostenstelle zugeordnet werden", "Kosten der Lieferanten"], "c": 2, "l": "Beispiel: Gehalt laut Gehaltsliste der Abteilung."}, {"k": "kstgk", "f": "Was sind Kostenstellen-Gemeinkosten?", "o": ["Kosten einer einzigen Abteilung", "Kosten des Wareneinkaufs", "Steuern", "Kosten, die mehrere Kostenstellen betreffen und geschl\u00fcsselt werden"], "c": 3, "l": "Beispiel: Miete f\u00fcr das ganze Haus."}, {"k": "verteilungsschluessel", "f": "Was ist ein Verteilungsschl\u00fcssel?", "o": ["Ein Passwort f\u00fcr die Kasse", "Ein Rabatt", "Eine Bezugsgr\u00f6\u00dfe zur Aufteilung von Gemeinkosten", "Eine Steuerart"], "c": 2, "l": "Zum Beispiel m\u00b2, kWh oder Anlagewert."}, {"k": "bab", "f": "Was steht im BAB in den Spalten?", "o": ["Die Kostenarten", "Die Kostenstellen", "Die Kunden", "Die Monate"], "c": 1, "l": "Kostenarten stehen in den Zeilen."}, {"k": "wareneinsatz", "f": "Wie berechnet man den Wareneinsatz?", "o": ["Anfangsbestand + Eink\u00e4ufe \u2212 Schlussbestand", "Umsatz \u2212 Gewinn", "Eink\u00e4ufe + Schlussbestand", "Umsatz \u00d7 19 %"], "c": 0, "l": "Wert der verkauften Ware zu Einstandspreisen."}, {"k": "hkz", "f": "Wie berechnet man den Handlungskostenzuschlagssatz?", "o": ["Handlungskosten \u00d7 100 \u00f7 Umsatz", "Gewinn \u00d7 100 \u00f7 Wareneinsatz", "Handlungskosten \u00d7 100 \u00f7 Wareneinsatz", "Wareneinsatz \u00d7 100 \u00f7 Handlungskosten"], "c": 2, "l": "Er bezieht sich auf den Wareneinsatz."}, {"k": "umlage", "f": "Was ist eine Umlage?", "o": ["Verteilung der Kosten einer allgemeinen Kostenstelle auf die Hauptkostenstellen", "Eine Steuer", "Ein Lieferantenrabatt", "Ein Teil des Gehalts"], "c": 0, "l": "Erst danach werden die Zuschlagss\u00e4tze berechnet."}, {"k": "zeitvergleich", "f": "Was vergleicht man beim Zeitvergleich?", "o": ["Zwei Abteilungen", "Zwei Unternehmen", "Plan und Ist", "Eine Kostenstelle in zwei Zeitr\u00e4umen"], "c": 3, "l": "Zum Beispiel M\u00e4rz Vorjahr mit M\u00e4rz Berichtsjahr."}, {"k": "sollist", "f": "Was vergleicht der Soll-Ist-Vergleich?", "o": ["Vorjahr und Berichtsjahr", "Geplante und tats\u00e4chliche Kosten", "Zwei Filialen", "Brutto und netto"], "c": 1, "l": "Soll = Plan, Ist = tats\u00e4chlich."}, {"k": "plankosten", "f": "Was sind Plankosten?", "o": ["Tats\u00e4chlich angefallene Kosten", "Im Voraus geplante Kosten", "Kosten der Planungsabteilung", "Kosten ohne Beleg"], "c": 1, "l": "Sie sind das Soll im Soll-Ist-Vergleich."}, {"k": "kostentraegerrechnung", "f": "Welcher Schritt folgt auf die Kostenstellenrechnung?", "o": ["Die Kostenartenrechnung", "Die Inventur", "Der Jahresabschluss", "Die Kostentr\u00e4gerrechnung"], "c": 3, "l": "Dort wird der Zuschlagssatz in der Kalkulation verwendet."}, {"k": "gemeinkosten", "f": "Was sind Gemeinkosten?", "o": ["Kosten, die f\u00fcr mehrere Kostenstellen oder Waren gemeinsam entstehen", "Kosten, die einer Ware direkt zugerechnet werden", "Kosten nur der Verwaltung", "Kosten, die nie anfallen"], "c": 0, "l": "Sie m\u00fcssen verteilt werden."}];
+var bgA=0,bgC=0;
+function buildBegriffe(){
+  var c=document.getElementById('bg-container');
+  if(!c||c.children.length>0)return;
+  BEGRIFFE.forEach(function(q,idx){
+    var g=GLOSSAR[q.k]||{t:''};
+    var bl=document.createElement('div');bl.className='quiz-block';
+    var nr=document.createElement('div');nr.className='quiz-nr';
+    nr.textContent='Begriff '+(idx+1)+' von '+BEGRIFFE.length+'  \u00b7  '+g.t;
+    var fr=document.createElement('div');fr.className='quiz-frage';fr.textContent=q.f;
+    var od=document.createElement('div');od.className='mc-opts';
+    var fb=document.createElement('div');fb.className='fb-box';
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(od);bl.appendChild(fb);
+    c.appendChild(bl);
+    q.o.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='mc-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        bl.querySelectorAll('.mc-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.c);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)od.querySelectorAll('.mc-btn')[q.c].classList.add('correct');
+        fb.textContent=ok?q.l:('Nicht ganz. '+q.l);
+        fb.className='fb-box show '+(ok?'correct':'wrong');
+        bgA++;if(ok)bgC++;bgFort();
+        if(bgA===BEGRIFFE.length)setTimeout(bgErgebnis,700);
+      });
+      od.appendChild(b);});
+  });
+}
+function bgFort(){
+  var f=document.getElementById('bg-fill'),l=document.getElementById('bg-pct');
+  if(f)f.style.width=Math.round(bgA/BEGRIFFE.length*100)+'%';
+  if(l)l.textContent=bgA+' / '+BEGRIFFE.length;
+}
+function bgErgebnis(){
+  var card=document.getElementById('bg-result');if(!card)return;
+  card.style.display='block';
+  var pct=Math.round(bgC/BEGRIFFE.length*100);
+  var txt;
+  if(pct>=92)txt='Sehr gut \u2013 die Fachbegriffe sitzen.';
+  else if(pct>=81)txt='Gut. Sieh dir die wenigen Fehler noch einmal an.';
+  else if(pct>=67)txt='Befriedigend. Tippe die unterstrichenen Begriffe im Text noch einmal an.';
+  else if(pct>=50)txt='Ausreichend. Geh die Begriffe in den Kapiteln noch einmal durch.';
+  else txt='Arbeite die Kapitel noch einmal durch und tippe dabei jeden unterstrichenen Begriff an.';
+  var s=document.getElementById('bg-score');
+  if(s)s.textContent=bgC+' von '+BEGRIFFE.length+' richtig ('+pct+' %)';
+  var t=document.getElementById('bg-txt');if(t)t.textContent=txt;
+  var bt=document.querySelector('[data-tab="begriffe"]');if(bt)bt.classList.add('done');
+  var nv=document.querySelector('nav.tabs');var nh=nv?nv.offsetHeight:40;
+  var r=card.getBoundingClientRect();
+  window.scrollTo({top:window.pageYOffset+r.top-nh-8,behavior:'smooth'});
+}
+
+/* ============ GLOSSAR ============ */
+function initGlossar(){
+  var tip=document.createElement('div');tip.className='gl-tip';
+  document.body.appendChild(tip);
+  var aktiv=null;
+  function schliesse(){tip.style.display='none';if(aktiv)aktiv.classList.remove('aktiv');aktiv=null;}
+  function zeige(el){
+    var g=GLOSSAR[el.getAttribute('data-gl')];if(!g)return;
+    tip.innerHTML='<strong>'+g.t+'</strong><span class="gl-x">\u2715</span><p>'+g.d+'</p>';
+    tip.style.display='block';
+    var tw=Math.min(310,window.innerWidth-24);
+    tip.style.width=tw+'px';
+    var r=el.getBoundingClientRect();
+    var left=r.left+r.width/2-tw/2;
+    if(left<12)left=12;
+    if(left+tw>window.innerWidth-12)left=window.innerWidth-tw-12;
+    tip.style.left=(left+window.pageXOffset)+'px';
+    var th=tip.offsetHeight;
+    tip.style.top=((r.top-th-12>8)?(r.top+window.pageYOffset-th-10):(r.bottom+window.pageYOffset+10))+'px';
+    el.classList.add('aktiv');aktiv=el;
+    var xb=tip.querySelector('.gl-x');
+    if(xb)xb.addEventListener('click',function(e){e.stopPropagation();schliesse();});
+  }
+  document.querySelectorAll('.gl').forEach(function(el){
+    el.setAttribute('role','button');el.setAttribute('tabindex','0');
+    el.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(aktiv===el){schliesse();return;}
+      schliesse();zeige(el);});
+    el.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();
+        if(aktiv===el){schliesse();}else{schliesse();zeige(el);}}});
+  });
+  tip.addEventListener('click',function(e){e.stopPropagation();});
+  document.addEventListener('click',schliesse);
+  window.addEventListener('resize',schliesse);
+  document.querySelectorAll('nav.tabs button').forEach(function(b){
+    b.addEventListener('click',schliesse);});
+}
+/* ============ AUFGABEN ============ */
+function buildAufgaben(tabId){
+  var c=document.getElementById('aufg-'+tabId);
+  if(!c||c.children.length>0)return;
+  var qs=AUFG[tabId];if(!qs)return;
+  qs.forEach(function(q,qi){
+    var bl=document.createElement('div');bl.className='aufg-block';
+    var nr=document.createElement('div');nr.className='aufg-nr';
+    nr.textContent='Aufgabe '+(qi+1)+' von '+qs.length;
+    var fr=document.createElement('div');fr.className='aufg-frage';fr.textContent=q.q;
+    var op=document.createElement('div');op.className='aufg-opts';
+    var fb=document.createElement('div');fb.className='aufg-fb';
+    q.opts.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='aufg-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        op.querySelectorAll('.aufg-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.ok);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)op.querySelectorAll('.aufg-btn')[q.ok].classList.add('correct');
+        fb.textContent=(ok?'\u2713 Richtig! ':'\u2717 Nicht ganz. ')+q.ex;
+        fb.className='aufg-fb show '+(ok?'correct':'wrong');});
+      op.appendChild(b);});
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(op);bl.appendChild(fb);
+    c.appendChild(bl);});
+}
+function buildRechen(tabId){
+  var c=document.getElementById('rechen-'+tabId);
+  if(!c||c.children.length>0)return;
+  RECHEN.filter(function(f){return f.tab===tabId;}).forEach(function(f){
+    var bl=document.createElement('div');bl.className='rechen-block';
+    var ti=document.createElement('div');ti.className='rechen-title';ti.textContent=f.titel;
+    var kx=document.createElement('p');kx.className='rechen-kontext';kx.textContent=f.kontext;
+    bl.appendChild(ti);bl.appendChild(kx);
+    f.aufgaben.forEach(function(a,i){
+      var row=document.createElement('div');row.className='rechen-row';
+      var fr=document.createElement('div');fr.className='rechen-frage';
+      fr.textContent=(i+1)+'. '+a.frage;
+      var wr=document.createElement('div');wr.className='rechen-inline';
+      var inp=document.createElement('input');
+      inp.type='text';inp.className='rechen-inp';inp.placeholder='Ergebnis';
+      inp.setAttribute('inputmode','decimal');
+      var un=document.createElement('span');un.className='rechen-unit';un.textContent=a.einheit;
+      var bt=document.createElement('button');bt.className='rechen-check';bt.textContent='Pr\u00fcfen';
+      var fb=document.createElement('div');fb.className='rechen-fb';
+      bt.addEventListener('click',function(){
+        var v=inp.value.replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,'');
+        var n=parseFloat(v);
+        var ok=!isNaN(n)&&Math.abs(n-a.wert)<=a.tol;
+        inp.className='rechen-inp '+(ok?'ok':'nok');
+        fb.textContent=(ok?'\u2713 Richtig! ':'\u2717 L\u00f6sung: ')+a.loesung;
+        fb.className='rechen-fb show '+(ok?'ok':'nok');});
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')bt.click();});
+      wr.appendChild(inp);wr.appendChild(un);wr.appendChild(bt);
+      row.appendChild(fr);row.appendChild(wr);row.appendChild(fb);
+      bl.appendChild(row);});
+    c.appendChild(bl);});
+}
+function buildZuordnung(){
+  var c=document.getElementById('zu-container');
+  if(!c||c.children.length>0)return;
+  ZU_DATA.forEach(function(it){
+    var bl=document.createElement('div');bl.className='zu-block';
+    var nr=document.createElement('div');nr.className='zu-nr';
+    nr.textContent='Beschreibung '+it.nr+' von '+ZU_DATA.length;
+    var tx=document.createElement('div');tx.className='zu-text';tx.textContent=it.text;
+    var se=document.createElement('select');se.className='zu-sel';
+    var o0=document.createElement('option');o0.value='';o0.textContent='-- Begriff w\u00e4hlen --';
+    se.appendChild(o0);
+    ZU_OPTS.forEach(function(o){
+      var op=document.createElement('option');op.value=o;op.textContent=o;se.appendChild(op);});
+    var fb=document.createElement('div');fb.className='zu-fb';
+    se.addEventListener('change',function(){
+      if(!se.value)return;
+      var ok=(se.value===it.loesung);
+      se.className='zu-sel '+(ok?'ok':'nok');
+      fb.textContent=ok?('\u2713 Richtig! '+it.ex):('\u2717 Richtig w\u00e4re: '+it.loesung+'. '+it.ex);
+      fb.className='zu-fb show '+(ok?'ok':'nok');});
+    bl.appendChild(nr);bl.appendChild(tx);bl.appendChild(se);bl.appendChild(fb);
+    c.appendChild(bl);});
+}
+var qA=0,qC=0;
+function buildQuiz(){
+  var c=document.getElementById('quiz-container');if(!c)return;
+  QUIZ.forEach(function(q,idx){
+    var bl=document.createElement('div');bl.className='quiz-block';
+    var nr=document.createElement('div');nr.className='quiz-nr';
+    nr.textContent='Frage '+(idx+1)+' von '+QUIZ.length;
+    var fr=document.createElement('div');fr.className='quiz-frage';fr.textContent=q.frage;
+    var od=document.createElement('div');od.className='mc-opts';
+    var fb=document.createElement('div');fb.className='fb-box';
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(od);bl.appendChild(fb);
+    c.appendChild(bl);
+    q.opts.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='mc-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        bl.querySelectorAll('.mc-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.correct);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)od.querySelectorAll('.mc-btn')[q.correct].classList.add('correct');
+        fb.textContent=ok?q.loes:('Nicht ganz. '+q.loes);
+        fb.className='fb-box show '+(ok?'correct':'wrong');
+        qA++;if(ok)qC++;addScore();
+        if(qA===QUIZ.length)setTimeout(showResult,700);});
+      od.appendChild(b);});});
+}
+function showResult(){
+  var card=document.getElementById('result-card');if(card)card.style.display='block';
+  var pct=Math.round(qC/QUIZ.length*100);
+  var mss;
+  if(pct>=95)mss=15;else if(pct>=90)mss=14;else if(pct>=85)mss=13;else if(pct>=80)mss=12;
+  else if(pct>=75)mss=11;else if(pct>=70)mss=10;else if(pct>=65)mss=9;else if(pct>=60)mss=8;
+  else if(pct>=55)mss=7;else if(pct>=50)mss=6;else if(pct>=45)mss=5;else if(pct>=40)mss=4;
+  else if(pct>=34)mss=3;else if(pct>=27)mss=2;else if(pct>=20)mss=1;else mss=0;
+  var note=mss+' MSS-Punkte',txt;
+  if(pct>=80)txt="Sehr gut! Du beherrschst die Kostenstellenrechnung sicher.";
+  else if(pct>=65)txt="Gut. Sieh dir die Aufgaben mit Fehlern noch einmal an.";
+  else if(pct>=50)txt="Rechne den BAB und die Umlage noch einmal durch.";
+  else if(pct>=34)txt="Arbeite besonders Verteilungsschl\u00fcssel und Zuschlagssatz noch einmal durch.";
+  else txt="Geh die Kapitel noch einmal von vorn durch und nutze die Rechenaufgaben.";
+  var s=document.getElementById('res-score');
+  if(s)s.textContent=qC+' von '+QUIZ.length+' richtig ('+pct+' %)';
+  var n=document.getElementById('res-note');if(n)n.textContent=note;
+  var t=document.getElementById('res-txt');if(t)t.textContent=txt;
+  var qt=document.querySelector('[data-tab="quiz"]');if(qt)qt.classList.add('done');
+  var nv=document.querySelector('nav.tabs');var nh=nv?nv.offsetHeight:40;
+  var r=card.getBoundingClientRect();
+  window.scrollTo({top:window.pageYOffset+r.top-nh-8,behavior:'smooth'});
+}
+document.addEventListener('DOMContentLoaded',function(){
+  buildQuiz();buildAufgaben('grundlagen');initGlossar();});
+})();
+</script>
+</body>
+</html>

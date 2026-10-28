@@ -310,6 +310,7 @@ table.t tr.sum td{background:var(--teal-l);border-top:2px solid var(--teal);}
 .abgr-fb.nok{background:var(--red-l);border-left:3px solid var(--red);color:#b71c1c;}
 .abgr-summe{background:var(--ink);color:#fff;border-radius:var(--r);padding:.75rem 1rem;text-align:center;font-size:.92rem;margin-top:.6rem;}
 @media(max-width:640px){.dreifeld,.grid3,.grid2{grid-template-columns:1fr;}}
+.info-red{background:var(--red-l);border-left:4px solid var(--red);border-radius:0 var(--r) var(--r) 0;padding:.7rem 1rem;margin:.6rem 0;font-size:.9rem;}
 </style>
 </head>
 <body>
@@ -547,8 +548,7 @@ function showTab(id){
   setTimeout(function(){window.scrollTo({top:0,behavior:'instant'});},0);
   buildAufgaben(id);buildRechen(id);
   if(id==='abgrenzung')buildAbgr();
-  if(id==='begriffe')buildBegriffe();
-  if(id==='begriffe')buildBegriffe();
+  if(id==='begriffe'||id==='wiederholung')buildBegriffe();
 }
 function addScore(){
   gAns=Math.min(gAns+1,TOTAL);
@@ -773,4 +773,69 @@ function buildZuordnung(){
     var se=document.createElement('select');se.className='zu-sel';
     var o0=document.createElement('option');o0.value='';o0.textContent='-- Begriff w\u00e4hlen --';
     se.appendChild(o0);
-    ZU_OPT
+    ZU_OPTS.forEach(function(o){
+      var op=document.createElement('option');op.value=o;op.textContent=o;se.appendChild(op);});
+    var fb=document.createElement('div');fb.className='zu-fb';
+    se.addEventListener('change',function(){
+      if(!se.value)return;
+      var ok=(se.value===it.loesung);
+      se.className='zu-sel '+(ok?'ok':'nok');
+      fb.textContent=ok?('\u2713 Richtig! '+it.ex):('\u2717 Richtig w\u00e4re: '+it.loesung+'. '+it.ex);
+      fb.className='zu-fb show '+(ok?'ok':'nok');});
+    bl.appendChild(nr);bl.appendChild(tx);bl.appendChild(se);bl.appendChild(fb);
+    c.appendChild(bl);});
+}
+var qA=0,qC=0;
+function buildQuiz(){
+  var c=document.getElementById('quiz-container');if(!c)return;
+  QUIZ.forEach(function(q,idx){
+    var bl=document.createElement('div');bl.className='quiz-block';
+    var nr=document.createElement('div');nr.className='quiz-nr';
+    nr.textContent='Frage '+(idx+1)+' von '+QUIZ.length;
+    var fr=document.createElement('div');fr.className='quiz-frage';fr.textContent=q.frage;
+    var od=document.createElement('div');od.className='mc-opts';
+    var fb=document.createElement('div');fb.className='fb-box';
+    bl.appendChild(nr);bl.appendChild(fr);bl.appendChild(od);bl.appendChild(fb);
+    c.appendChild(bl);
+    q.opts.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='mc-btn';b.textContent=o;
+      b.addEventListener('click',function(){
+        bl.querySelectorAll('.mc-btn').forEach(function(x){x.disabled=true;});
+        var ok=(oi===q.correct);
+        b.classList.add(ok?'correct':'wrong');
+        if(!ok)od.querySelectorAll('.mc-btn')[q.correct].classList.add('correct');
+        fb.textContent=ok?q.loes:('Nicht ganz. '+q.loes);
+        fb.className='fb-box show '+(ok?'correct':'wrong');
+        qA++;if(ok)qC++;addScore();
+        if(qA===QUIZ.length)setTimeout(showResult,700);});
+      od.appendChild(b);});});
+}
+function showResult(){
+  var card=document.getElementById('result-card');if(card)card.style.display='block';
+  var pct=Math.round(qC/QUIZ.length*100);
+  var mss;
+  if(pct>=95)mss=15;else if(pct>=90)mss=14;else if(pct>=85)mss=13;else if(pct>=80)mss=12;
+  else if(pct>=75)mss=11;else if(pct>=70)mss=10;else if(pct>=65)mss=9;else if(pct>=60)mss=8;
+  else if(pct>=55)mss=7;else if(pct>=50)mss=6;else if(pct>=45)mss=5;else if(pct>=40)mss=4;
+  else if(pct>=34)mss=3;else if(pct>=27)mss=2;else if(pct>=20)mss=1;else mss=0;
+  var note=mss+' MSS-Punkte',txt;
+  if(pct>=80)txt="Sehr gut! Du kannst Kosten und Leistungen sicher abgrenzen.";
+  else if(pct>=65)txt="Gut. Sieh dir die Aufgaben mit Fehlern noch einmal an.";
+  else if(pct>=50)txt="Geh die Abgrenzungstabelle noch einmal Zeile f\u00fcr Zeile durch.";
+  else if(pct>=34)txt="Arbeite besonders Anderskosten und Zusatzkosten noch einmal durch.";
+  else txt="Geh die Kapitel noch einmal von vorn durch und nutze das Fallbeispiel.";
+  var s=document.getElementById('res-score');
+  if(s)s.textContent=qC+' von '+QUIZ.length+' richtig ('+pct+' %)';
+  var n=document.getElementById('res-note');if(n)n.textContent=note;
+  var t=document.getElementById('res-txt');if(t)t.textContent=txt;
+  var qt=document.querySelector('[data-tab="quiz"]');if(qt)qt.classList.add('done');
+  var nv=document.querySelector('nav.tabs');var nh=nv?nv.offsetHeight:40;
+  var r=card.getBoundingClientRect();
+  window.scrollTo({top:window.pageYOffset+r.top-nh-8,behavior:'smooth'});
+}
+document.addEventListener('DOMContentLoaded',function(){
+  buildQuiz();buildAufgaben('grundlagen');initGlossar();});
+})();
+</script>
+</body>
+</html>
